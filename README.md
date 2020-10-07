@@ -14,7 +14,7 @@ Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 n
 # Raspored
 
 <b>Predavanja</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Četvrtkom,&nbsp;16:00–17:30
-<br><b>Konzultacije</b>&nbsp;&nbsp;&nbsp;Četvrtkom,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17:30-18:30
+<br><b>Konzultacije</b>&nbsp;&nbsp;&nbsp;Četvrtkom,&nbsp;17:30-18:30
 
 # Knjige
 
