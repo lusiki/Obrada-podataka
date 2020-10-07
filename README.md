@@ -19,7 +19,7 @@ Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 n
 # Knjige
 
 Koristiti ćemo mnoštvo različitih knjiga koje će biti dostupne na linkovima kod svakog predavanja.
-Nekoliko knjiga ulazi u nezaobilaznu literaturu za kolegij:
+Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <a href="http://barbra-coco.dyndns.org/yuri/R/R%20for%20Data%20Science-%20Import,%20Tidy,%20Transform,%20Visualize,%20and%20Model%20Data.pdf">R for Data Science</a>
@@ -41,10 +41,10 @@ Nekoliko knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <i>Napomena:</i> Predavanja će biti dostupna kao .pdf,.html i .Rmd.
 
 
-<a href="/Predavanja/01_UVOD.pdf">Predavanje 01:Pregled kolegija i studentskih obveza</a>
+<a href="/Predavanja/.pdf">Predavanje 01:Pregled kolegija i studentskih obveza</a>
 
 
-<a href="/Predavanja/02_UVOD_U_R.pdf">Predavanje 02:Uvod u R</a>
+<a href="/Predavanja/.pdf">Predavanje 02:Vrste podataka</a>
 
 
 
@@ -77,7 +77,6 @@ Svi studenti tijekom semestra moraju održati jednu prezentaciju prema zadanoj l
 <ul>
 <li><a href="https://education.rstudio.com/learn/">RStudio: Finding Your Way To R</a></li>
 <li><a href="https://www.datacamp.com/courses/free-introduction-to-r">DataCamp's Introduction to R</a></li>
-<li><a href="https://r4ds.had.co.nz/">R for Data Science</a></li>
 <li><a href="http://adv-r.had.co.nz/">Advanced R</a></li>
 <li><a href="https://www.r-bloggers.com/">R bloggers</a></li>
 <li><a href="https://cran.r-project.org/web/views/SocialSciences.html">CRAN Task View:Statistics for the Social Science</a></li
