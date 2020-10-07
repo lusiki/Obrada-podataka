@@ -41,10 +41,35 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <i>Napomena:</i> Predavanja će biti dostupna kao .pdf,.html i .Rmd.
 
 
-<a href="/Predavanja/.pdf">Predavanje 01:Pregled kolegija i studentskih obveza</a>
+<a href="/Predavanja/01_UVOD.pdf">Predavanje 01:Pregled kolegija i studentskih obveza</a>
 
+<a href="/Predavanja/02_VRSTEdta.pdf">Predavanje 02:Vrste podataka</a>
 
-<a href="/Predavanja/.pdf">Predavanje 02:Vrste podataka</a>
+<a href="/Predavanja/03_IZVORIdta.pdf">Predavanje 03:Izvori podataka</a>
+
+<a href="/Predavanja/04_UCITAVANJEdta.pdf">Predavanje 04:Učitavanje podataka u R</a>
+
+<a href="/Predavanja/05_PRIKUPLJANJEdta.pdf">Predavanje 05:Prikupljanje podataka sa interneta</a>
+
+<a href="/Predavanja/06_SPREMANJEdta.pdf">Predavanje 06:Spremanje i baze podataka</a>
+
+<a href="/Predavanja/07_MANIPULACIJAdta.pdf">Predavanje 07:Manipulacija i prilagodba podataka</a>
+
+<a href="/Predavanja/08_PODRŠKA.pdf">Predavanje 08: Podrška za provedbu empirijske analize</a>
+
+<a href="/Predavanja/09_ANALIZA.pdf">Predavanje 09:Statistička analiza</a>
+
+<a href="/Predavanja/10_STROJNO.pdf">Predavanje 10:Strojno učenje</a>
+
+<a href="/Predavanja/11_TEKST.pdf">Predavanje 11:Analiza teksta</a>
+
+<a href="/Predavanja/12_STATICKI.pdf">Predavanje 12:Prezentacija podataka u statičkom formatu</a>
+
+<a href="/Predavanja/13_DINAMICKI.pdf">Predavanje 13:Prezentacija podataka u dinamičkom formatu</a>
+
+<a href="/Predavanja/14_DINAMICKI.pdf">Predavanje 14:Prezentacija podataka u interaktivnom formatu</a>
+
+<a href="/Predavanja/15_OBJAVA.pdf">Predavanje 15:Objava i dijeljenje rezultata analize</a>
 
 
 
