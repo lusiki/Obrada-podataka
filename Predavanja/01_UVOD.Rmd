@@ -1,7 +1,7 @@
 ---
 title: "OBRADA PODATAKA"
 subtitle: "Hrvatski studiji"
-institute: "Diplomski studij sociologije"
+institute: "Preddiplomski studij sociologije"
 author: "dr.sc. Luka Šikić"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 font: 10pt
@@ -15,7 +15,7 @@ output:
 
 ## TEHNIČKI DETALJI
 
-- Nastava iz kolegija **Obrada podataka** sastoji se od dva sata predavanja tjedno (7 ECTS). 
+- Nastava iz kolegija **Obradca podataka** sastoji se od dva sata predavanja i dva sata seminara tjedno (4 ECTS). 
 - Predavanja se održavaju u blok satima (dva školska sata od 45 min).
 - Pohađanje nastave (i predavanja i seminara) je obavezno i evidentira se. 
 - Predavanje se održava ponedjeljkom od 16:00 do 17:30 u dvorani Split. 
@@ -25,17 +25,17 @@ output:
 ## CILJEVI KOLEGIJA
 
 1. Upoznati vas sa osnovama programskog sučelja [**R**](https://rstudio.com/).
-2. Osposobiti vas za obradu podataka u programu **R**. 
-3. Naučiti vas kako prikupiti, prilagoditi, analizirati podatke te prezentirati rezultate. 
+2. Osposobiti vas za primjenu osnovnih statističkih koncepata u programu **R**. 
+3. Naučiti vas kako operacionalizirati osnovne statističke koncepte u empirijskoj analizi i interpretirati rezultate. 
 4. Upoznati vas sa važnostima, korisnostima i znanstvenom relevantnosti domaćih i stranih sekundarnih izvora podataka (npr. Iz [**DZS**](https://www.dzs.hr/), [**HGK**](https://www.hgk.hr/), [**EUROSTAT**](https://ec.europa.eu/eurostat/data/database) i sl.).
 
 
 ## SADRŽAJ KOLEGIJA
 
 - Računalna podrška: **R** osnove, dodatni koncepti u **R**.
-- Podatci: karakteristike, prikupljanje, spremanje.
-- Manipulacija podataka: prilagodba, vizualizacija, analiza.
-- Prezentacija rezultata: prezentacijski format, diseminacija rezulatata.
+- Pregled podataka: deskriptivna statistika, vizualizacija podataka.
+- Statistička teorija: vjerojatnost, distribucije, procjena parametara, testiranje hipoteza.
+- Statistički alati: kategorijalna analiza, usporedba dva prosjeka, usporedba više prosjeka, osnove regresijske analize.
 
 
 ## STUDENTSKE OBVEZE (Predavanja)
@@ -66,9 +66,10 @@ Konzultacije:  od 17:30 do 18:30 u sobi 18 (I.kat), ili prema dogovoru na mail: 
 
 ## LITERATURA ZA ISPIT
 
-- [**R for data science**](http://barbra-coco.dyndns.org/yuri/R/R%20for%20Data%20Science-%20Import,%20Tidy,%20Transform,%20Visualize,%20and%20Model%20Data.pdf)
+- **Petz, B. (1997).** *Osnovne statističke metode za nematematičare*, III, Naklada  Slap, Jastrebarsko
+- [**Navarro, D. (2014)** *Learning statistics with R: A tutorial*](https://learningstatisticswithr.com/)
 - Predavanja
-- [**Materijali**](https://github.com/BrbanMiro/Statistika) koji će biti distribuirani u toku kolegija
+- [**Materijali**](https://github.com/BrbanMiro/Obrada-podataka) koji će biti distribuirani u toku kolegija
 
 
 
