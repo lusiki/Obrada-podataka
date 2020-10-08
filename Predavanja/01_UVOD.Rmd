@@ -15,7 +15,7 @@ output:
 
 ## TEHNIČKI DETALJI
 
-- Nastava iz kolegija **Obradca podataka** sastoji se od dva sata predavanja i dva sata seminara tjedno (4 ECTS). 
+- Nastava iz kolegija **Obrada podataka** sastoji se od dva sata predavanja tjedno (4 ECTS). 
 - Predavanja se održavaju u blok satima (dva školska sata od 45 min).
 - Pohađanje nastave (i predavanja i seminara) je obavezno i evidentira se. 
 - Predavanje se održava ponedjeljkom od 16:00 do 17:30 u dvorani Split. 
