@@ -1,7 +1,7 @@
 ---
 title: "OBRADA PODATAKA"
 subtitle: "Hrvatski studiji"
-institute: "Preddiplomski studij sociologije"
+institute: "Diplomski studij sociologije"
 author: "dr.sc. Luka Šikić"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 font: 10pt
