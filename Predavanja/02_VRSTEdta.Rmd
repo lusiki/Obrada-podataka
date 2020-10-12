@@ -1,0 +1,95 @@
+---
+title: "OBRADA PODATAKA"
+subtitle: "Hrvatski studiji"
+institute: "Diplomski studij sociologije"
+author: "dr.sc. Luka Šikić"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+font: 10pt
+output: 
+  beamer_presentation:
+    theme: "Szeged"
+    colortheme: "beaver"
+    fonttheme: "structurebold"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+## CILJEVI PREDAVANJA
+
+- Strukturirani i ne-strukturirani podatci
+- Kvantitativni i kvalitativni podatci
+- Podatci u "praksi"
+- Big Data
+
+```{r cars}
+```
+
+## STRUKTURIRANI I NESTRUKTURIRANI PODATCI
+
+
+1. **STRUKTURIRANI**
+- observacije sa karakteristikama, uglavnom organizirane u tablicu (redovi i kolone)
+- znanstveno prikupljeni podatci, telefonski imenik
+- manji dio podataka
+
+
+2. **NESTRUKTURIRANI**
+- podatci bez standardne organizacijske hijerarhije 
+- Facebook objave, Twitter, logovi na server, genetska sekvenca nukleotida, tekstualni podatci
+- vjerojatno više od 80% svih podataka
+- zahtjevaju prilagodbu prije analize 
+
+
+
+## KVANTITATIVNI i KVALITATIVNI PODATCI
+
+1. **KVANTITATIVNI**
+- brojevi, matematičke procedure, prosjek, vremenski trend, threshold efekti
+
+2. **KVALITATIVNI**
+- "prirodne" kategorije, jezik
+- najčešća observacija, jedinstvene vrijednosti
+
+## PRIMJER
+
+```{r pressure}
+
+
+```
+
+## DISKRETNI I KONTINUIRANI PODATCI
+
+1. **DISKRETNI**
+- prebrojivi
+- npr. igraća kocka
+
+
+1. **KONTINUIRANI**
+- postoje na kontinuiranoj skali
+- npr. težina ili visina
+
+
+## ČETIRI RAZINE PODATAKA
+
+1. **NOMINALNI**
+
+1. **ORDINALNI**
+
+1. **INTERVALNI**
+
+1. **OMJERNI**
+
+
+
+
+
+
+
+
+
+
+
+
