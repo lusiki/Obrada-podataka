@@ -645,6 +645,8 @@ dr.sc. Luka Šikić
 <ul>
 <li>Strukturirani i ne-strukturirani podatci</li>
 <li>Kvantitativni i kvalitativni podatci</li>
+<li>Diskretni i kontinuirani podatci</li>
+<li>Razine podataka</li>
 <li>Podatci u “praksi”</li>
 <li>Big Data</li>
 </ul>
@@ -1009,7 +1011,7 @@ EU
 <ul>
 <li>npr. temperatura</li>
 <li>opravdane su matematičke operacije poput zbrajanja i oduzimanja</li>
-<li>opravdanjo korištenje mjera centralne tendencije i varijabilnosti</li>
+<li>opravdano korištenje mjera centralne tendencije i varijabilnosti</li>
 </ul>
 <div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># temperatura frizidera u fahrenheitima mjerena svakih sat vremena</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>temps <span class="op">=</span> [<span class="dv">31</span>, <span class="dv">32</span>, <span class="dv">32</span>, <span class="dv">31</span>, <span class="dv">28</span>, <span class="dv">29</span>, <span class="dv">31</span>, <span class="dv">38</span>, <span class="dv">32</span>, <span class="dv">31</span>, <span class="dv">30</span>, <span class="dv">29</span>, <span class="dv">30</span>, <span class="dv">31</span>, <span class="dv">26</span>]</span>
@@ -1047,6 +1049,123 @@ EU
 <ul>
 <li>opravdane matematičke operacije množenja i dieljenja</li>
 <li>podatci na ovoj razni ne smiju biti negativni</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co"># temperatura frizidera u fahrenheitima mjerena svakih sat vremena</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a>temps <span class="op">=</span> [<span class="dv">31</span>, <span class="dv">32</span>, <span class="dv">32</span>, <span class="dv">31</span>, <span class="dv">28</span>, <span class="dv">29</span>, <span class="dv">31</span>, <span class="dv">38</span>, <span class="dv">32</span>, <span class="dv">31</span>, <span class="dv">30</span>, <span class="dv">29</span>, <span class="dv">30</span>, <span class="dv">31</span>, <span class="dv">26</span>]</span>
+<span id="cb19-4"><a href="#cb19-4"></a></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="co"># izracunaj geometrijsku sredinu</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a>num_items <span class="op">=</span> <span class="bu">len</span>(temps)</span>
+<span id="cb19-7"><a href="#cb19-7"></a>product <span class="op">=</span> <span class="fl">1.</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="cf">for</span> temperature <span class="kw">in</span> temps:</span>
+<span id="cb19-10"><a href="#cb19-10"></a> product <span class="op">*=</span> temperature</span>
+<span id="cb19-11"><a href="#cb19-11"></a></span>
+<span id="cb19-12"><a href="#cb19-12"></a>geometric_mean <span class="op">=</span> product<span class="op">**</span>(<span class="fl">1.</span><span class="op">/</span>num_items)</span>
+<span id="cb19-13"><a href="#cb19-13"></a></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="co"># prikazi rezultat</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="bu">print</span>(<span class="st">&quot;geometrijska sredina:&quot;</span>,geometric_mean)</span></code></pre></div>
+<pre><code>## geometrijska sredina: 30.63473484374659</code></pre>
+</div>
+<div id="podatci-u-praksi" class="slide section level2">
+<h1>PODATCI U “PRAKSI”</h1>
+<ol style="list-style-type: decimal">
+<li><strong>Big Data</strong></li>
+</ol>
+<ul>
+<li>zbog veličine se ne mogu pohraniti na standardne rrelacijske baze</li>
+<li>nestrukturirani, semi-srtukturirani i strukturirani podatci</li>
+<li>od terabayt-a do zettabayt-a veličine</li>
+<li>osnova za strojno učenje, AI, predviđanje budućnosti</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Strukturirani, Ne-strukturirani i Kvazi-strukturirani podatci</strong></li>
+</ol>
+<ul>
+<li>podatkovni “polymorphism” zbog uspona novih tehnologije (web,mobile, socialNet,IoT, programming)</li>
+<li><a href="https://www.mongodb.com/">MongoDB</a>, RAVENDB,RETHINKDB, ORIENTDB, PostrgreSQL, ArangoDB cassandra</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><strong>Vremenske serije</strong></li>
+</ol>
+<ul>
+<li>svaka opservacija ima vremenski pečat(događaj ili procesuiranje)</li>
+<li>npr. bihevioralni podatci(web) koji se koriste za predviđanje akcijskih modela</li>
+<li>npr. financijsko trgovanje</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Strojni podatci</strong></li>
+</ol>
+<ul>
+<li>sistemski proizvedeni podatci</li>
+<li>npr. PC logovi, mobiteli, pametni automobili, aplikacije, API, cloud aplikacije, sensorni signali</li>
+<li>posebno korisna za identifikaciju prijetnji, kontrolu kvalitete procesa, predviđanje</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li><strong>Prostorno-temporalni podatci</strong></li>
+</ol>
+<ul>
+<li>geografski i temporalni pečat</li>
+<li>prokazuju lokacijsku dinamiku u vremenu</li>
+<li>praćenje vozila, promjene u populaciji, otkrivanje anomalija u (npr. telekom) mreži</li>
+</ul>
+<ol start="6" style="list-style-type: decimal">
+<li><strong>Otvoreni podatci</strong></li>
+</ol>
+<ul>
+<li>dostupni javnosti prema “pravilima za upotrebu”</li>
+<li>trenutno uglavno ograničeni na znanstvenu uporabu</li>
+</ul>
+<ol start="7" style="list-style-type: decimal">
+<li><strong>Crni podatci</strong></li>
+</ol>
+<ul>
+<li>neiskorišteni podatci</li>
+<li>uglavnom u institucionalnom vlasništvu(tvrtke instituti, think-tank, fakulteti)</li>
+</ul>
+<ol start="8" style="list-style-type: decimal">
+<li><strong>Podatci u realnom vremenu</strong></li>
+</ol>
+<ul>
+<li>visoka potražnja i “vrući trend”</li>
+<li>5G</li>
+<li>medicina, promet, trgovina</li>
+<li>velik potencijal</li>
+</ul>
+<ol start="9" style="list-style-type: decimal">
+<li><strong>Genomski podatci</strong></li>
+</ol>
+<ul>
+<li>analiza DNA u cilju identifikacije efekata ljekova i tretiranja bolesti</li>
+<li>analitika je glavno ograničenje</li>
+<li>prikupljanje i procesuiranje podataka otežano</li>
+</ul>
+<ol start="10" style="list-style-type: decimal">
+<li><strong>Operativni podatci</strong></li>
+</ol>
+<ul>
+<li>uvidi u procese ponad analitičara i specijalista</li>
+<li>podatci o praksama -korisni za obrnuti inžinjering</li>
+</ul>
+<ol start="11" style="list-style-type: decimal">
+<li><strong>Visoko-dimenzionalni podatci</strong></li>
+</ol>
+<ul>
+<li>popularizirani kroz IT podršku za prepoznavanje lica</li>
+<li>zbog složenosti transformacija zahtijevaju nove načine bilježenja i manipulacije</li>
+</ul>
+<ol start="12" style="list-style-type: decimal">
+<li><strong>Ne-verificirani podatci</strong></li>
+</ol>
+<ul>
+<li>prikupljeni podatci upitne relevantnosti</li>
+</ul>
+<ol start="13" style="list-style-type: decimal">
+<li><strong>Translitički podatci</strong></li>
+</ol>
+<ul>
+<li>podatci dostupni u realnom vremenu</li>
+<li>memorijska zahtjevnost i brzi pristup informacijama</li>
 </ul>
 </div>
 

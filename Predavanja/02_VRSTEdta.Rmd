@@ -31,6 +31,8 @@ library(kableExtra)
 
 - Strukturirani i ne-strukturirani podatci
 - Kvantitativni i kvalitativni podatci
+- Diskretni i kontinuirani podatci
+- Razine podataka
 - Podatci u "praksi"
 - Big Data
 
@@ -196,6 +198,7 @@ print("stdev:",round(standard_deviation,2))
 # temperatura frizidera u fahrenheitima mjerena svakih sat vremena
 temps = [31, 32, 32, 31, 28, 29, 31, 38, 32, 31, 30, 29, 30, 31, 26]
 
+# izracunaj geometrijsku sredinu
 num_items = len(temps)
 product = 1.
 
@@ -203,18 +206,89 @@ for temperature in temps:
  product *= temperature
 
 geometric_mean = product**(1./num_items)
-print("geometrijska sredina:",geometric_mean)# == 30.634
+
+# prikazi rezultat
+print("geometrijska sredina:",geometric_mean)
 
 ```
 
 
+## PODATCI U "PRAKSI"
+
+1. **Big Data**
+
+- zbog veličine se ne mogu pohraniti na standardne rrelacijske baze
+- nestrukturirani, semi-srtukturirani i strukturirani podatci
+- od terabayt-a do zettabayt-a veličine
+- osnova za strojno učenje, AI, predviđanje budućnosti
+
+2. **Strukturirani, Ne-strukturirani i Kvazi-strukturirani podatci**
+
+- podatkovni "polymorphism" zbog uspona novih tehnologije (web,mobile, socialNet,IoT, programming)
+- [MongoDB](https://www.mongodb.com/), RAVENDB,RETHINKDB, ORIENTDB, PostrgreSQL, ArangoDB cassandra
+
+3. **Vremenske serije**
+
+- svaka opservacija ima vremenski pečat(događaj ili procesuiranje)
+- npr. bihevioralni podatci(web) koji se koriste za predviđanje akcijskih modela
+- npr. financijsko trgovanje
+
+4. **Strojni podatci**
+
+- sistemski proizvedeni podatci
+- npr. PC logovi, mobiteli, pametni automobili, aplikacije, API, cloud aplikacije, sensorni signali
+- posebno korisna za identifikaciju prijetnji, kontrolu kvalitete procesa, predviđanje
+
+5. **Prostorno-temporalni podatci**
+
+- geografski i temporalni pečat
+- prokazuju lokacijsku dinamiku u vremenu
+- praćenje vozila, promjene u populaciji, otkrivanje anomalija u (npr. telekom) mreži 
+
+6. **Otvoreni podatci**
+
+- dostupni javnosti prema "pravilima za upotrebu"
+- trenutno uglavno ograničeni na znanstvenu uporabu
+
+7. **Crni podatci**
+
+- neiskorišteni podatci
+- uglavnom u institucionalnom vlasništvu(tvrtke instituti, think-tank, fakulteti)
+
+8. **Podatci u realnom vremenu**
+
+- visoka potražnja i "vrući trend"
+- 5G
+- medicina, promet, trgovina
+- velik potencijal
+
+9. **Genomski podatci**
+
+- analiza DNA u cilju identifikacije efekata ljekova i tretiranja bolesti
+- analitika je glavno ograničenje
+- prikupljanje i procesuiranje podataka otežano
+
+10. **Operativni podatci**
+
+- uvidi u procese ponad analitičara i specijalista
+- podatci o praksama
+-korisni za obrnuti inžinjering
+
+11. **Visoko-dimenzionalni podatci**
+
+- popularizirani kroz IT podršku za prepoznavanje lica
+- zbog složenosti transformacija zahtijevaju nove načine bilježenja i manipulacije
 
 
+12. **Ne-verificirani podatci**
+
+- prikupljeni podatci upitne relevantnosti
 
 
+13. **Translitički podatci**
 
-
-
+- podatci dostupni u realnom vremenu
+- memorijska zahtjevnost i brzi pristup informacijama
 
 
 
