@@ -44,7 +44,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <a href="/Predavanja/01_UVOD.pdf">Predavanje 01: Pregled kolegija i studentskih obveza</a>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="/Predavanja/02_VRSTEdta.html">Predavanje 02: Vrste podataka</a>
+<a href="https://rpubs.com/shichich/674967">Predavanje 02: Vrste podataka</a>
 
 <ul>
 <li> Strukturirani i ne-strukturirani podatci</li>
