@@ -43,7 +43,24 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 <a href="/Predavanja/01_UVOD.pdf">Predavanje 01: Pregled kolegija i studentskih obveza</a>
 
-<a href="/Predavanja/02_VRSTEdta.pdf">Predavanje 02: Vrste podataka</a>
+<a href="/Predavanja/02_VRSTEdta.html">Predavanje 02: Vrste podataka</a>
+
+<ul>
+<li> Strukturirani i ne-strukturirani podatci</li>
+<li> Kvantitativni i kvalitativni podatci</li>
+<li> Diskretni i kontinuirani podatci</li>
+<li> Razine podataka</li>
+<li> Podatci u "praksi"</li>
+<ul>
+
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/02_VRSTEdta.html">.html</a> | <a href="/Predavanja/02_VRSTEdta.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> 
+<br><b>Čitanje: </b><a href="/Predavanja/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> 
+
+
+
+
 
 <a href="/Predavanja/03_IZVORIdta.pdf">Predavanje 03: Izvori podataka</a>
 
