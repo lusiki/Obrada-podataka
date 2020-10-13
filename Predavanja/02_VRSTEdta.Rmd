@@ -83,13 +83,30 @@ knitr::opts_chunk$set(echo = F)
 1. **OMJERNI**
 
 
+## NOMINALNA RAZINA
 
+- podatci opisani nazivom ili kategorijom (kategorički podatci)
+- npr. spol, nacionalnost, biološke vrste 
+- ne mogu se obavljati matematičke operacije poput zbrajanja ili djeljenja
+- računanje prosjeka ili drugih statističkih momenata nema smisla
 
+## ODINALNA RAZINA
 
+- kategorički podatci koji imaju hijerarhijsku strukturu
+- iako postoji hijerarhija, nije moguće utvrditi relativne razlike među opservacijama
+- matematičke operacije kao zbrajanje ili dijeljenje nisu opravdane
+- usporedbe i sortiranje podataka su opravdane
+- moguće je koristiti medijan (ne i prosjek)
 
+## INTERVALNA RAZINA
 
+- npr. temperatura
+- opravdane su matematičke operacije poput zbrajanja i oduzimanja
+- opravdanjo korištenje mjera centralne tendencije i varijabilnosti
 
+## OMJERNA RAZINA
 
-
+- opravdane matematičke operacije množenja i dieljenja
+- podatci na ovoj razni ne smiju biti negativni
 
 
