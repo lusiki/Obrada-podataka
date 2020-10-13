@@ -1,20 +1,30 @@
 ---
 title: "OBRADA PODATAKA"
-subtitle: "Hrvatski studiji"
-institute: "Diplomski studij sociologije"
 author: "dr.sc. Luka Šikić"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-font: 10pt
-output: 
+output:
+  slidy_presentation: default
   beamer_presentation:
-    theme: "Szeged"
-    colortheme: "beaver"
-    fonttheme: "structurebold"
-
+    theme: Szeged
+    colortheme: beaver
+    fonttheme: structurebold
+institute: Diplomski studij sociologije
+font: 10pt
+subtitle: Hrvatski studiji
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F)
+```
+
+```{r paketi, include=FALSE}
+
+library(tidyverse)
+library(reticulate)
+use_virtualenv("r-reticulate")
+#py_install("pandas")
+#use_python("C:\\Users\\Lukas\\AppData\\Local\\R-MINI~1\\envs\\R-RETI~1\\python.exe")
+library(kableExtra)
 ```
 
 ## CILJEVI PREDAVANJA
@@ -23,9 +33,6 @@ knitr::opts_chunk$set(echo = F)
 - Kvantitativni i kvalitativni podatci
 - Podatci u "praksi"
 - Big Data
-
-```{r cars}
-```
 
 ## STRUKTURIRANI I NESTRUKTURIRANI PODATCI
 
@@ -55,10 +62,31 @@ knitr::opts_chunk$set(echo = F)
 
 ## PRIMJER
 
-```{r pressure}
+```{python, echo = T}
+import pandas as pd
 
+# ucitaj CSV file sa URL
+drinks = pd.read_csv('https://raw.githubusercontent.com/sinanuozdemir/principles_of_data_science/master/data/chapter_2/drinks.csv')
+
+# pregledaj prvih 10 redova
+#drinks.head(10) 
+```
+
+```{r, echo = T}
+# prikazi podatke u tablici
+py$drinks %>%
+  head(10) %>%
+  kbl() %>%
+  kableExtra::kable_material_dark()
+```
+```{python, echo = T}
+
+drinks['continent'].describe() # pregledaj kolonu 'continent'- KVALITATTIVNA
+
+drinks['beer_servings'].describe() # pregledaj kolonu 'continent'- KVANTITATIVNA
 
 ```
+
 
 ## DISKRETNI I KONTINUIRANI PODATCI
 
@@ -98,15 +126,90 @@ knitr::opts_chunk$set(echo = F)
 - usporedbe i sortiranje podataka su opravdane
 - moguće je koristiti medijan (ne i prosjek)
 
+
+```{python, echo = T}
+import numpy
+
+# anketa o sreci na ljestvici 1-5
+results = [5, 4, 3, 4, 5, 3, 2, 5, 3, 2, 1, 4, 5, 3, 4, 4, 5, 4, 2, 1,
+4, 5, 4, 3, 2, 4, 4, 5, 4, 3, 2, 1]
+
+# sortiraj rezultate
+sorted_results = sorted(results)
+print(sorted_results)
+
+# pogledaj prosjek i medijan
+print ("prosjek:",round(numpy.mean(results),2))
+print ("medijan:",round(numpy.median(results),2))
+
+
+```
+
 ## INTERVALNA RAZINA
 
 - npr. temperatura
 - opravdane su matematičke operacije poput zbrajanja i oduzimanja
-- opravdanjo korištenje mjera centralne tendencije i varijabilnosti
+- opravdano korištenje mjera centralne tendencije i varijabilnosti
+
+
+```{python, echo = T}
+# temperatura frizidera u fahrenheitima mjerena svakih sat vremena
+temps = [31, 32, 32, 31, 28, 29, 31, 38, 32, 31, 30, 29, 30, 31, 26]
+
+# pogledaj prosjek i medijan
+print("prosjek:",round(numpy.mean(temps),2))
+print("medijan:",round(numpy.median(temps),2))
+
+## pogledaj mjere varijacije
+
+squared_differences = []
+# napravi praznu listu
+mean = numpy.mean(temps)
+# spremi prosjek u objekt
+
+for temperature in temps:
+ difference = temperature - mean
+ # definiraj funkciju za izracun udaljenosti (temperature) od prosjeka
+ 
+ squared_difference = difference**2
+ # kvadriraj razliku
+ squared_differences.append(squared_difference)
+ # dodaj listi
+
+average_squared_difference = numpy.mean(squared_differences)
+# izracunaj varijancu
+standard_deviation = numpy.sqrt(average_squared_difference)
+# izracunaj standardnu devijaciju
+print("stdev:",round(standard_deviation,2)) 
+
+```
+
 
 ## OMJERNA RAZINA
 
 - opravdane matematičke operacije množenja i dieljenja
 - podatci na ovoj razni ne smiju biti negativni
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
