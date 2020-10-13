@@ -8,7 +8,7 @@
 
 
 # Obrada-podataka
-Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu. 
+Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi dr.sc. Luka Sikic. 
 
 
 # Raspored
@@ -43,6 +43,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 <a href="/Predavanja/01_UVOD.pdf">Predavanje 01: Pregled kolegija i studentskih obveza</a>
 
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href="/Predavanja/02_VRSTEdta.html">Predavanje 02: Vrste podataka</a>
 
 <ul>
@@ -57,12 +58,23 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 <b>Format predavanja:</b> <a href="/Predavanja/02_VRSTEdta.html">.html</a> | <a href="/Predavanja/02_VRSTEdta.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> 
 <br><b>Čitanje: </b><a href="/Predavanja/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> 
-
-
-
-
-
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href="/Predavanja/03_IZVORIdta.pdf">Predavanje 03: Izvori podataka</a>
+
+<ul>
+<li> </li>
+<li> </li>
+<li> </li>
+<li> </li>
+<li> </li>
+<ul>
+
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/03_.html">.html</a> | <a href="/Predavanja/03_.pdf">.pdf</a> | <a href="/Predavanja/.Rmd">.Rmd</a> 
+<br><b>Čitanje: </b><a href="/Predavanja/.pdf">add</a>
+
+
 
 <a href="/Predavanja/04_UCITAVANJEdta.pdf">Predavanje 04: Učitavanje podataka u R</a>
 
