@@ -291,6 +291,27 @@ print("geometrijska sredina:",geometric_mean)
 - memorijska zahtjevnost i brzi pristup informacijama
 
 
+## BIG DATA U DRUŠTVENIM ZNANOSTIMA
+
+- visoki volumen, opseg, brzina i raznolikost
+- geografski, tekstualni, i podatci sa društvenih medija
+- dostupnost u realnom vremenu, većem opsegu, novi pokazatelji i manje strukture (T.Khun!?)
+- u poslovnom sektoru i prirodnim znanostima je BD već postao standard
+- društvene znanosti i javne institucije (vlade) kasne u prihvaćanju BD 
+
+**POTENCIJAL BD ZA UNAPRIJEĐENJE DRUŠTVENIH (I HUMANISTIČKIH) ZNANOSTI**
+
+- prikupljanje podatka
+- novi uvidi u društvo, politiku i ekonomiju
+- nova istraživačka pitanja
+- preciznija predviđanja
+- bolje javne politike
+
+**IZVAZOVI BD**
+
+- pristup podatcima
+- upravljanje podatcima i provedba analize
+- postavljanje pravih pitanja
 
 
 
