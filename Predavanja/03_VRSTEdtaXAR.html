@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>OBRADA PODATAKA</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="dr.sc. Luka Šikić" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# OBRADA PODATAKA
+## Fakultet hrvatskih studija
+### dr.sc. Luka Šikić
+### Diplomski studij sociologije
+### 15 listopad, 2020
+
+---
+
+
+
+
+
+
+## CILJEVI PREDAVANJA
+
+- Strukturirani i ne-strukturirani podatci
+&lt;br&gt;
+&lt;br&gt;
+- Kvantitativni i kvalitativni podatci
+&lt;br&gt;
+&lt;br&gt;
+- Diskretni i kontinuirani podatci
+&lt;br&gt;
+&lt;br&gt;
+- Razine podataka
+&lt;br&gt;
+&lt;br&gt;
+- Podatci u "praksi"
+&lt;br&gt;
+&lt;br&gt;
+- Big Data u društvenim znanostima
+
+---
+## STRUKTURIRANI I NESTRUKTURIRANI PODATCI
+
+.pull-left[
+1. **STRUKTURIRANI**
+- observacije sa karakteristikama, uglavnom organizirane u tablicu (redovi i kolone);
+- znanstveno prikupljeni podatci, telefonski imenik;
+- manji dio podataka;
+]
+
+.pull-right[
+2. **NESTRUKTURIRANI**
+- podatci bez standardne organizacijske hijerarhije 
+- Facebook objave, Twitter, logovi na server, genetska sekvenca nukleotida, tekstualni podatci;
+- vjerojatno više od 80% svih podataka;
+- zahtjevaju prilagodbu prije analize;
+]
+---
+
+## KVANTITATIVNI i KVALITATIVNI PODATCI
+.pull-left[
+1. **KVANTITATIVNI**
+- brojevi, matematičke procedure, prosjek, vremenski trend, threshold efekti
+]
+
+.pull-right[
+2. **KVALITATIVNI**
+- "prirodne" kategorije, jezik
+- najčešća observacija, jedinstvene vrijednosti
+]
+
+---
+### PODATCI
+
+
+
+```r
+# prikazi podatke u tablici
+py$drinks %&gt;%
+  head(10) %&gt;%
+  kbl() %&gt;%
+  kableExtra::kable_material_dark()
+```
+
+&lt;table class=" lightable-material-dark" style='font-family: "Source Sans Pro", helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; country &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; beer_servings &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; spirit_servings &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; wine_servings &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; total_litres_of_pure_alcohol &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; continent &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Afghanistan &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AS &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Albania &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 132 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 54 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EU &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Algeria &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AF &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Andorra &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 245 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 138 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 312 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12.4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EU &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Angola &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 217 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AF &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Antigua &amp;amp; Barbuda &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 102 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 128 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NaN &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Argentina &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 193 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 221 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; SA &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Armenia &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 179 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EU &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Australia &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 261 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 212 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OC &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Austria &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 279 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 191 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.7 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; EU &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+### PREGLED PODATAKA
+.pull-left[
+
+```python
+drinks['continent'].describe() # pregledaj kolonu 'continent'- KVALITATTIVNA
+```
+
+```
+## count     170
+## unique      5
+## top        AF
+## freq       53
+## Name: continent, dtype: object
+```
+]
+
+.pull-right[
+
+```python
+drinks['beer_servings'].describe() # pregledaj kolonu 'continent'- KVANTITATIVNA
+```
+
+```
+## count    193.000000
+## mean     106.160622
+## std      101.143103
+## min        0.000000
+## 25%       20.000000
+## 50%       76.000000
+## 75%      188.000000
+## max      376.000000
+## Name: beer_servings, dtype: float64
+```
+]
+---
+
+## DISKRETNI I KONTINUIRANI PODATCI
+.pull-left[
+1. **DISKRETNI**
+- prebrojivi
+- npr. igraća kocka
+]
+.pull-right[
+1. **KONTINUIRANI**
+- postoje na kontinuiranoj skali
+- npr. težina ili visina
+]
+---
+
+## ČETIRI RAZINE PODATAKA
+
+1. **NOMINALNI**
+
+2. **ORDINALNI**
+
+3. **INTERVALNI**
+
+4. **OMJERNI**
+
+---
+## NOMINALNA RAZINA
+
+- podatci opisani nazivom ili kategorijom (kategorički podatci)
+
+- npr. spol, nacionalnost, biološke vrste 
+
+- ne mogu se obavljati matematičke operacije poput zbrajanja ili djeljenja
+
+- računanje prosjeka ili drugih st
+
+---
+
+## ODINALNA RAZINA
+
+- kategorički podatci koji imaju hijerarhijsku strukturu
+
+- iako postoji hijerarhija, nije moguće utvrditi relativne razlike među opservacijama
+
+- matematičke operacije kao zbrajanje ili dijeljenje nisu opravdane
+
+- usporedbe i sortiranje podataka su opravdane
+
+- moguće je koristiti medijan (ne i prosjek)
+
+---
+### PRIMJER
+
+
+```python
+import numpy
+
+# anketa o sreci na ljestvici 1-5
+results = [5, 4, 3, 4, 5, 3, 2, 5, 3, 2, 1, 4, 5, 3, 4, 4, 5, 4, 2, 1,
+4, 5, 4, 3, 2, 4, 4, 5, 4, 3, 2, 1]
+
+# sortiraj rezultate
+sorted_results = sorted(results)
+print(sorted_results)
+
+# pogledaj prosjek i medijan
+```
+
+```
+## [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5]
+```
+
+```python
+print ("prosjek:",round(numpy.mean(results),2))
+```
+
+```
+## prosjek: 3.44
+```
+
+```python
+print ("medijan:",round(numpy.median(results),2))
+
+```
+
+```
+## medijan: 4.0
+```
+
+---
+## INTERVALNA RAZINA
+
+- npr. temperatura
+- opravdane su matematičke operacije poput zbrajanja i oduzimanja
+- opravdano korištenje mjera centralne tendencije i varijabilnosti
+
+### PRIMJER
+
+
+```python
+# temperatura frizidera u fahrenheitima mjerena svakih sat vremena
+temps = [31, 32, 32, 31, 28, 29, 31, 38, 32, 31, 30, 29, 30, 31, 26]
+
+# pogledaj prosjek i medijan
+print("prosjek:",round(numpy.mean(temps),2))
+```
+
+```
+## prosjek: 30.73
+```
+
+```python
+print("medijan:",round(numpy.median(temps),2))
+```
+
+```
+## medijan: 31.0
+```
+
+---
+### PRIMJER
+
+```python
+## pogledaj mjere varijacije
+
+squared_differences = []
+# napravi praznu listu
+mean = numpy.mean(temps)
+# spremi prosjek u objekt
+
+for temperature in temps:
+ difference = temperature - mean
+ # definiraj funkciju za izracun udaljenosti (temperature) od prosjeka
+ 
+ squared_difference = difference**2
+ # kvadriraj razliku
+ squared_differences.append(squared_difference)
+ # dodaj listi
+
+average_squared_difference = numpy.mean(squared_differences)
+# izracunaj varijancu
+standard_deviation = numpy.sqrt(average_squared_difference)
+# izracunaj standardnu devijaciju
+print("stdev:",round(standard_deviation,2)) 
+```
+
+```
+## stdev: 2.52
+```
+
+---
+## OMJERNA RAZINA
+
+- opravdane matematičke operacije množenja i djeljenja
+- podatci na ovoj razni ne smiju biti negativni
+
+### PRIMJER
+
+```python
+# temperatura frizidera u fahrenheitima mjerena svakih sat vremena
+temps = [31, 32, 32, 31, 28, 29, 31, 38, 32, 31, 30, 29, 30, 31, 26]
+
+# izracunaj geometrijsku sredinu
+num_items = len(temps)
+product = 1.
+
+for temperature in temps:
+ product *= temperature
+
+geometric_mean = product**(1./num_items)
+
+# prikazi rezultat
+print("geometrijska sredina:",geometric_mean)
+```
+
+```
+## geometrijska sredina: 30.63473484374659
+```
+---
+
+## PODATCI U "PRAKSI"
+
+**Big Data**
+- zbog veličine se ne mogu pohraniti na standardne relacijske baze
+- nestrukturirani, semi-srtukturirani i strukturirani podatci
+- od terabayt-a do zettabayt-a veličine
+- osnova za strojno učenje, AI, predviđanje budućnosti
+
+---
+
+## PODATCI U "PRAKSI"
+
+**Strukturirani, Ne-strukturirani i Kvazi-strukturirani podatci**
+- podatkovni "polymorphism" zbog uspona novih tehnologije (web,mobile, socialNet,IoT, programming)
+- [MongoDB](https://www.mongodb.com/), RAVENDB,RETHINKDB, ORIENTDB, PostrgreSQL, ArangoDB cassandra
+
+---
+## PODATCI U "PRAKSI"
+
+**Vremenske serije**
+- svaka opservacija ima vremenski pečat(događaj ili procesuiranje)
+- npr. bihevioralni podatci(web) koji se koriste za predviđanje akcijskih modela
+- npr. financijsko trgovanje
+
+---
+## PODATCI U "PRAKSI"
+
+**Strojni podatci**
+- sistemski proizvedeni podatci
+- npr. PC logovi, mobiteli, pametni automobili, aplikacije, API, cloud aplikacije, sensorni signali
+- posebno korisna za identifikaciju prijetnji, kontrolu kvalitete procesa, predviđanje
+
+---
+## PODATCI U "PRAKSI"
+
+**Prostorno-temporalni podatci**
+- geografski i temporalni pečat
+- prokazuju lokacijsku dinamiku u vremenu
+- praćenje vozila, promjene u populaciji, otkrivanje anomalija u (npr. telekom) mreži 
+---
+## PODATCI U "PRAKSI"
+
+**Otvoreni podatci**
+- dostupni javnosti prema "pravilima za upotrebu"
+- trenutno uglavno ograničeni na znanstvenu uporabu
+---
+
+## PODATCI U "PRAKSI"
+
+**Crni podatci**
+- neiskorišteni podatci
+- uglavnom u institucionalnom vlasništvu(tvrtke instituti, think-tank, fakulteti)
+---
+## PODATCI U "PRAKSI"
+
+**Podatci u realnom vremenu**
+- visoka potražnja i "vrući trend"
+- 5G
+- medicina, promet, trgovina
+- velik potencijal
+
+---
+## PODATCI U "PRAKSI"
+
+**Genomski podatci**
+- analiza DNA u cilju identifikacije efekata ljekova i tretiranja bolesti
+- analitika je glavno ograničenje
+- prikupljanje i procesuiranje podataka otežano
+---
+## PODATCI U "PRAKSI"
+
+**Operativni podatci**
+- uvidi u procese ponad analitičara i specijalista
+- podatci o praksama
+- korisni za obrnuti inžinjering
+---
+## PODATCI U "PRAKSI"
+
+**Visoko-dimenzionalni podatci**
+- popularizirani kroz IT podršku za prepoznavanje lica
+- zbog složenosti transformacija zahtijevaju nove načine bilježenja i manipulacije
+
+---
+## PODATCI U "PRAKSI"
+
+**Ne-verificirani podatci**
+- prikupljeni podatci upitne relevantnosti
+
+**Translitički podatci**
+- podatci dostupni u realnom vremenu
+- memorijska zahtjevnost i brzi pristup informacijama
+
+---
+
+## BIG DATA U DRUŠTVENIM ZNANOSTIMA
+
+- visoki volumen, opseg, brzina i raznolikost
+- geografski, tekstualni, i podatci sa društvenih medija
+- dostupnost u realnom vremenu, većem opsegu, novi pokazatelji i manje strukture 
+- u poslovnom sektoru i prirodnim znanostima je BD već postao standard
+- društvene znanosti i javne institucije (vlade) kasne u prihvaćanju BD 
+
+---
+
+## BIG DATA U DRUŠTVENIM ZNANOSTIMA
+.pull-left[
+**POTENCIJAL BD ZA UNAPRIJEĐENJE DRUŠTVENIH (I HUMANISTIČKIH) ZNANOSTI**
+
+- novi uvidi u društvo, politiku i ekonomiju
+- nova istraživačka pitanja
+- preciznija predviđanja
+- bolje javne politike
+
+]
+
+.pull-left[
+**IZVAZOVI BD**
+
+- pristup podatcima
+- upravljanje podatcima i provedba analize (T.Khun!?)
+- postavljanje pravih pitanja
+]
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
