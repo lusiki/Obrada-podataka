@@ -52,6 +52,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <li> Diskretni i kontinuirani podatci</li>
 <li> Razine podataka</li>
 <li> Podatci u "praksi"</li>
+<li> "Big data" u društvenim istraživanjima</li>
 <ul>
 
 </div>

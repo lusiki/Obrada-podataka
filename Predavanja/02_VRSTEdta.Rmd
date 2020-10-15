@@ -189,7 +189,7 @@ print("stdev:",round(standard_deviation,2))
 
 ## OMJERNA RAZINA
 
-- opravdane matematičke operacije množenja i dieljenja
+- opravdane matematičke operacije množenja i djeljenja
 - podatci na ovoj razni ne smiju biti negativni
 
 
@@ -217,7 +217,7 @@ print("geometrijska sredina:",geometric_mean)
 
 1. **Big Data**
 
-- zbog veličine se ne mogu pohraniti na standardne rrelacijske baze
+- zbog veličine se ne mogu pohraniti na standardne relacijske baze
 - nestrukturirani, semi-srtukturirani i strukturirani podatci
 - od terabayt-a do zettabayt-a veličine
 - osnova za strojno učenje, AI, predviđanje budućnosti
@@ -272,7 +272,7 @@ print("geometrijska sredina:",geometric_mean)
 
 - uvidi u procese ponad analitičara i specijalista
 - podatci o praksama
--korisni za obrnuti inžinjering
+- korisni za obrnuti inžinjering
 
 11. **Visoko-dimenzionalni podatci**
 
@@ -295,13 +295,12 @@ print("geometrijska sredina:",geometric_mean)
 
 - visoki volumen, opseg, brzina i raznolikost
 - geografski, tekstualni, i podatci sa društvenih medija
-- dostupnost u realnom vremenu, većem opsegu, novi pokazatelji i manje strukture (T.Khun!?)
+- dostupnost u realnom vremenu, većem opsegu, novi pokazatelji i manje strukture 
 - u poslovnom sektoru i prirodnim znanostima je BD već postao standard
 - društvene znanosti i javne institucije (vlade) kasne u prihvaćanju BD 
 
 **POTENCIJAL BD ZA UNAPRIJEĐENJE DRUŠTVENIH (I HUMANISTIČKIH) ZNANOSTI**
 
-- prikupljanje podatka
 - novi uvidi u društvo, politiku i ekonomiju
 - nova istraživačka pitanja
 - preciznija predviđanja
@@ -310,7 +309,7 @@ print("geometrijska sredina:",geometric_mean)
 **IZVAZOVI BD**
 
 - pristup podatcima
-- upravljanje podatcima i provedba analize
+- upravljanje podatcima i provedba analize (T.Khun!?)
 - postavljanje pravih pitanja
 
 
