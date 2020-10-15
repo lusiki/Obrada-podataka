@@ -46,20 +46,23 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href="https://rpubs.com/shichich/674967">Predavanje 02: Vrste podataka</a>
 
+
 <ul>
 <li> Strukturirani i ne-strukturirani podatci</li>
-<li> Kvantitativni i kvalitativni podatci</li>
+<li> <a href="https://www.youtube.com/watch?v=_I2GrxUGNQc&t=2">Kvantitativni i kvalitativni</a></li>
 <li> Diskretni i kontinuirani podatci</li>
 <li> Razine podataka</li>
 <li> Podatci u "praksi"</li>
-<li> "Big data" u društvenim istraživanjima</li>
+<li> "Big data" u društvenim znanostima</li>
 <ul>
 
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/02_VRSTEdta.html">.html</a> | <a href="/Predavanja/02_VRSTEdta.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> 
-<br><b>Čitanje: </b><a href="/Literatura/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> 
+<br><b>Čitanje: </b><a href="/Literatura/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> + <a href="/Literatura/Sociology in the Era of Big Data.pdf">Sociology in the Era of Big Data</a> + <a href="/Literatura/VELIKI PODACI – VELIKI IZAZOV ZA SOCIOLOGIJU.pdf">Veliki podatci-veliki izazov za sociologiju</a> + <a href="/Literatura/Msc_mastruko_Kristalna kugla.pdf">Uloga big data, algoritama i prediktivne analitike u konstrukciji zbilje</a>
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
+
+
 <a href="/Predavanja/03_IZVORIdta.pdf">Predavanje 03: Izvori podataka</a>
 
 <ul>

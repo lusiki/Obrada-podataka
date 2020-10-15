@@ -34,7 +34,7 @@ library(kableExtra)
 - Diskretni i kontinuirani podatci
 - Razine podataka
 - Podatci u "praksi"
-- Big Data
+- Big Data u društvenim znanostima
 
 ## STRUKTURIRANI I NESTRUKTURIRANI PODATCI
 
