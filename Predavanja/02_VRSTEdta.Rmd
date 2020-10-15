@@ -22,8 +22,6 @@ knitr::opts_chunk$set(echo = F)
 library(tidyverse)
 library(reticulate)
 use_virtualenv("r-reticulate")
-#py_install("pandas")
-#use_python("C:\\Users\\Lukas\\AppData\\Local\\R-MINI~1\\envs\\R-RETI~1\\python.exe")
 library(kableExtra)
 ```
 
