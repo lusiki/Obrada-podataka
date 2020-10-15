@@ -53,7 +53,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <li> Diskretni i kontinuirani podatci</li>
 <li> Razine podataka</li>
 <li> Podatci u "praksi"</li>
-<li> <a href="/Literatura/Shu-Heng Chen - Big Data in Computational Social Science and Humanities-Springer (2018).pdf">"Big data" u društvenim znanostim</a></li>
+<li> <a href="/Literatura/Shu-Heng Chen - Big Data in Computational Social Science and Humanities-Springer (2018).pdf">"Big data" u društvenim i humanističkim znanostim</a></li>
 <ul>
 
 </div>
