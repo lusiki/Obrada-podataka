@@ -57,7 +57,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/02_VRSTEdta.html">.html</a> | <a href="https://raw.githack.com/BrbanMiro/Statistika/main/Predavanja/03_DESKRIPTIVNA_STATISTIKA_sdy.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> 
+<b>Format predavanja:</b> <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/02_VRSTEdta.html">.html</a> | <a href="https://raw.githack.com/BrbanMiro/Statistika/main/Predavanja/03_DESKRIPTIVNA_STATISTIKA_sdy.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> 
 | <a href="Predavanja/03_VRSTEdtaXAR.html">.xar</a>
 | <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_VRSTEdtaXAR.html">.par</a>
 
