@@ -58,7 +58,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/02_VRSTEdta.html">.html</a> | <a href="/Predavanja/02_VRSTEdta.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> 
-| <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_VRSTEdtaXAR.Rmd">.xar</a>
+| <a href="/Predavanja/03_VRSTEdtaXAR.html">.xar</a>
 [.xarP](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_VRSTEdtaXAR.Rmd)
 
 <br><b>Čitanje: </b><a href="/Literatura/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> + <a href="/Literatura/Sociology in the Era of Big Data.pdf">Sociology in the Era of Big Data</a> + <a href="/Literatura/VELIKI PODACI – VELIKI IZAZOV ZA SOCIOLOGIJU.pdf">Veliki podatci-veliki izazov za sociologiju</a> + <a href="/Literatura/Msc_mastruko_Kristalna kugla.pdf">Uloga big data, algoritama i prediktivne analitike u konstrukciji zbilje</a>
