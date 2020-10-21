@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>IZVORI PODATAKA</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Luka Šikić, Phd" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# IZVORI PODATAKA
+### Luka Šikić, Phd
+### Diplomski studij sociologije, FHS
+### 21 listopad, 2020
+
+---
+
+
+
+
+
+
+
+layout: true
+class: middle
+# PREGLED PREDAVANJA
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+- Kategorije izvora podatka
+- Klasični izvori podataka 
+- Moderni izvori podataka (BigData)
+- Web 
+- Društvene mreže 
+- Senzori i aplikacije  
+- Upravljanje modernim podatcima
+- Korištenje R za dohvat (modernih) izvora podataka
+
+---
+class: inverse, middle
+layout: false
+# Kategorije izvora podataka
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+1. Primarni
+&lt;br&gt;
+&lt;br&gt;
+2. Sekundarni
+&lt;br&gt;
+&lt;br&gt;
+3. Tercijarni
+
+---
+layout: true
+# Kategorije izvora podataka
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+### Primarni
+* Prikupljeni od strane istraživača
+* Zahtjevni 
+* Promatranje, eksperimenti, upitnici, intervju
+* Skupi
+* Specifični
+* Pouzdani
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+### Sekundarni
+
+* Otprije prikupljeni
+* Podatci iz prošlosti
+* Jednostavnost
+* Publikacije, knjige, časopisi, zapisi
+* Ekonomični
+* Obrađeni i prilagođeni
+* Manje pouzdani
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+### Tercijarni
+
+* Kombinacija primarnih i sekundarnih
+* Nisu osnova za akademska istraživanja
+* Često anonimni
+* Riječnici, pregledi literature, izvještaji, tutoriali, vodiči
+
+---
+class: inverse, middle
+layout: false
+# Klasični izvori podataka
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+1. Eksperiment
+&lt;br&gt;
+&lt;br&gt;
+2. Ispitivanje
+&lt;br&gt;
+&lt;br&gt;
+3. Intervju
+&lt;br&gt;
+&lt;br&gt;
+4. Strukturirane baze podataka
+&lt;br&gt;
+&lt;br&gt;
+
+---
+
+layout: true
+# Klasični izvori podataka
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+### Eksperiment
+
+* Visok stupanj kontrole
+* Planirani dizajn
+* Longitudinalni i studije slučaja
+* Problem generalizacije rezulatata
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+### Ispitivanje
+
+* Ciljana populacija
+* Veći uzorak
+* Pogodno za analizu ponašanja,osjećaja,iskustava,stavova
+* Problem reprezentativnosti uzorka 
+* Potreban prilagođeni dizajn
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+### Intervju
+
+* Profilirani uzorak
+* Manji uzorak
+* Pogodno za dubinsku analizu
+* Ovisan o istraživaču
+* Poteškoće sa reproduciranjem rezultata
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+### Strukturirane baze podataka
+
+* Omogućuje kvanitativnu analizu
+* Makro i mezzo razina analize
+* Potrebno prilagoditi podatke prije modeliranja
+* Institucionalni i uređeni podatci
+* Strojno preuzimanje podataka
+
+---
+class: inverse, middle
+layout: false
+# Moderni izvori podataka (BigData)
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+1. Web
+&lt;br&gt;
+&lt;br&gt;
+2. Društvene mreže
+&lt;br&gt;
+&lt;br&gt;
+3. Aplikacije i senzorni uređaji
+
+---
+
+layout:true
+# Moderni izvori podataka (BigData)
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+**Karakteristike**:
+
+1. Veliki
+2. Brzi
+3. Raznoliki
+4. Vrijedni
+5. Zakonski regulirani
+
+* Internet, pametni uređaji, pametni senzori
+* Nova podatkovna paradigma
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+### NOVA ISTRAŽIVAČKA PARADIGMA 
+
+* Analiza počinje od podataka (ne od teorije)
+* Potrebne tehničke vještine
+* Složena i memorijski zahtjevna analitika
+* Noviteti u prezentaciji i komunikaciji rezultata
+* Poslovne primjene prednjače
+* Primjena u društvenim istraživanjima je u povojima
+* Potrebno definirati novu arhitekturu (ekosistem)
+
+.footnote[[*] [Khunova revolucija!?](https://journals.sagepub.com/doi/10.1177/2053951714528481)]
+
+---
+class: inverse, middle
+layout:false
+# Web KAO IZVOR PODATAKA
+---
+layout:true
+# Web KAO IZVOR PODATAKA
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+**Ciljevi analiza društvenog ponašanja:**
+1. Objašnjenje
+&lt;br&gt;
+&lt;br&gt;
+2. Modeliranje
+&lt;br&gt;
+&lt;br&gt;
+3. 'Nowcasting'
+&lt;br&gt;
+&lt;br&gt;
+4. Predviđanje
+
+---
+
+### Google
+
+**Google trends:**
+1. [Analizu prodaje kuća](https://rpubs.com/tonytusharjr/newhomes)
+&lt;br&gt;
+&lt;br&gt;
+2. [Potražnja za autombilima](https://aisel.aisnet.org/icis2017/DataScience/Presentations/1/)
+&lt;br&gt;
+&lt;br&gt;
+3. [Turistička potražnja](https://www.researchgate.net/publication/336516335_Forecasting_international_tourism_demand_in_Croatia_using_Google_Trends)
+&lt;br&gt;
+&lt;br&gt;
+4. [Nezaposlenost](https://www.sciencedirect.com/science/article/abs/pii/S1544612319301072)
+&lt;br&gt;
+&lt;br&gt;
+5. [Kretanja na dioničkim tržištima](https://www.emerald.com/insight/content/doi/10.1108/JED-07-2019-0017/full/pdf?title=stock-market-activity-and-google-trends-the-case-of-a-developing-economy)
+&lt;br&gt;
+&lt;br&gt;
+6. [Kupnje kino ulazinica](https://www.tandfonline.com/doi/abs/10.1080/13504851.2011.613744)
+&lt;br&gt;
+&lt;br&gt;
+7. [Politički radikalizam u Kini](https://martinctc.github.io/blog/vignette-google-trends-with-gtrendsr/)
+&lt;br&gt;
+&lt;br&gt;
+8. [Političkih stavova](https://journals.sagepub.com/doi/full/10.1177/2378023118760414)
+
+---
+
+### Google trends (praktični primjer u R)
+
+
+```r
+# paketi
+library (gtrendsR) 
+library(ggplot2)
+
+#ključne riječi
+keywords=c("virus","korupcija","ekonomija")
+#GEO
+country=c('HR')
+#vremenski raspon
+time=("2010-01-01 2018-08-27")
+#kanali
+channel='web'
+# funkcija
+trends = gtrends(keywords, gprop =channel,geo=country, time = time )
+#samo 'interes kroz vrijeme'
+time_trend=trends$interest_over_time
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+
+```r
+# pregledaj podatke
+head(time_trend,5)
+```
+
+```
+#&gt;         date hits keyword geo                  time gprop category
+#&gt; 1 2010-01-01   47   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 2 2010-02-01   60   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 3 2010-03-01   52   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 4 2010-04-01   51   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 5 2010-05-01   48   virus  HR 2010-01-01 2018-08-27   web        0
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+
+```r
+# Vizualizacija
+plot &lt;- ggplot(data = time_trend,
+               aes(x = date, y = hits, group = keyword, col = keyword)) +
+               geom_line() +
+               xlab('Vrijeme') + 
+               ylab('Relativni interes') +
+               theme_bw() +
+               theme(legend.title = element_blank(), legend.position = "bottom",
+                     legend.text = element_text (size = 12)) + 
+               ggtitle("Google volumen pretrage")
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+
+```r
+# prikaži
+plot
+```
+
+&lt;img src="03_IZVORIdtaXAR_files/figure-html/unnamed-chunk-5-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Google trends (praktični primjer u R)
+
+
+```r
+# sve u jednom redu koda :-)
+plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
+                       geo = "HR",
+                       time = "2010-01-01 2018-08-27"))
+```
+
+&lt;img src="03_IZVORIdtaXAR_files/figure-html/unnamed-chunk-6-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+### Twitter
+
+
+* Najpoznatiji mikroblogging servis
+&lt;br&gt;
+&lt;br&gt;
+* Brojni radovi i analize
+&lt;br&gt;
+&lt;br&gt;
+* [Popularan u kvantitativnoj politologiji](http://pablobarbera.com/static/social-media-data-generators.pdf)
+&lt;br&gt;
+&lt;br&gt;
+* [Predviđanje političkih ishoda](https://core.ac.uk/reader/11310530)
+&lt;br&gt;
+&lt;br&gt;
+* [Predviđanje dioničkih trendova](http://cs229.stanford.edu/proj2011/GoelMittal-StockMarketPredictionUsingTwitterSentimentAnalysis.pdf)
+&lt;br&gt;
+&lt;br&gt;
+* [Praćenje javnog mijenja](https://openknowledge.worldbank.org/bitstream/handle/10986/22656/The0pulse0of0p0eform0in0El0Salvador.pdf?sequence=1&amp;isAllowed=y)
+
+.footnote[[*] [Podrška za analizu u R](https://towardsdatascience.com/a-guide-to-mining-and-analysing-tweets-with-r-2f56818fdd16)]
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+
+
+```r
+library (rtweet) # paket
+# stvori token
+twitter_token &lt;- create_token(
+  app = "izprobavanje",
+  consumer_key = key,
+  consumer_secret = kSecret,
+  access_token = tkn,
+  access_secret = tSecret)
+```
+
+
+
+```r
+# objavi iz R
+post_tweet("Look, i'm tweeting from R!")
+```
+
+
+
+```r
+# prikupi rezultate
+tweets &lt;- search_tweets(q = c("#Hrvatska"),
+                               n = 200)
+# geolokacija                               
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+```r
+# pregledj podatke
+head(tweets[,2:5], n = 2)
+```
+
+```
+#&gt; # A tibble: 2 x 4
+#&gt;   status_id     created_at          screen_name  text                           
+#&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;        &lt;chr&gt;                          
+#&gt; 1 131900556168~ 2020-10-21 20:00:06 Nitka_22     "Autumn paradise in Croatia \U~
+#&gt; 2 131899720864~ 2020-10-21 19:26:54 StimmeKroat~ "Autumn paradise in Croatia \U~
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+```r
+# pregledaj korisnike
+users &lt;- search_users("#Hrvatska",
+                      n = 100)
+length(unique(users$location)) # provjeri
+```
+
+```
+#&gt; [1] 34
+```
+
+```r
+library(tidyverse) # paket 
+library(ggplot2)   # paket
+# vizualiziraj
+plotTW &lt;- users %&gt;%
+  slice(1:8) %&gt;%
+  ggplot(aes(location)) +
+  geom_bar() + 
+  coord_flip() +
+  labs(x = "Lokacija",
+  y = "Broj",
+  title = "Twitter korisnici - jedinstvene lokacije")
+```
+
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+```r
+# prikaži grafikon
+plotTW
+```
+
+&lt;img src="03_IZVORIdtaXAR_files/figure-html/unnamed-chunk-13-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+
+```r
+hashtag_pat &lt;- "#[a-zA-Z0-9_-ー\\.]+" # regex za tweet-ove
+hashtag &lt;- str_extract_all(tweets$text, hashtag_pat) # izvuci tweetove
+# uredi podatke
+hashtag_word &lt;- unlist(hashtag)
+hashtag_word &lt;- tolower(hashtag_word) # mala slova
+hashtag_word &lt;- gsub("[[:punct:]ー]", "", hashtag_word) # makni inerpunkciju
+hashtag_count &lt;- table(hashtag_word) # tabulliraj
+top_20_freqs &lt;- sort(hashtag_count, decreasing = TRUE)[1:20] # sortiraj
+top_20_hashtags &lt;- as.character(as.data.frame(top_20_freqs)[,1]) # napravi stringove
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+```r
+# prikaži rezultate
+top_20_freqs
+```
+
+```
+#&gt; hashtag_word
+#&gt;             hrvatska              vijesti              croatia 
+#&gt;                  201                   77                   66 
+#&gt;             croatian    croatiafulloflife               nature 
+#&gt;                   66                   22                   20 
+#&gt;               travel         nationalpark               autumn 
+#&gt;                   19                   16                   15 
+#&gt;                 fall               natgeo         natgeotravel 
+#&gt;                   15                   15                   15 
+#&gt; yourshotphotographer             business            marketing 
+#&gt;                   15                   13                   13 
+#&gt;             politika             racunalo           smartphone 
+#&gt;                   13                   13                   13 
+#&gt;           technology         hasanbegovic 
+#&gt;                   13                   11
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+```r
+# vizualizacija 
+library(wordcloud) # paket
+wordcloud(top_20_hashtags, top_20_freqs, scale=c(3.5,1.5), # oblak riječi
+          random.order=FALSE, rot.per=.25)
+```
+
+&lt;img src="03_IZVORIdtaXAR_files/figure-html/unnamed-chunk-16-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, middle
+layout:false
+# DRUŠTVENE MREŽE KAO IZVOR PODATAKA
+
+---
+
+layout:true
+# DRUŠTVENE MREŽE KAO IZVOR PODATAKA
+
+---
+
+**Popularne društvene mreže**
+
+1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [+1](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
+2. LinkedIn
+3. Youtube
+4. Instagram
+5. Google+
+6. Tumblr
+7. Flickr
+
+---
+
+### Facebook
+
+
+---
+
+class: inverse, middle
+layout:false
+# WEB STRANICE I APLIKACIJE
+
+---
+layout:true
+# WEB STRANICE I APLIKACIJE
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+**Prikupljanje podataka**
+
+1. Web-Scraping 
+&lt;br&gt;
+&lt;br&gt;
+2. Analiza trgovačkih platformi (Amazon)
+
+---
+
+class: inverse, middle
+layout:false
+# APLIKACIJE I SENZORNI UREĐAJI
+---
+
+layout:true
+# APLIKACIJE I SENZORNI UREĐAJI
+---
+
+**Prikupljanje podataka**
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+ 1. Mobilni senzori (broj putnika u javnom prijevozu)
+&lt;br&gt;
+&lt;br&gt;
+ 2. GPS (dostava, epidemiologija)
+&lt;br&gt;
+&lt;br&gt;
+ 3. Kartične transakcije (predviđanje bankrota, marketing, ponašanje potrošača)
+
+.footnote[[*] Pravno osjetljivi podatci!]
+
+---
+class: inverse, middle
+layout:false
+# UPRAVLJANJE MODERNIM PODATCIMA
+---
+
+layout:true
+# UPRAVLJANJE MODERNIM PODATCIMA
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+.pull-left[
+ **Prikupljanje podataka** 
+* API
+* Web Scraping
+* Baze podatka
+&lt;br&gt;
+&lt;br&gt;
+]
+
+.pull-right[
+**Strukturiranje podataka**
+* Čišćenje
+* Standardizacija
+* Spajanje baza
+* NLP(txt.)
+&lt;br&gt;
+&lt;br&gt;
+]
+
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+.pull-left[ 
+**Analiza podataka**
+* Nadzirano i nenadzirano strojno učenje
+* Duboko učenje
+* Ensemble metode
+* Bayes
+&lt;br&gt;
+&lt;br&gt;
+]
+
+.pull-right[
+**Provjera robusnosti**
+* Informacijski kriteriji
+* 'Cross'-validacija
+* Train-test split
+* Backtesting
+* Preciznost klasifikatora (ROC,Confusion Mtx)
+&lt;br&gt;
+&lt;br&gt;
+]
+
+---
+layout:true
+# PREGLED PREDAVANJA
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+1. Klasični izvori podataka u društvenim znanostima
+
+2. BigData kao nova istraživačka paradigma
+
+3. Moderni izvori podataka: Web, SocMedia, App
+
+4. Ekosistem za upravljanje BigData-om
+
+---
+class: inverse, middle
+layout:false
+# HVALA NA PAŽNJI!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

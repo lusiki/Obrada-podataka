@@ -1,0 +1,800 @@
+---
+title: "IZVORI PODATAKA"
+author: "Luka Šikić, Phd"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+institute: Diplomski studij sociologije, FHS
+font: 10pt
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{R, setup, include = F}
+# devtools::install_github("dill/emoGG")
+library(pacman)
+p_load(
+  broom, tidyverse,
+  latex2exp, ggplot2, ggthemes, ggforce, viridis, extrafont, gridExtra,
+  kableExtra, snakecase, janitor,
+  data.table, dplyr, estimatr,
+  lubridate, knitr, parallel,
+  lfe,
+  here, magrittr
+)
+# Define pink color
+red_pink <- "#e64173"
+turquoise <- "#20B2AA"
+orange <- "#FFA500"
+red <- "#fb6107"
+blue <- "#2b59c3"
+green <- "#8bb174"
+grey_light <- "grey70"
+grey_mid <- "grey50"
+grey_dark <- "grey20"
+purple <- "#6A5ACD"
+slate <- "#314f4f"
+# Dark slate grey: #314f4f
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 7,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+options(crayon.enabled = F)
+options(knitr.table.format = "html")
+# A blank theme for ggplot
+theme_empty <- theme_bw() + theme(
+  line = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  plot.margin = structure(c(0, 0, -0.5, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_simple <- theme_bw() + theme(
+  line = element_blank(),
+  panel.grid = element_blank(),
+  rect = element_blank(),
+  strip.text = element_blank(),
+  axis.text.x = element_text(size = 18, family = "STIXGeneral"),
+  axis.text.y = element_blank(),
+  axis.ticks = element_blank(),
+  plot.title = element_blank(),
+  axis.title = element_blank(),
+  # plot.margin = structure(c(0, 0, -1, -1), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_math <- theme_void() + theme(
+  text = element_text(family = "MathJax_Math"),
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes_serif <- theme_void() + theme(
+  text = element_text(family = "MathJax_Main"),
+  axis.title = element_text(size = 22),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = "grey70",
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_axes <- theme_void() + theme(
+  text = element_text(family = "Fira Sans Book"),
+  axis.title = element_text(size = 18),
+  axis.title.x = element_text(hjust = .95, margin = margin(0.15, 0, 0, 0, unit = "lines")),
+  axis.title.y = element_text(vjust = .95, margin = margin(0, 0.15, 0, 0, unit = "lines")),
+  axis.line = element_line(
+    color = grey_light,
+    size = 0.25,
+    arrow = arrow(angle = 30, length = unit(0.15, "inches")
+  )),
+  plot.margin = structure(c(1, 0, 1, 0), unit = "lines", valid.unit = 3L, class = "unit"),
+  legend.position = "none"
+)
+theme_set(theme_gray(base_size = 20))
+# Column names for regression results
+reg_columns <- c("Term", "Est.", "S.E.", "t stat.", "p-Value")
+# Function for formatting p values
+format_pvi <- function(pv) {
+  return(ifelse(
+    pv < 0.0001,
+    "<0.0001",
+    round(pv, 4) %>% format(scientific = F)
+  ))
+}
+format_pv <- function(pvs) lapply(X = pvs, FUN = format_pvi) %>% unlist()
+# Tidy regression results table
+tidy_table <- function(x, terms, highlight_row = 1, highlight_color = "black", highlight_bold = T, digits = c(NA, 3, 3, 2, 5), title = NULL) {
+  x %>%
+    tidy() %>%
+    select(1:5) %>%
+    mutate(
+      term = terms,
+      p.value = p.value %>% format_pv()
+    ) %>%
+    kable(
+      col.names = reg_columns,
+      escape = F,
+      digits = digits,
+      caption = title
+    ) %>%
+    kable_styling(font_size = 20) %>%
+    row_spec(1:nrow(tidy(x)), background = "white") %>%
+    row_spec(highlight_row, bold = highlight_bold, color = highlight_color)
+}
+```
+
+```{css, echo = F, eval = F}
+@media print {
+  .has-continuation {
+    display: block !important;
+  }
+}
+```
+
+
+layout: true
+class: middle
+# PREGLED PREDAVANJA
+---
+<br>
+<br>
+<br>
+
+- Kategorije izvora podatka
+- Klasični izvori podataka 
+- Moderni izvori podataka (BigData)
+- Web 
+- Društvene mreže 
+- Senzori i aplikacije  
+- Upravljanje modernim podatcima
+- Korištenje R za dohvat (modernih) izvora podataka
+
+---
+class: inverse, middle
+layout: false
+# Kategorije izvora podataka
+<br>
+<br>
+<br>
+1. Primarni
+<br>
+<br>
+2. Sekundarni
+<br>
+<br>
+3. Tercijarni
+
+---
+layout: true
+# Kategorije izvora podataka
+---
+<br>
+<br>
+<br>
+
+### Primarni
+* Prikupljeni od strane istraživača
+* Zahtjevni 
+* Promatranje, eksperimenti, upitnici, intervju
+* Skupi
+* Specifični
+* Pouzdani
+
+---
+<br>
+<br>
+<br>
+
+### Sekundarni
+
+* Otprije prikupljeni
+* Podatci iz prošlosti
+* Jednostavnost
+* Publikacije, knjige, časopisi, zapisi
+* Ekonomični
+* Obrađeni i prilagođeni
+* Manje pouzdani
+
+---
+<br>
+<br>
+<br>
+
+### Tercijarni
+
+* Kombinacija primarnih i sekundarnih
+* Nisu osnova za akademska istraživanja
+* Često anonimni
+* Riječnici, pregledi literature, izvještaji, tutoriali, vodiči
+
+---
+class: inverse, middle
+layout: false
+# Klasični izvori podataka
+<br>
+<br>
+<br>
+1. Eksperiment
+<br>
+<br>
+2. Ispitivanje
+<br>
+<br>
+3. Intervju
+<br>
+<br>
+4. Strukturirane baze podataka
+<br>
+<br>
+
+---
+
+layout: true
+# Klasični izvori podataka
+
+---
+<br>
+<br>
+<br>
+
+### Eksperiment
+
+* Visok stupanj kontrole
+* Planirani dizajn
+* Longitudinalni i studije slučaja
+* Problem generalizacije rezulatata
+
+---
+<br>
+<br>
+<br>
+
+### Ispitivanje
+
+* Ciljana populacija
+* Veći uzorak
+* Pogodno za analizu ponašanja,osjećaja,iskustava,stavova
+* Problem reprezentativnosti uzorka 
+* Potreban prilagođeni dizajn
+
+---
+<br>
+<br>
+<br>
+### Intervju
+
+* Profilirani uzorak
+* Manji uzorak
+* Pogodno za dubinsku analizu
+* Ovisan o istraživaču
+* Poteškoće sa reproduciranjem rezultata
+
+---
+<br>
+<br>
+<br>
+### Strukturirane baze podataka
+
+* Omogućuje kvanitativnu analizu
+* Makro i mezzo razina analize
+* Potrebno prilagoditi podatke prije modeliranja
+* Institucionalni i uređeni podatci
+* Strojno preuzimanje podataka
+
+---
+class: inverse, middle
+layout: false
+# Moderni izvori podataka (BigData)
+<br>
+<br>
+<br>
+1. Web
+<br>
+<br>
+2. Društvene mreže
+<br>
+<br>
+3. Aplikacije i senzorni uređaji
+
+---
+
+layout:true
+# Moderni izvori podataka (BigData)
+
+---
+<br>
+<br>
+<br>
+
+**Karakteristike**:
+
+1. Veliki
+2. Brzi
+3. Raznoliki
+4. Vrijedni
+5. Zakonski regulirani
+
+* Internet, pametni uređaji, pametni senzori
+* Nova podatkovna paradigma
+
+---
+<br>
+<br>
+<br>
+
+### NOVA ISTRAŽIVAČKA PARADIGMA 
+
+* Analiza počinje od podataka (ne od teorije)
+* Potrebne tehničke vještine
+* Složena i memorijski zahtjevna analitika
+* Noviteti u prezentaciji i komunikaciji rezultata
+* Poslovne primjene prednjače
+* Primjena u društvenim istraživanjima je u povojima
+* Potrebno definirati novu arhitekturu (ekosistem)
+
+.footnote[[*] [Khunova revolucija!?](https://journals.sagepub.com/doi/10.1177/2053951714528481)]
+
+---
+class: inverse, middle
+layout:false
+# Web KAO IZVOR PODATAKA
+---
+layout:true
+# Web KAO IZVOR PODATAKA
+---
+<br>
+<br>
+<br>
+<br>
+<br>
+**Ciljevi analiza društvenog ponašanja:**
+1. Objašnjenje
+<br>
+<br>
+2. Modeliranje
+<br>
+<br>
+3. 'Nowcasting'
+<br>
+<br>
+4. Predviđanje
+
+---
+
+### Google
+
+**Google trends:**
+1. [Analizu prodaje kuća](https://rpubs.com/tonytusharjr/newhomes)
+<br>
+<br>
+2. [Potražnja za autombilima](https://aisel.aisnet.org/icis2017/DataScience/Presentations/1/)
+<br>
+<br>
+3. [Turistička potražnja](https://www.researchgate.net/publication/336516335_Forecasting_international_tourism_demand_in_Croatia_using_Google_Trends)
+<br>
+<br>
+4. [Nezaposlenost](https://www.sciencedirect.com/science/article/abs/pii/S1544612319301072)
+<br>
+<br>
+5. [Kretanja na dioničkim tržištima](https://www.emerald.com/insight/content/doi/10.1108/JED-07-2019-0017/full/pdf?title=stock-market-activity-and-google-trends-the-case-of-a-developing-economy)
+<br>
+<br>
+6. [Kupnje kino ulazinica](https://www.tandfonline.com/doi/abs/10.1080/13504851.2011.613744)
+<br>
+<br>
+7. [Politički radikalizam u Kini](https://martinctc.github.io/blog/vignette-google-trends-with-gtrendsr/)
+<br>
+<br>
+8. [Političkih stavova](https://journals.sagepub.com/doi/full/10.1177/2378023118760414)
+
+---
+
+### Google trends (praktični primjer u R)
+
+```{r echo=T}
+# paketi
+library (gtrendsR) 
+library(ggplot2)
+
+#ključne riječi
+keywords=c("virus","korupcija","ekonomija")
+#GEO
+country=c('HR')
+#vremenski raspon
+time=("2010-01-01 2018-08-27")
+#kanali
+channel='web'
+# funkcija
+trends = gtrends(keywords, gprop =channel,geo=country, time = time )
+#samo 'interes kroz vrijeme'
+time_trend=trends$interest_over_time
+
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+```{r echo = TRUE}
+# pregledaj podatke
+head(time_trend,5)
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+```{r echo=TRUE, fig.width=5, fig.height=3}
+# Vizualizacija
+plot <- ggplot(data = time_trend,
+               aes(x = date, y = hits, group = keyword, col = keyword)) +
+               geom_line() +
+               xlab('Vrijeme') + 
+               ylab('Relativni interes') +
+               theme_bw() +
+               theme(legend.title = element_blank(), legend.position = "bottom",
+                     legend.text = element_text (size = 12)) + 
+               ggtitle("Google volumen pretrage")
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+```{r  echo=TRUE, fig.width=5, fig.height=3}
+# prikaži
+plot
+```
+
+---
+
+### Google trends (praktični primjer u R)
+
+```{r echo=TRUE, fig.width=5, fig.height=3}
+# sve u jednom redu koda :-)
+plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
+                       geo = "HR",
+                       time = "2010-01-01 2018-08-27"))
+```
+
+---
+<br>
+<br>
+<br>
+### Twitter
+
+
+* Najpoznatiji mikroblogging servis
+<br>
+<br>
+* Brojni radovi i analize
+<br>
+<br>
+* [Popularan u kvantitativnoj politologiji](http://pablobarbera.com/static/social-media-data-generators.pdf)
+<br>
+<br>
+* [Predviđanje političkih ishoda](https://core.ac.uk/reader/11310530)
+<br>
+<br>
+* [Predviđanje dioničkih trendova](http://cs229.stanford.edu/proj2011/GoelMittal-StockMarketPredictionUsingTwitterSentimentAnalysis.pdf)
+<br>
+<br>
+* [Praćenje javnog mijenja](https://openknowledge.worldbank.org/bitstream/handle/10986/22656/The0pulse0of0p0eform0in0El0Salvador.pdf?sequence=1&isAllowed=y)
+
+.footnote[[*] [Podrška za analizu u R](https://towardsdatascience.com/a-guide-to-mining-and-analysing-tweets-with-r-2f56818fdd16)]
+
+---
+
+### Twitter (praktični primjer u R)
+
+```{r echo=FALSE}
+key <- "VaspMZezW3cjji4CKUdxhJorb"
+kSecret <- "bCDPEIS559T7AfEVruPv4HoDueAWqr8Gp2NXy2VnX7k0aEVtqy"
+tkn <- "1486088228-657Om30LfATyCMCXJad9HTPqx8eHdtOeuFyWgo8"
+tSecret <- "GpSHw4FCQHp8JAy1EaU81R09LPkHuNhXtXWcPdYdDdphV"
+```
+
+```{r echo = TRUE}
+library (rtweet) # paket
+# stvori token
+twitter_token <- create_token(
+  app = "izprobavanje",
+  consumer_key = key,
+  consumer_secret = kSecret,
+  access_token = tkn,
+  access_secret = tSecret)
+```
+
+
+```{r echo=TRUE, eval=FALSE}
+# objavi iz R
+post_tweet("Look, i'm tweeting from R!")
+```
+
+
+```{r echo = TRUE}
+# prikupi rezultate
+tweets <- search_tweets(q = c("#Hrvatska"),
+                               n = 200)
+# geolokacija                               
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+```{r echo = TRUE}
+# pregledj podatke
+head(tweets[,2:5], n = 2)
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+```{r echo = TRUE}
+# pregledaj korisnike
+users <- search_users("#Hrvatska",
+                      n = 100)
+length(unique(users$location)) # provjeri
+
+library(tidyverse) # paket 
+library(ggplot2)   # paket
+# vizualiziraj
+plotTW <- users %>%
+  slice(1:8) %>%
+  ggplot(aes(location)) +
+  geom_bar() + 
+  coord_flip() +
+  labs(x = "Lokacija",
+  y = "Broj",
+  title = "Twitter korisnici - jedinstvene lokacije")
+```
+
+
+---
+
+### Twitter (praktični primjer u R)
+
+```{r echo = TRUE, fig.width=6, fig.height=3}
+# prikaži grafikon
+plotTW
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+
+```{r echo = TRUE}
+
+hashtag_pat <- "#[a-zA-Z0-9_-ー\\.]+" # regex za tweet-ove
+hashtag <- str_extract_all(tweets$text, hashtag_pat) # izvuci tweetove
+# uredi podatke
+hashtag_word <- unlist(hashtag)
+hashtag_word <- tolower(hashtag_word) # mala slova
+hashtag_word <- gsub("[[:punct:]ー]", "", hashtag_word) # makni inerpunkciju
+hashtag_count <- table(hashtag_word) # tabulliraj
+top_20_freqs <- sort(hashtag_count, decreasing = TRUE)[1:20] # sortiraj
+top_20_hashtags <- as.character(as.data.frame(top_20_freqs)[,1]) # napravi stringove
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+```{r echo = TRUE}
+# prikaži rezultate
+top_20_freqs
+```
+
+---
+
+### Twitter (praktični primjer u R)
+
+```{r echo = TRUE, fig.width=6, fig.height=3 }
+# vizualizacija 
+library(wordcloud) # paket
+wordcloud(top_20_hashtags, top_20_freqs, scale=c(3.5,1.5), # oblak riječi
+          random.order=FALSE, rot.per=.25)
+```
+
+
+---
+class: inverse, middle
+layout:false
+# DRUŠTVENE MREŽE KAO IZVOR PODATAKA
+
+---
+
+layout:true
+# DRUŠTVENE MREŽE KAO IZVOR PODATAKA
+
+---
+
+**Popularne društvene mreže**
+
+1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [+1](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
+2. LinkedIn
+3. Youtube
+4. Instagram
+5. Google+
+6. Tumblr
+7. Flickr
+
+---
+
+### Facebook
+
+
+---
+
+class: inverse, middle
+layout:false
+# WEB STRANICE I APLIKACIJE
+
+---
+layout:true
+# WEB STRANICE I APLIKACIJE
+
+---
+<br>
+<br>
+<br>
+
+**Prikupljanje podataka**
+
+1. Web-Scraping 
+<br>
+<br>
+2. Analiza trgovačkih platformi (Amazon)
+
+---
+
+class: inverse, middle
+layout:false
+# APLIKACIJE I SENZORNI UREĐAJI
+---
+
+layout:true
+# APLIKACIJE I SENZORNI UREĐAJI
+---
+
+**Prikupljanje podataka**
+<br>
+<br>
+<br>
+<br>
+ 1. Mobilni senzori (broj putnika u javnom prijevozu)
+<br>
+<br>
+ 2. GPS (dostava, epidemiologija)
+<br>
+<br>
+ 3. Kartične transakcije (predviđanje bankrota, marketing, ponašanje potrošača)
+
+.footnote[[*] Pravno osjetljivi podatci!]
+
+---
+class: inverse, middle
+layout:false
+# UPRAVLJANJE MODERNIM PODATCIMA
+---
+
+layout:true
+# UPRAVLJANJE MODERNIM PODATCIMA
+---
+<br>
+<br>
+<br>
+.pull-left[
+ **Prikupljanje podataka** 
+* API
+* Web Scraping
+* Baze podatka
+<br>
+<br>
+]
+
+.pull-right[
+**Strukturiranje podataka**
+* Čišćenje
+* Standardizacija
+* Spajanje baza
+* NLP(txt.)
+<br>
+<br>
+]
+
+
+---
+<br>
+<br>
+<br>
+
+.pull-left[ 
+**Analiza podataka**
+* Nadzirano i nenadzirano strojno učenje
+* Duboko učenje
+* Ensemble metode
+* Bayes
+<br>
+<br>
+]
+
+.pull-right[
+**Provjera robusnosti**
+* Informacijski kriteriji
+* 'Cross'-validacija
+* Train-test split
+* Backtesting
+* Preciznost klasifikatora (ROC,Confusion Mtx)
+<br>
+<br>
+]
+
+---
+layout:true
+# PREGLED PREDAVANJA
+
+---
+<br>
+<br>
+<br>
+
+1. Klasični izvori podataka u društvenim znanostima
+
+2. BigData kao nova istraživačka paradigma
+
+3. Moderni izvori podataka: Web, SocMedia, App
+
+4. Ekosistem za upravljanje BigData-om
+
+---
+class: inverse, middle
+layout:false
+# HVALA NA PAŽNJI!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

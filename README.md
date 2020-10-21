@@ -80,7 +80,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/03_.html">.html</a> | <a href="/Predavanja/03_.pdf">.pdf</a> | <a href="/Predavanja/.Rmd">.Rmd</a> 
-<br><b>Čitanje: </b><a href="/Predavanja/.pdf">add</a>
+<br><b>Čitanje: </b><a href="/Predavanja/BDSources.pdf">BigData ekosistem u društvenim istraživanjijma</a>
 
 
 
