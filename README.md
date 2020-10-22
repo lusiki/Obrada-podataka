@@ -67,7 +67,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 
 
-<a href="/Predavanja/03_IZVORIdtaXAR.html">Predavanje 03: Izvori podataka</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_IZVORIdtaXAR.html">Predavanje 03: Izvori podataka</a>
 
 <ul>
 <li> Kategorije izvora podatka</li>
@@ -83,8 +83,8 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/03_.html">.html</a> | <a href="/Predavanja/03_.pdf">.pdf</a> | <a href="/Predavanja/03_IZVORIdtaXAR.Rmd">.Rmd</a> 
-<br><b>Čitanje: </b><a href="/Literature/BDSources.pdf">BigData ekosistem u društvenim istraživanjijma</a>
+<b>Format predavanja:</b> <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_IZVORIdtaXAR.html">.html</a> | <a href="/Predavanja/03_.pdf">.pdf</a> | <a href="/Predavanja/03_IZVORIdtaXAR.Rmd">.Rmd</a> 
+<br><b>Čitanje: </b><a href="/Literatura/BDSources.pdf">Big Data ekosistem u društvenim istraživanjijma</a>
 
 
 
