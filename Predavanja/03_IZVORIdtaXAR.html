@@ -189,7 +189,10 @@ layout: false
 2. Društvene mreže
 &lt;br&gt;
 &lt;br&gt;
-3. Aplikacije i senzorni uređaji
+3. Web stranice i aplikacije 
+&lt;br&gt;
+&lt;br&gt;
+4. Senzorni uređaji
 
 ---
 
@@ -259,7 +262,7 @@ layout:true
 ### Google
 
 **Google trends:**
-1. [Analizu prodaje kuća](https://rpubs.com/tonytusharjr/newhomes)
+1. [Analiza prodaje kuća](https://rpubs.com/tonytusharjr/newhomes)
 &lt;br&gt;
 &lt;br&gt;
 2. [Potražnja za autombilima](https://aisel.aisnet.org/icis2017/DataScience/Presentations/1/)
@@ -372,7 +375,6 @@ plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
 ---
 &lt;br&gt;
 &lt;br&gt;
-&lt;br&gt;
 ### Twitter
 
 
@@ -392,6 +394,8 @@ plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
 &lt;br&gt;
 &lt;br&gt;
 * [Praćenje javnog mijenja](https://openknowledge.worldbank.org/bitstream/handle/10986/22656/The0pulse0of0p0eform0in0El0Salvador.pdf?sequence=1&amp;isAllowed=y)
+&lt;br&gt;
+&lt;br&gt;
 
 .footnote[[*] [Podrška za analizu u R](https://towardsdatascience.com/a-guide-to-mining-and-analysing-tweets-with-r-2f56818fdd16)]
 
@@ -406,7 +410,7 @@ plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
 library (rtweet) # paket
 # stvori token
 twitter_token &lt;- create_token(
-  app = "izprobavanje",
+  app = app,
   consumer_key = key,
   consumer_secret = kSecret,
   access_token = tkn,
@@ -441,10 +445,10 @@ head(tweets[,2:5], n = 2)
 
 ```
 #&gt; # A tibble: 2 x 4
-#&gt;   status_id     created_at          screen_name  text                           
-#&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;        &lt;chr&gt;                          
-#&gt; 1 131922442284~ 2020-10-22 10:29:47 zkusovac     "Ispraznim frazetinama protiv ~
-#&gt; 2 131922379358~ 2020-10-22 10:27:17 lokalnahrva~ "#Požega : Gradonačelnik Pulja~
+#&gt;   status_id     created_at          screen_name text                            
+#&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;       &lt;chr&gt;                           
+#&gt; 1 131922972077~ 2020-10-22 10:50:50 MarkoSket   "“Gospođo Obuljen, promašili st~
+#&gt; 2 131892315615~ 2020-10-21 14:32:39 MarkoSket   "Dr.Hasanbegović o razlozima ap~
 ```
 
 ---
@@ -474,7 +478,9 @@ plotTW &lt;- users %&gt;%
   coord_flip() +
   labs(x = "Lokacija",
   y = "Broj",
-  title = "Twitter korisnici - jedinstvene lokacije")
+  title = "Twitter korisnici - jedinstvene lokacije") +
+  theme(legend.title = element_blank(), legend.position = "bottom",
+                     legend.text = element_text (size = 5))
 ```
 
 
@@ -520,10 +526,10 @@ top_20_freqs
 
 ```
 #&gt; hashtag_word
-#&gt;             hrvatska              vijesti              croatia 
+#&gt;             hrvatska              vijesti             croatian 
 #&gt;                  202                   87                   62 
-#&gt;             croatian    croatiafulloflife         nationalpark 
-#&gt;                   62                   19                   19 
+#&gt;              croatia    croatiafulloflife         nationalpark 
+#&gt;                   60                   19                   19 
 #&gt;               travel               autumn               nature 
 #&gt;                   19                   17                   17 
 #&gt;                 fall               natgeo         natgeotravel 
@@ -532,8 +538,8 @@ top_20_freqs
 #&gt;                   16                   12                   12 
 #&gt;             racunalo           smartphone           technology 
 #&gt;                   12                   12                   12 
-#&gt;             politika          koronavirus 
-#&gt;                   10                    9
+#&gt;             politika               istina 
+#&gt;                   11                    9
 ```
 
 ---
@@ -562,15 +568,23 @@ layout:true
 # DRUŠTVENE MREŽE KAO IZVOR PODATAKA
 
 ---
-
+&lt;br&gt;
+&lt;br&gt;
 **Popularne društvene mreže**
-
-1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [+1](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
+&lt;br&gt;
+&lt;br&gt;
+1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [(Vidi takodjer!)](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
+&lt;br&gt;
 2. [LinkedIn](https://github.com/mpiccirilli/Rlinkedin)
+&lt;br&gt;
 3. [Youtube](https://rpubs.com/arafath/YouTubeVideos_Analysis)
+&lt;br&gt;
 4. [Instagram](https://github.com/JonasSchroeder/InstaCrawlR)
+&lt;br&gt;
 5. Google+
+&lt;br&gt;
 6. Tumblr
+&lt;br&gt;
 7. Flickr
 
 
