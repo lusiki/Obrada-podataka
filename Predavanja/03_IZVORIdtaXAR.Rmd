@@ -653,10 +653,6 @@ layout:true
 
 
 .footnote[[*] [Knjiga!](http://www.pzs.dstu.dp.ua/DataMining/social/bibl/Social%20Media%20Mining%20with%20R.pdf)]
----
-
-### Facebook
-
 
 ---
 
@@ -679,6 +675,65 @@ layout:true
 <br>
 <br>
 2. Analiza trgovačkih platformi (Amazon)
+
+---
+
+### Web scraping (praktični mikro primjer u R)
+
+```{r}
+library(rvest) # paket
+url <- "https://www.dzs.hr/Hrv/censuses/census2011/results/htm/H01_06_01/H01_06_01.html" # www
+# preuzmi tablicu sa www
+citySize <- url %>%
+              xml2::read_html() %>% 
+              html_nodes('table') %>%
+              html_table()
+# izvadi korisne djelove
+cSize <- as_tibble(citySize[[2]],
+                   .name_repair = ~ c("Grad","Stanovnici","opcina","stan2"))
+# prilagodi podatke
+cSize <- cSize %>%
+  select(Grad,Stanovnici) %>%
+  mutate(Stanovnici = as.numeric(Stanovnici)) %>%
+  mutate(Grad = toupper(Grad)) %>%
+  arrange(desc(Stanovnici))
+
+
+```
+---
+
+### Web scraping (praktični mikro primjer u R)
+
+```{r echo = TRUE}
+# pregledaj podatke
+head(cSize, 10)
+```
+
+---
+
+### Web scraping (praktični mikro primjer u R)
+
+```{r echo = TRUE}
+# vizualizacija
+plot <- ggplot(data = cSize[1:10,],
+               aes(x = Grad, y = Stanovnici)) +
+               geom_bar(stat = "identity") +
+               xlab('Grad') + 
+               ylab('Broj stanovnika') +
+               theme_bw() +
+               theme(legend.title = element_blank(), legend.position = "bottom",
+                     legend.text = element_text (size = 9), axis.text.x=element_text(angle=45,hjust=1)) + 
+               ggtitle("Hrvatski gradovi po veličini")
+```
+
+---
+
+### Web scraping (praktični mikro primjer u R)
+
+```{r echo = TRUE, fig.width=6, fig.height=3}
+# pregled grafikona
+plot
+```
 
 ---
 
