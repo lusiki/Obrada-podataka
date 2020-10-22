@@ -113,15 +113,17 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 # Polaganje ispita i kolokvija
 
-Studentima se preporuča i omogućuje da polože kolegij kroz prezentaciju i dva kolokvija. Sustav bodovanja za studente koji polažu kolegij preko kolokvija: moguće je skupiti 100 bodova, pri tome je na prezentaciji moguće ostvariti do 10 bodova, a na svakom kolokviju do 40 bodova. Pri tome je sustav bodovanja jednak kao kod ispita(vidi niže!). U zimskom , ljetnom i jesenskom ispitnom roku studenti imaju završni pismeni ispit iz tema obrađenih na predavanjima i prema priloženoj literaturi. Ispit je položen ako student ostvari 60% od ukupno mogućih
-bodova: 60-64% = (2); 65-74% = (3); 75-84% = (4); 85% = (5).
+Studentima se preporuča i omogućuje da polože kolegij kroz prezentaciju i dva kolokvija. Sustav bodovanja za studente koji polažu kolegij preko kolokvija: moguće je skupiti 100 bodova, pri tome je na prezentaciji moguće ostvariti do 10 bodova, a na svakom kolokviju do 40 bodova. Pri tome je sustav bodovanja jednak kao kod ispita(vidi niže!).
+
+U zimskom , ljetnom i jesenskom ispitnom roku studenti imaju završni pismeni ispit iz tema obrađenih na predavanjima i prema priloženoj literaturi. Ispit je položen ako student ostvari 60% od ukupno mogućih bodova: 60-64% = (2); 65-74% = (3); 75-84% = (4); 85% = (5).
 
 # Studentska prezentacija/seminarski rad
 
-Svi studenti tijekom semestra moraju održati jednu prezentaciju prema zadanoj literaturi u .ppt formi. Izlagači moraju pripremiti na kraju prezentacije i nekoliko (2-3) ključnih pitanja za raspravu koju imamo na kraju obrađene teme. Prezentaciju studenti moraju poslati profesoru na e-mail najkasnije u petak, tjedan dana prije seminara. Seminari osim prezentacije uključuju: povezivanje teorijskih koncepata s praktičnom primjenom, zajednička empirijska analiza, rasprava o društvenim aspektima statističkih rezultata, aktivno sudjelovanje u raspravi na zadanu temu.
+Svi studenti tijekom semestra moraju održati jednu prezentaciju prema zadanoj literaturi u .ppt formi. Izlagači moraju pripremiti na kraju prezentacije i nekoliko (2-3) ključnih pitanja za raspravu koju imamo na kraju obrađene teme. Prezentaciju je potrebno poslati profesoru na e-mail najkasnije u petak, tjedan dana prije seminara.
+
+Seminari osim prezentacije uključuju: povezivanje teorijskih koncepata s praktičnom primjenom, zajednička empirijska analiza, rasprava o društvenim aspektima statističkih rezultata, aktivno sudjelovanje u raspravi na zadanu temu.
 
 # Korisni resursi
-
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 <H3>Statistika</h3>
