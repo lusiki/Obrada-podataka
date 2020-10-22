@@ -323,7 +323,10 @@ layout: false
 2. Društvene mreže
 <br>
 <br>
-3. Aplikacije i senzorni uređaji
+3. Web stranice i aplikacije 
+<br>
+<br>
+4. Senzorni uređaji
 
 ---
 
@@ -393,7 +396,7 @@ layout:true
 ### Google
 
 **Google trends:**
-1. [Analizu prodaje kuća](https://rpubs.com/tonytusharjr/newhomes)
+1. [Analiza prodaje kuća](https://rpubs.com/tonytusharjr/newhomes)
 <br>
 <br>
 2. [Potražnja za autombilima](https://aisel.aisnet.org/icis2017/DataScience/Presentations/1/)
@@ -489,7 +492,6 @@ plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
 ---
 <br>
 <br>
-<br>
 ### Twitter
 
 
@@ -509,6 +511,8 @@ plot(gtrendsR::gtrends(keyword = c("virus","korupcija","ekonomija"),
 <br>
 <br>
 * [Praćenje javnog mijenja](https://openknowledge.worldbank.org/bitstream/handle/10986/22656/The0pulse0of0p0eform0in0El0Salvador.pdf?sequence=1&isAllowed=y)
+<br>
+<br>
 
 .footnote[[*] [Podrška za analizu u R](https://towardsdatascience.com/a-guide-to-mining-and-analysing-tweets-with-r-2f56818fdd16)]
 
@@ -521,13 +525,14 @@ key <- "VaspMZezW3cjji4CKUdxhJorb"
 kSecret <- "bCDPEIS559T7AfEVruPv4HoDueAWqr8Gp2NXy2VnX7k0aEVtqy"
 tkn <- "1486088228-657Om30LfATyCMCXJad9HTPqx8eHdtOeuFyWgo8"
 tSecret <- "GpSHw4FCQHp8JAy1EaU81R09LPkHuNhXtXWcPdYdDdphV"
+app <- "izprobavanje"
 ```
 
 ```{r echo = TRUE}
 library (rtweet) # paket
 # stvori token
 twitter_token <- create_token(
-  app = "izprobavanje",
+  app = app,
   consumer_key = key,
   consumer_secret = kSecret,
   access_token = tkn,
@@ -577,7 +582,9 @@ plotTW <- users %>%
   coord_flip() +
   labs(x = "Lokacija",
   y = "Broj",
-  title = "Twitter korisnici - jedinstvene lokacije")
+  title = "Twitter korisnici - jedinstvene lokacije") +
+  theme(legend.title = element_blank(), legend.position = "bottom",
+                     legend.text = element_text (size = 5))
 ```
 
 
@@ -640,15 +647,23 @@ layout:true
 # DRUŠTVENE MREŽE KAO IZVOR PODATAKA
 
 ---
-
+<br>
+<br>
 **Popularne društvene mreže**
-
-1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [+1](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
+<br>
+<br>
+1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [(Vidi takodjer!)](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
+<br>
 2. [LinkedIn](https://github.com/mpiccirilli/Rlinkedin)
+<br>
 3. [Youtube](https://rpubs.com/arafath/YouTubeVideos_Analysis)
+<br>
 4. [Instagram](https://github.com/JonasSchroeder/InstaCrawlR)
+<br>
 5. Google+
+<br>
 6. Tumblr
+<br>
 7. Flickr
 
 
