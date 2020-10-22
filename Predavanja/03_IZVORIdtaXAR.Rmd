@@ -171,9 +171,12 @@ class: middle
 - Moderni izvori podataka (BigData)
 - Web 
 - Društvene mreže 
-- Senzori i aplikacije  
+- Web stranice i aplikacije
+- Senzori  
 - Upravljanje modernim podatcima
-- Korištenje R za dohvat (modernih) izvora podataka
+
+
+.footnote[[*]Korištenje R za dohvat (modernih) izvora podataka]
 
 ---
 class: inverse, middle
@@ -641,13 +644,15 @@ layout:true
 **Popularne društvene mreže**
 
 1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [+1](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
-2. LinkedIn
-3. Youtube
-4. Instagram
+2. [LinkedIn](https://github.com/mpiccirilli/Rlinkedin)
+3. [Youtube](https://rpubs.com/arafath/YouTubeVideos_Analysis)
+4. [Instagram](https://github.com/JonasSchroeder/InstaCrawlR)
 5. Google+
 6. Tumblr
 7. Flickr
 
+
+.footnote[[*] [Knjiga!](http://www.pzs.dstu.dp.ua/DataMining/social/bibl/Social%20Media%20Mining%20with%20R.pdf)]
 ---
 
 ### Facebook
@@ -670,7 +675,7 @@ layout:true
 
 **Prikupljanje podataka**
 
-1. Web-Scraping 
+1. [Web-Scraping](https://www.datacamp.com/community/tutorials/r-web-scraping-rvest) 
 <br>
 <br>
 2. Analiza trgovačkih platformi (Amazon)

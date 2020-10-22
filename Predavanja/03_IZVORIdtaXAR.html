@@ -14,7 +14,7 @@ class: center, middle, inverse, title-slide
 # IZVORI PODATAKA
 ### Luka Šikić, Phd
 ### Diplomski studij sociologije, FHS
-### 21 listopad, 2020
+### 22 listopad, 2020
 
 ---
 
@@ -37,9 +37,12 @@ class: middle
 - Moderni izvori podataka (BigData)
 - Web 
 - Društvene mreže 
-- Senzori i aplikacije  
+- Web stranice i aplikacije
+- Senzori  
 - Upravljanje modernim podatcima
-- Korištenje R za dohvat (modernih) izvora podataka
+
+
+.footnote[[*]Korištenje R za dohvat (modernih) izvora podataka]
 
 ---
 class: inverse, middle
@@ -315,10 +318,10 @@ head(time_trend,5)
 
 ```
 #&gt;         date hits keyword geo                  time gprop category
-#&gt; 1 2010-01-01   47   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 2 2010-02-01   60   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 3 2010-03-01   52   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 4 2010-04-01   51   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 1 2010-01-01   57   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 2 2010-02-01   58   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 3 2010-03-01   61   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 4 2010-04-01   55   virus  HR 2010-01-01 2018-08-27   web        0
 #&gt; 5 2010-05-01   48   virus  HR 2010-01-01 2018-08-27   web        0
 ```
 
@@ -440,8 +443,8 @@ head(tweets[,2:5], n = 2)
 #&gt; # A tibble: 2 x 4
 #&gt;   status_id     created_at          screen_name  text                           
 #&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;        &lt;chr&gt;                          
-#&gt; 1 131900556168~ 2020-10-21 20:00:06 Nitka_22     "Autumn paradise in Croatia \U~
-#&gt; 2 131899720864~ 2020-10-21 19:26:54 StimmeKroat~ "Autumn paradise in Croatia \U~
+#&gt; 1 131921526676~ 2020-10-22 09:53:24 Dalmatinkam~ "So sah #Konavle am 21. Oktobe~
+#&gt; 2 131921494200~ 2020-10-22 09:52:06 lokalnahrva~ "#Bjelovarskobilogorskažupanij~
 ```
 
 ---
@@ -518,19 +521,19 @@ top_20_freqs
 ```
 #&gt; hashtag_word
 #&gt;             hrvatska              vijesti              croatia 
-#&gt;                  201                   77                   66 
-#&gt;             croatian    croatiafulloflife               nature 
-#&gt;                   66                   22                   20 
-#&gt;               travel         nationalpark               autumn 
-#&gt;                   19                   16                   15 
+#&gt;                  202                   84                   62 
+#&gt;             croatian    croatiafulloflife         nationalpark 
+#&gt;                   59                   19                   19 
+#&gt;               travel               autumn               nature 
+#&gt;                   19                   17                   17 
 #&gt;                 fall               natgeo         natgeotravel 
-#&gt;                   15                   15                   15 
+#&gt;                   16                   16                   16 
 #&gt; yourshotphotographer             business            marketing 
-#&gt;                   15                   13                   13 
-#&gt;             politika             racunalo           smartphone 
+#&gt;                   16                   13                   13 
+#&gt;             racunalo           smartphone           technology 
 #&gt;                   13                   13                   13 
-#&gt;           technology         hasanbegovic 
-#&gt;                   13                   11
+#&gt;             politika         hasanbegovic 
+#&gt;                   11                    9
 ```
 
 ---
@@ -563,13 +566,15 @@ layout:true
 **Popularne društvene mreže**
 
 1. [Facebook](https://www.kaggle.com/chrisbow/an-introduction-to-facebook-ad-analysis-using-r) [+1](https://www.residualthoughts.com/2018/02/12/analyzing-facebook-messages-in-r/)
-2. LinkedIn
-3. Youtube
-4. Instagram
+2. [LinkedIn](https://github.com/mpiccirilli/Rlinkedin)
+3. [Youtube](https://rpubs.com/arafath/YouTubeVideos_Analysis)
+4. [Instagram](https://github.com/JonasSchroeder/InstaCrawlR)
 5. Google+
 6. Tumblr
 7. Flickr
 
+
+.footnote[[*] [Knjiga!](http://www.pzs.dstu.dp.ua/DataMining/social/bibl/Social%20Media%20Mining%20with%20R.pdf)]
 ---
 
 ### Facebook
@@ -592,7 +597,7 @@ layout:true
 
 **Prikupljanje podataka**
 
-1. Web-Scraping 
+1. [Web-Scraping](https://www.datacamp.com/community/tutorials/r-web-scraping-rvest) 
 &lt;br&gt;
 &lt;br&gt;
 2. Analiza trgovačkih platformi (Amazon)
