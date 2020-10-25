@@ -4,7 +4,7 @@
   <img src="Foto/dta.png" width="750" title="hover text">
 </p>
 
-
+ 
 
 
 # Obrada-podataka
