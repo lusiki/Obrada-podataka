@@ -26,11 +26,6 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <br><i>od Garrett Grolemund-a i  Hadley Wickham-a</i> 
 <br>Ovo je literatura za R. Dostupna je i <a href="https://r4ds.had.co.nz/">bookdown</a> verzija.
 
-<a href="http://www.ievbras.ru/ecostat/Kiril/R/Biblio_N/R_Eng/Wickham2016.pdf">ggplot2: Elegant Graphics for Data Analysis with R</a>
-<br><i>od Hadley Wickham-a.</i> 
-<br>Ovo je referenca za vizualizaciju podataka u R. Dostupna je i <a href="https://ggplot2-book.org/">bookdown</a> verzija.
-
-
 <a href="https://bookdown.org/yihui/rmarkdown/rmarkdown.pdf">R Markdown: The Definitive Guide</a>
 <br><i>od Yihui Xie.</i> 
 <br>Ovo je referenca za komunikaciju i objavu analize u različitim formatima. Dostupna je i <a href="https://bookdown.org/yihui/rmarkdown/">bookdown</a> verzija.
@@ -39,9 +34,11 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 # Materijali sa predavanja
 
 <i>Napomena:</i> Predavanja će biti dostupna kao .pdf,.html i .Rmd.
-
-
+<br>
+<br>
 <a href="/Predavanja/01_UVOD.pdf">Predavanje 01: Pregled kolegija i studentskih obveza</a>
+<br>
+<br>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_VRSTEdtaXAR.html">Predavanje 02: Vrste podataka</a>
@@ -58,7 +55,8 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 <b>Format predavanja:</b> <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/02_VRSTEdta.html">.html</a> | <a href="https://raw.githack.com/BrbanMiro/Statistika/main/Predavanja/03_DESKRIPTIVNA_STATISTIKA_sdy.pdf">.pdf</a> | <a href="/Predavanja/02_VRSTEdta.Rmd">.Rmd</a> | <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_VRSTEdtaXAR.html">.xar</a>
 <br><b>Čitanje: </b><a href="/Literatura/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> + <a href="/Literatura/Sociology in the Era of Big Data.pdf">Sociology in the Era of Big Data</a> + <a href="/Literatura/VELIKI PODACI – VELIKI IZAZOV ZA SOCIOLOGIJU.pdf">Veliki podatci-veliki izazov za sociologiju</a> + <a href="/Literatura/Msc_mastruko_Kristalna kugla.pdf">Uloga big data, algoritama i prediktivne analitike u konstrukciji zbilje</a>
-
+<br>
+<br>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_IZVORIdtaXAR.html">Predavanje 03: Izvori podataka</a>
@@ -77,11 +75,31 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/03_IZVORIdtaXAR.html">.html</a> | <a href="/Predavanja/03_.pdf">.pdf</a> | <a href="/Predavanja/03_IZVORIdtaXAR.Rmd">.Rmd</a> 
-<br><b>Čitanje: </b><a href="/Literatura/BDSources.pdf">Big Data ekosistem u društvenim istraživanjijma</a>
+<br><b>Čitanje: </b><a href="/Literatura/BDSources.pdf">Big Data ekosistem u društvenim istraživanjima</a>
+<br>
+<br>
 
 
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="">Predavanje 04: Osnove programskog jezika R</a> + <a href=""> Dodatno:vizualizacija sa ggplot2 sustavom</a>
+<ul>
+<li> Instalacija</li>
+<li> Zašto R?</li>
+<li> Osnovni koncepti</li>
+<li> Objektno orjentirano programiranje u R</li>
+<li> "Sve je objekt"</li>
+<li> "Sve ima naziv"</li>
+<li> Društvene mreže</li>
+<li> Indeksiranje</li>
+<li> Čišćenje radnog prostora</li>
+<ul>
 
-<a href="/Predavanja/04_UCITAVANJEdta.pdf">Predavanje 04: Učitavanje podataka u R</a>
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/04_OSNOVE_R.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R.Rmd">.Rmd</a> + <a href="/Predavanja/04_OSNOVE_R_ggplot2.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R_ggplot2.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href="https://www.srce.unizg.hr/files/srce/docs/edu/R/s720_polaznik.pdf">Uvod u R - skripta I</a> + </b><a href="https://cran.r-project.org/doc/contrib/Kasum+Legovic-UvodUr.pdf">Uvod u R - skripta II</a> + </b><a href="https://learningstatisticswithr.com/lsr-0.6.pdf">LSR, poglavlja 3 i 4</a>
+<br>
+<br>
 
 <a href="/Predavanja/05_PRIKUPLJANJEdta.pdf">Predavanje 05: Prikupljanje podataka sa interneta</a>
 
