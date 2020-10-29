@@ -158,7 +158,7 @@ Seminari osim prezentacije uključuju: povezivanje teorijskih koncepata s prakti
 <li><a href="https://www.datacamp.com/courses/free-introduction-to-r">DataCamp's Introduction to R</a></li>
 <li><a href="http://adv-r.had.co.nz/">Advanced R</a></li>
 <li><a href="https://www.r-bloggers.com/">R bloggers</a></li>
-<li><a href="https://cran.r-project.org/web/views/SocialSciences.html">CRAN Task View:Statistics for the Social Science</a></li
+<li><a href="https://cran.r-project.org/web/views/SocialSciences.html">CRAN Task View: Statistics for the Social Science</a></li
 </ul>
 </div>
 
