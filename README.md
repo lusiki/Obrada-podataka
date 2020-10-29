@@ -33,7 +33,6 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 # Materijali sa predavanja
 
-<i>Napomena:</i> Predavanja će biti dostupna kao .pdf,.html i .Rmd.
 <br>
 <br>
 <a href="/Predavanja/01_UVOD.pdf">Predavanje 01: Pregled kolegija i studentskih obveza</a>
@@ -53,7 +52,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/03_VRSTEdtaXAR.html">.html</a> | <a href="https://raw.githack.com/BrbanMiro/Statistika/main/Predavanja/03_DESKRIPTIVNA_STATISTIKA_sdy.pdf">.pdf</a> | <a href="/Predavanja/03_VRSTEdtaXAR.Rmd">.Rmd</a> | <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/03_VRSTEdtaXAR.html">.xar</a>
+<b>Format predavanja:</b> <a href="/Predavanja/03_VRSTEdtaXAR.html">.html</a> | <a href="/Predavanja/03_VRSTEdtaXAR.Rmd">.Rmd</a> 
 <br><b>Čitanje: </b><a href="/Literatura/Vrste_podataka.pdf">Vrste podataka-poglavlje u knjizi</a> + <a href="/Literatura/Sociology in the Era of Big Data.pdf">Sociology in the Era of Big Data</a> + <a href="/Literatura/VELIKI PODACI – VELIKI IZAZOV ZA SOCIOLOGIJU.pdf">Veliki podatci-veliki izazov za sociologiju</a> + <a href="/Literatura/Msc_mastruko_Kristalna kugla.pdf">Uloga big data, algoritama i prediktivne analitike u konstrukciji zbilje</a>
 <br>
 <br>
@@ -74,7 +73,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/03_IZVORIdtaXAR.html">.html</a> | <a href="/Predavanja/03_.pdf">.pdf</a> | <a href="/Predavanja/03_IZVORIdtaXAR.Rmd">.Rmd</a> 
+<b>Format predavanja:</b> <a href="/Predavanja/03_IZVORIdtaXAR.html">.html</a> | <a href="/Predavanja/03_IZVORIdtaXAR.Rmd">.Rmd</a> 
 <br><b>Čitanje: </b><a href="/Literatura/BDSources.pdf">Big Data ekosistem u društvenim istraživanjima</a>
 <br>
 <br>
