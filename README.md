@@ -35,7 +35,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 <br>
 <br>
-<a href="https://github.com/BrbanMiro/Obrada-podataka/blob/main/Predavanja/01_UVOD_XAR.html">Predavanje 01: Pregled kolegija i studentskih obveza</a>
+<a href="/Predavanja/01_UVOD_XAR.html">Predavanje 01: Pregled kolegija i studentskih obveza</a>
 <br>
 <br>
 
