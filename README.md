@@ -81,7 +81,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="">Predavanje 04: Osnove programskog jezika R</a> + <a href=""> Dodatno:vizualizacija sa ggplot2 sustavom</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/04_OSNOVE_R.html">Predavanje 04: Osnove programskog jezika R</a> + <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/04_OSNOVE_R_ggplot2.html"> Dodatak predavanju: ggplot2</a>
 <ul>
 <li> Instalacija</li>
 <li> Zašto R?</li>
@@ -96,7 +96,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/04_OSNOVE_R.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R.Rmd">.Rmd</a> + <a href="/Predavanja/04_OSNOVE_R_ggplot2.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R_ggplot2.Rmd">.Rmd</a>
+<b>Format predavanja:</b> <a href="/Predavanja/04_OSNOVE_R.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R.Rmd">.Rmd</a> + <a href="/Predavanja/04_OSNOVE_R_ggplot2.html">.html(ggplot2)</a> | <a href="/Predavanja/04_OSNOVE_R_ggplot2.Rmd">.Rmd(ggplot2)</a>
 <br><b>Čitanje: </b><a href="https://www.srce.unizg.hr/files/srce/docs/edu/R/s720_polaznik.pdf">Uvod u R - skripta I</a> + </b><a href="https://cran.r-project.org/doc/contrib/Kasum+Legovic-UvodUr.pdf">Uvod u R - skripta II</a> + </b><a href="https://learningstatisticswithr.com/lsr-0.6.pdf">LSR, poglavlja 3 i 4</a>
 <br>
 <br>
