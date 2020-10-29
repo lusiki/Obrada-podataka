@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>IZVORI PODATAKA</title>
+    <title>OBRADA PODATAKA</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Luka Šikić, Phd" />
+    <meta name="author" content="Luka Sikic, PhD" />
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/metropolis-fonts.css" rel="stylesheet" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# IZVORI PODATAKA
-### Luka Šikić, Phd
-### Diplomski studij sociologije, FHS
-### 22 listopad, 2020
+# OBRADA PODATAKA
+## Predavanje 3: Izvori podataka
+### Luka Sikic, PhD
+### Fakultet hrvatskih studija | <a href="https://github.com/BrbanMiro/Obrada-podataka">OP</a>
 
 ---
 
@@ -321,11 +322,11 @@ head(time_trend,5)
 
 ```
 #&gt;         date hits keyword geo                  time gprop category
-#&gt; 1 2010-01-01   57   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 2 2010-02-01   58   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 3 2010-03-01   61   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 4 2010-04-01   55   virus  HR 2010-01-01 2018-08-27   web        0
-#&gt; 5 2010-05-01   48   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 1 2010-01-01   59   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 2 2010-02-01   60   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 3 2010-03-01   59   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 4 2010-04-01   46   virus  HR 2010-01-01 2018-08-27   web        0
+#&gt; 5 2010-05-01   40   virus  HR 2010-01-01 2018-08-27   web        0
 ```
 
 ---
@@ -445,10 +446,10 @@ head(tweets[,2:5], n = 2)
 
 ```
 #&gt; # A tibble: 2 x 4
-#&gt;   status_id     created_at          screen_name  text                           
-#&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;        &lt;chr&gt;                          
-#&gt; 1 131923252538~ 2020-10-22 11:01:58 sectest9     "\U0001f449 iPhone 12 i 12 Pro~
-#&gt; 2 131923251420~ 2020-10-22 11:01:56 CyberSecuri~ "\U0001f449 iPhone 12 i 12 Pro~
+#&gt;   status_id     created_at          screen_name text                            
+#&gt;   &lt;chr&gt;         &lt;dttm&gt;              &lt;chr&gt;       &lt;chr&gt;                           
+#&gt; 1 132178075608~ 2020-10-29 11:47:44 zarkobns    "#BiH 1.903 i 21 mrtav #sloveni~
+#&gt; 2 132141300606~ 2020-10-28 11:26:25 zarkobns    "#hrvatska 2.378 i 23 mrtvih #s~
 ```
 
 ---
@@ -464,7 +465,7 @@ length(unique(users$location)) # provjeri
 ```
 
 ```
-#&gt; [1] 34
+#&gt; [1] 35
 ```
 
 ```r
@@ -526,20 +527,12 @@ top_20_freqs
 
 ```
 #&gt; hashtag_word
-#&gt;             hrvatska              vijesti              croatia 
-#&gt;                  202                   87                   63 
-#&gt;             croatian    croatiafulloflife         nationalpark 
-#&gt;                   62                   19                   19 
-#&gt;               travel               autumn               nature 
-#&gt;                   19                   17                   17 
-#&gt;                 fall               natgeo         natgeotravel 
-#&gt;                   16                   16                   16 
-#&gt; yourshotphotographer             business            marketing 
-#&gt;                   16                   15                   15 
-#&gt;             racunalo           smartphone           technology 
-#&gt;                   15                   15                   15 
-#&gt;          koronavirus              covid19 
-#&gt;                    9                    8
+#&gt;   hrvatska    vijesti   croatian    croatia   business  marketing   racunalo 
+#&gt;        200         97         75         43         12         12         12 
+#&gt; smartphone technology     zagreb      split         a1    covid19      istra 
+#&gt;         12         12         12         10          8          8          8 
+#&gt;     a1down a1hrvatska   a1outage   evenings     outage   pitomača 
+#&gt;          7          7          7          7          7          7
 ```
 
 ---

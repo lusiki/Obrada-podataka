@@ -1,11 +1,12 @@
 ---
-title: "IZVORI PODATAKA"
-author: "Luka Šikić, Phd"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-institute: Diplomski studij sociologije, FHS
-font: 10pt
+title: "OBRADA PODATAKA"
+# subtitle: "<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>"
+subtitle: "Predavanje 3: Izvori podataka"
+author: "Luka Sikic, PhD"
+date: "Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)" #"`r format(Sys.time(), '%d %B %Y')`"
 output:
   xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
     lib_dir: libs
     nature:
       highlightStyle: github
