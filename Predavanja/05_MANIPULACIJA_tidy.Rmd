@@ -1,0 +1,854 @@
+---
+title: "OBRADA PODATAKA"
+# subtitle: "<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>"
+subtitle: "Predavanje 5: Manipulacija i prilagodba podataka (tidyverse)"
+author: "Luka Sikic, PhD"
+date: "Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)" #"`r format(Sys.time(), '%d %B %Y')`"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+name: toc
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+opts_chunk$set(
+  fig.align="center", #fig.width=6, fig.height=4.5, 
+  # out.width="748px", #out.length="520.75px",
+  dpi=300, #fig.path='Figs/',
+  cache=F#, echo=F, warning=F, message=F
+  )
+```
+
+# Pregled predavanja
+
+
+1. [Set-up](#prologue)
+
+2. [Tidyverse osnove](#basics)
+
+3. [Manipulacija podatcima sa dplyr](#dplyr)
+
+4. [Manipulacija podatcima sa tidyr](#tidyr)
+
+5. [Pregled](#summary)
+
+
+---
+class: inverse, center, middle
+name: prologue
+
+# Set-up
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Postavke za rad sa tidyverse paketima!)
+---
+
+# Što su "tidy" podatci?
+
+Resursi:
+- [Vignette](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) (iz **tidyr** paketa)
+- [Članak](https://vita.had.co.nz/papers/tidy-data.pdf) (Hadley Wickham, 2014 JSS)
+
+--
+
+</br>
+
+Ključni elementi:
+1. Svaka varijabla je u koloni.
+2. Svaka opservacija je red.
+3. Opservacija formiraju tablicu.
+
+--
+
+</br>
+
+*Tidy* podatci će najćešće biti u [long (i.e. narrow) formatu](https://en.wikipedia.org/wiki/Wide_and_narrow_data).
+
+---
+
+# Checklist
+
+☑ Instaliran[**tidyverse**](https://www.tidyverse.org/) paket.
+
+
+☑ Potrebno instalirati[**nycflights13**](hhttps://github.com/hadley/nycflights13) paket.
+- Izvršite naredbu: `install.packages('nycflights13', repos = 'https://cran.rstudio.com')`
+
+---
+class: inverse, center, middle
+name: basics
+
+# Tidyverse osnove
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Osnovna sintaksa.)
+---
+
+# Tidyverse vs. base R
+
+Debata na temu "tidyverse vs. base R" u R zajednici.
+
+--
+
+Nećemo ulaziti dublje u ovu raspravu jer je odgovor [očit](http://varianceexplained.org/r/teach-tidyverse/): Bilo bi najbolje naučiti tidyverse na početku (ili barem rano).
+- Dokumentacija i podrška su izvrsni.
+- Konzistentna filozofija i sintaksa što olakšava učenje.
+- Tidyverse omogućava praktičan"front-end" za neke važne big-data alate.
+- Za čišćenje, manipulaciju i vizualizaciju...tidyverse je relativno jednostavan.<sup>1</sup>
+
+.footnote[
+<sup>1</sup>Altertnativni pristup je [**data.table**](http://r-datatable.com/).]
+
+--
+
+Ovo sve ne znači da treba preskočiti učenje base R.
+- Base R je ekstremno fleksibilan i moćan, posebno u kombinaciji sa drugim paketima.
+- Neke stvari se nemogu napraviti u tidyverse-u.
+- Kombinacija tidyverse i base R je često rješenje.
+
+---
+
+
+# Tidyverse vs. base R (dalje)
+
+Često postoje ekvivalenti izmedju base R i tidyverse. 
+
+Ovo se generalno odražava u pravili `tidyverse::snake_case`  vs  `base::period.case`.  E.g. Usporedi:
+
+| tidyverse  |  base |
+|---|---|
+| `?readr::read_csv`  | `?utils::read.csv` |
+|  `?dplyr::if_else` |  `?base::ifelse` |
+|  `?tibble::tibble` |  `?base::data.frame` |
+Etc...
+  
+Tidyverse alternative često nude neka poboljšanja ili druge korisne opcije (ponekad i restrikcije) u odnosu na base R. 
+- Zapamtite: Uvijek postoji mnoštvo načina da se nešto izvede u R.
+
+---
+
+# Tidyverse paketi
+
+Učitajte tidyverse meta-package i provjerite output.
+```{r tverse, cache = FALSE}
+library(tidyverse)
+```
+
+--
+
+Primjetite da smo učitali mnoštvo paketa (što je moguće napraviti i pojedinačno): **ggplot2**, **tibble**, **dplyr**, etc.
+- Vidljive su i informacije o vezrijama paketa i [namespace konfliktima](https://raw.githack.com/uo-ec607/lectures/master/04-rlang/04-rlang.html#59).
+
+---
+
+
+
+# Tidyverse paketi (dalje)
+
+Ttidyverse se zapravo sastoji od sa više paketa nego što se automatski učitava.<sup>1</sup>
+```{r tverse_pkgs}
+tidyverse_packages()
+```
+
+Neke od tih dodatnih paketa ćemo koristiti u okviru kolegija.
+— E.g. **Lubridate** paket za raad sa datumima i **rvest** paket za webscraping.
+- Ipak, ti se paketi moraju učitati zasebno.
+
+.footnote[
+<sup>1</sup> Tidyverse uključuje *puno* zavisnosti pri instalaciji. Ovo je tema uz koju se vežu određene [kontroverze](http://www.tinyverse.org/).
+].
+
+---
+
+# Tidyverse paketi (dalje)
+
+Cilj je izložiti većinu tidyverse paketa kroz ovaj kolegij.
+
+Naglasak današnjeg predavanja je na dva paketa: 
+1. [**dplyr**](https://dplyr.tidyverse.org/)
+2. [**tidyr**](https://tidyr.tidyverse.org/)
+
+Ovo su glavni paketi za čišćenje i manipulaciju podatcima. Zbog toga će se jako često koristiti(uz **ggplot2**).
+- Na čišćenje i manipulaciju podatcima odlazi jako puno vremena u radu sa podatcima.
+
+
+---
+
+
+# Dodatak o pipe-ovima: %>%
+
+U R-u, pipe operator se označava `%>%` i automatski se učitava sa tidyverse-om.
+  
+Pipe operatori su sjani i njihovo korištenje znatno poboljšava iskustvo kodiranja. Usporedite:
+
+```{r, eval = F}
+## Ovaj kod postiže isti cilj.
+mpg %>% filter(manufacturer=="audi") %>% group_by(model) %>% summarise(hwy_mean = mean(hwy))
+summarise(group_by(filter(mpg, manufacturer=="audi"), model), hwy_mean = mean(hwy))
+```
+
+--
+
+Prva linija koda se čita s ijeva na desno, baš kao što nalaže intuicija. 
+- Ozmi objek (mpg), napravi ovo (filter), nakon toga ovo (group by), etc.
+
+Druga linija koda ima inverznu intuiciju (zadnja operacija dolazi prva!) 
+- Tko želi čitati stvari iznutra-van?
+
+---
+
+# Dodatak o pipe-ovima: %>%
+
+Pipe verzija koda je još čitljivija ako se napiše kroz nekoliko redova:
+```{r pipe}
+mpg %>% 
+  filter(manufacturer=="audi") %>% 
+  group_by(model) %>% 
+  summarise(hwy_mean = mean(hwy))
+```
+
+Zapamtite: Korištenje prostora ne košta ništa, a doprinosi čitljivosti koda.
+
+--
+
+PS — Pipe orginalno potječe iz [**magrittr**](https://magrittr.tidyverse.org/) paketa ([geddit?](https://en.wikipedia.org/wiki/The_Treachery_of_Images)) i omogućava mnoštvo sjajnih stvari ako želite dodatno istražiti...
+
+
+---
+class: inverse, center, middle
+name: dplyr
+
+# dplyr
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Workhorse!)
+---
+
+
+# Dodatno: dplyr 1.0.0 verzija
+
+Neke od **dplyr** svojstava koja ćemo obraditi danas dolaze iz [verzije 1.0.0](https://www.tidyverse.org/blog/2020/06/dplyr-1-0-0/) paketa.
+- Verzija 1.0.0 ije bitna jer donosi stabilnu verziju paketa. Utrenutku pisanja ovih,aktualna verzija je 1.0.2. 
+- Provjerite da li imate barem **dplyr** 1.0.0.
+
+```{r dplyr_vers, cache=FALSE}
+packageVersion('dplyr')
+# install.packages('dplyr') ## instaliraj update verziju ako < 1.0.0
+```
+
+--
+
+*Note:* dplyr 1.0.0 javlja notifikaciju vezanu za grupirane varijable. Iako ta opcija može biti korisna, nekada ju želimo [isključiti](https://twitter.com/MattCowgill/status/1278463099272491008).
+
+```r
+options(dplyr.summarise.inform = FALSE) ## dodaj .Rprofile za trajno isključenje
+```
+---
+
+# Ključne dplyr funkcije
+
+Postoji pet osnovnih dplyr funkcija koje je jako korisno naučiti.
+
+1. `filter`: Filtriranje (i.e. subset) redova prema vrijednostima.
+
+2. `arrange`: Uređivanje (i.e. reorder) redova prema vrijednostima.
+
+3. `select`: Izaberi (i.e. subset) kolone prema nazivima: 
+
+4. `mutate`: Stvori nove kolone.
+
+5. `summarise`: Sažmi više redova u deskriptivni pregled.<sup>1</sup>
+
+.footnote[
+<sup>1</sup> `summarize` sa "z" također funkcionira. Nema diskriminacije u R!
+]
+
+--
+
+</br>
+
+Za pregled dplyr funkcionalnosti ćemo koristiti `starwars` podatkovni skup koji dolazi sa dplyr paketom. 
+
+---
+
+# 1) dplyr::filter
+
+Moguće je koristiti više filter naredbi sa pipe (`%>%`) operatorom ili ih odvojiti unutar zagrade zarezom.
+```{r filter1}
+starwars %>% 
+  filter( 
+    species == "Human", 
+    height >= 190
+    ) 
+```
+
+---
+
+# 1) dplyr::filter (*dalje*)
+
+Regularni izrazi također funkcioniraju.
+
+```{r filter2}
+starwars %>% 
+  filter(grepl("Skywalker", name))
+```
+
+---
+
+
+# 1) dplyr::filter (*dalje*)
+
+`Filter` se često koristi za identifikaciju (ili midanje) nedostajećih opservacija. 
+```{r filter3}
+starwars %>% 
+  filter(is.na(height))
+```
+
+--
+
+</br>
+
+Za micanje nedostajećih opservacija je moguće koristiti negaciju: `filter(!is.na(height))`. Isprobajte!
+
+---
+
+# 2) dplyr::arrange
+
+```{r arrange1}
+starwars %>% 
+  arrange(birth_year)
+```
+
+--
+
+*Note:* Uređivanje na osnovi karakterne (i.e. string) varijable (kolone) će biti abecedno. 
+
+---
+
+
+# 2) dplyr::arrange (*dalje*)
+
+Moguće je i uređivanje po pdajućem redosljedu `arrange(desc())`.
+```{r arrange2}
+starwars %>% 
+  arrange(desc(birth_year))
+```
+
+---
+
+# 3) dplyr::select
+
+Zarezi se mogu koristiti za izbor više kolona df-a.(Dozvoljena je i sintaksa "first:last" za sukcesivne kolone). Makni kolonu sa `-`.
+```{r select1}
+starwars %>% 
+  select(name:skin_color, species, -height)
+```
+
+---
+
+# 3) dplyr::select (*dalje*)
+
+Moguće je promijeniti naziv jedne ili više kolona.
+```{r select2}
+starwars %>%
+  select(alias=name, crib=homeworld, sex=gender) 
+```
+
+--
+
+Promjena naziva kolone bez subseting-a je moguće sa `rename` funkcijom. Probajte izvršiti gornji kod sa  `rename(...)` funkcijom.
+
+---
+
+
+# 3) dplyr::select (*dalje*)
+
+`select(contains(PATTERN))` opcija je jako korisna u nekim slučajevima.
+```{r select3}
+starwars %>% 
+  select(name, contains("color"))
+```
+
+---
+
+# 3) dplyr::select (*dalje*)
+
+`select(..., everything())` opcija je također korisna ukoliko želite sortirati nazive kolona (i.e. staviti neke na prvo mjesto).
+
+```{r select4}
+starwars %>% 
+  select(species, homeworld, everything()) %>%
+  head(5)
+```
+
+--
+
+</br>
+*Note:* Nova `relocate` funkcija je dostupna u dplyr 1.0.0 i nudi još funkcionalnosti kod uređivanja redosljeda kolona. [Pogledaj detaljnije!](https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-select-rename-relocate/).
+
+---
+
+# 4) dplyr::mutate
+
+Nove kolone možete stvoriti ni iz čega ili (češće) kao transformaciju postojećih kolona.
+```{r mutate1}
+starwars %>% 
+  select(name, birth_year) %>%
+  mutate(dog_years = birth_year * 7) %>%
+  mutate(comment = paste0(name, " is ", dog_years, " in dog years."))
+```
+
+---
+
+
+# 4) dplyr::mutate (*dalje*)
+
+*Note:* `mutate` funkcija uvažava redosljed. Moguće je napraviti više lančanih funkcija u jednom pozivu.
+```{r mutate2}
+starwars %>% 
+  select(name, birth_year) %>%
+  mutate(
+    dog_years = birth_year * 7, ## Separate with a comma
+    comment = paste0(name, " is ", dog_years, " in dog years.")
+    )
+```
+
+---
+
+# 4) dplyr::mutate (*dalje*)
+
+Boolean, logički i kondicionalni operatori se mogu dobro kombinirati sa `mutate`
+```{r mutate3}
+starwars %>% 
+  select(name, height) %>%
+  filter(name %in% c("Luke Skywalker", "Anakin Skywalker")) %>% 
+  mutate(tall1 = height > 180) %>%
+  mutate(tall2 = ifelse(height > 180, "Tall", "Short")) ## Isti rezultat;izaberi nazive
+```
+
+---
+
+# 4) dplyr::mutate (*dalje*)
+
+Kombiniranje `mutate` sa novim `across` dodatkom u dplyr 1.0.0+ omogućava jednostavan rad na selekciji varijabli. Primjerice:
+
+```{r, mutate4}
+starwars %>% 
+  select(name:eye_color) %>% 
+  mutate(across(where(is.character), toupper)) %>% #<< 
+  head(5)
+```
+
+--
+
+</br>
+*Note:* Ovaj workflow (i.e. kombinacija `mutate` i `across`) nadrasta stare "scoped" verzije `mutate` koje ste možda koristili prije. Za više detalja pogledajte [ovdje](https://www.tidyverse.org/blog/2020/04/dplyr-1-0-0-colwise/) i [ovdje](https://dplyr.tidyverse.org/dev/articles/colwise.html).
+
+---
+
+# 5) dplyr::summarise
+
+Posebno korisno u kombinaciji sa `group_by` funkcijom.
+```{r summ1}
+starwars %>% 
+  group_by(species, gender) %>% 
+  summarise(mean_height = mean(height, na.rm = TRUE))
+```
+
+---
+
+# 5) dplyr::summarise (*dalje*)
+
+Uključite funkcijski argument **na.rm = TRUE*** (ili **na.rm = T**) kod `summarise` funkcija. U suprotnom će nedostajeće vrijednosti biti uključene u output :-/
+```{r summ2}
+## Vjerojatno nepoželjno
+starwars %>% 
+  summarise(mean_height = mean(height))
+## Bolje
+starwars %>% 
+  summarise(mean_height = mean(height, na.rm = TRUE))
+```
+
+---
+
+# 5) dplyr::summarise (*dalje*)
+
+ `across` pristup koji smo vidjeli sa `mutate` maloprije također funkcionira sa `summarise` funkcijom. Primjerice:
+
+```{r, summ4}
+starwars %>% 
+  group_by(species) %>% 
+  summarise(across(where(is.numeric), mean, na.rm=T)) %>% #<<
+  head(5)
+```
+
+--
+
+</br>
+*Note:* Ova funkcionalnost nadrasta stare "scoped" verzije `summarise` funkcije koje prethode dplyr 1.0.0. Za detalje vidi [ovdje](https://www.tidyverse.org/blog/2020/04/dplyr-1-0-0-colwise/) i [ovdje](https://dplyr.tidyverse.org/dev/articles/colwise.html).
+
+---
+
+# Ostale dplyr funkcionalnosti
+
+`group_by` i `ungroup`: Za (un)grouping.
+- Posebno korisno sa `summarise` i `mutate` naredbama,kao što smo već vidjeli.
+
+--
+
+`slice`: Izaberi redove prema poziciji reda.
+- E.g. `starwars %>% slice(c(1, 5))`
+
+--
+
+`pull`: Izvadi kolonu iz podatkovnog skupa kao vektor ili skalar.
+- E.g. `starwars %>% filter(gender=="female") %>% pull(height)`
+
+--
+
+`count` i `distinct`: Pobroji i izoliraj jedinstvene opservacije.
+- E.g. `starwars %>% count(species)`, ili `starwars %>% distinct(species)`
+- Također moguće koristiti kombinaciju `mutate`, `group_by`, i `n()`, e.g. `starwars %>% group_by(species) %>% mutate(num = n())`.
+
+
+---
+
+# Ostale dplyr funkcionalnosti (dalje)
+
+Postoji još i klasa [window funkcija](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html) za stvaranje lead-ova i lag-ova, rengiranje, stvaranje kumulativnih agregata, etc.
+- Vidi `vignette("window-functions")`.
+
+--
+
+</br>
+
+Zadnja skupina dodatnih dplyr funkcionalnosti je familija `join` funkcija. Riječ je o jako bitnim funkcijama pa ćemo pogledati njihove mogućnosti...
+- Ove funkcije ćemo sretati često do kraja kolegija.
+
+
+---
+
+
+
+# Joining operacije 
+
+Jedna od glavnih funkcionalnosti dplyr-a je mogućnost spajanja podataka [(join operacija)](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html).
+- `inner_join(df1, df2)`
+- `left_join(df1, df2)`
+- `right_join(df1, df2)`
+- `full_join(df1, df2)`
+- `semi_join(df1, df2)`
+- `anti_join(df1, df2)`
+
+(Vizualni pregled operacija spajanja pogledajte [ovdje](https://r4ds.had.co.nz/relational-data.html).)
+
+--
+
+Za sljedeće primjere su nam potrebni podatci iz [**nycflights13**](http://github.com/hadley/nycflights13) paketa. 
+- Učitajte paket i pregledajte podatke.
+
+```{r flights, echo = F}
+library(nycflights13)
+```
+```{r, eval = F}
+library(nycflights13)
+flights 
+planes
+```
+
+---
+
+# Joining operacije (dalje)
+
+Izvedimo [left join](https://stat545.com/bit001_dplyr-cheatsheet.html#left_joinsuperheroes-publishers) na `flights` i `planes` podatkovnim sklupovima. 
+- *Note*: Kolone ćemo subsetirati nakon spajanja, ali zadržavamo tekst sa strane.
+
+--
+
+```{r join1}
+left_join(flights, planes) %>%
+  select(year, month, day, dep_time, arr_time, carrier, flight, tailnum, type, model)
+```
+
+---
+
+# Joining operacije (dalje)
+
+
+dplyr je napravio razumnu pretpostavku na kojim kolonama će izvršiti spajanje (i.e. kolone sa istim nazivom). Također smo dobili obavjest: 
+
+```
+*## Joining, by = c("year", "tailnum")
+```
+
+Ipak, ovdje se javlja očiti problem: varijabla `year` nema konzitentno značenje u skupovima podataka koje spajamo!
+- U jednom se odnosi na *year of flight*, a u drugom na *year of construction*.
+
+--
+
+Postoji jednostavan način izbjegavanja ovog problema. 
+- Probajte razmisliti sami!
+- Isprobajte `?dplyr::join`.
+
+---
+
+# Joining operacije (dalje)
+
+
+Potrebna je eksplicitnost u funkcijskom pozivu sa `by = ` argumentom.
+- Promjena naziva kolona je drugo legitimno rješenje. 
+```{r join2}
+left_join(
+  flights,
+  planes %>% rename(year_built = year), ## Nije nužno ali pomaže
+  by = "tailnum" ## Eksplicitnost
+  ) %>%
+  select(year, month, day, dep_time, arr_time, carrier, flight, tailnum, year_built, type, model) %>%
+  head(3) ## Preglednost
+```
+
+---
+
+# Joining operacije (dalje)
+
+Što ako specificiramo kolonu `by` argmentom bez prethodne promjene naziva kolone.
+```{r join3}
+left_join(
+  flights,
+  planes, ## Bez promjene naziva
+  by = "tailnum"
+  ) %>%
+  select(contains("year"), month, day, dep_time, arr_time, carrier, flight, tailnum, type, model) %>%
+  head(3)
+```
+
+--
+
+Provjerite što su "year.x" i "year.y".  Eksplicitnost pomaže!
+
+---
+
+class: inverse, center, middle
+name: tidyr
+
+# tidyr
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Nezaobilazne funkcionalnosti...)
+---
+
+# Ključne tidyr riječi
+
+1. `pivot_longer`: Pivot "wide" podatke u "long" format (i.e. "melt").<sup>1</sup> 
+
+2. `pivot_wider`: Pivot "long" podatke u "wide" format (i.e. "cast").<sup>2</sup> 
+
+3. `separate`: Razdvoji (i.e. split) jednu kolonu u više njih.
+
+4. `unite`: Ujedini (i.e. combine) Više kolona u jednu.
+
+.footnote[
+<sup>1</sup> Updated verzija `tidyr::gather`.
+
+<sup>2</sup> Updated verzija `tidyr::spread`.
+]  
+
+--
+
+</br>
+
+Praktični primjeri...
+- Pitanje: Koja funkcija `pivot_longer` ili `pivot_wider` stvara "tidy" podatke?
+  
+---
+
+# 1) tidyr::pivot_longer
+
+```{r pivot_longer1}
+stocks <- data.frame( ## Možete koristiti i "tibble" umjesto "data.frame" 
+  time = as.Date('2009-01-01') + 0:1,
+  X = rnorm(2, 0, 1),
+  Y = rnorm(2, 0, 2),
+  Z = rnorm(2, 0, 4)
+  )
+stocks
+stocks %>% pivot_longer(-time, names_to="stock", values_to="price")
+```
+
+---
+
+# 1) tidyr::pivot_longe  (*dalje*)
+
+Spremi "tidy" (i.e. long) stocks podatkovni okvir za sljedeći slide. 
+
+```{r pivot_longer2}
+## Specificirajte nazive argumenata: i.e. "names_to=" i "values_to="
+tidy_stocks <- 
+  stocks %>% 
+  pivot_longer(-time, names_to="stock", values_to="price")
+```
+
+---
+
+# 2) tidyr::pivot_wider
+
+```{r pivot_wider1, dependson=tidy_stocks}
+tidy_stocks %>% pivot_wider(names_from=stock, values_from=price)
+tidy_stocks %>% pivot_wider(names_from=time, values_from=price)
+```
+
+--
+
+</br>
+Drugi primjer &mdash; koji je iskombinirao različite pivoting argumente &mdash; je uspješno transponirao podatke.
+
+
+---
+
+# Dodatno: Zapamtite pivot_* sintaksu
+
+Za one koji se (još) uvijek sijećaju Stata-ine "reshape" naredbe...([Exhibit A](https://twitter.com/scottimberman/status/1036801308785864704).)
+
+Ista situacija je lako zamisliva i sa `pivot_*` funkcijama. Prijedlog je zapamtiti redosljed funkcijskih argumenata: prvo *"names"*, potom *"values"*.
+
+---
+
+# 3) tidyr::separate
+
+```{r sep1}
+economists <- data.frame(name = c("Adam.Smith", "Paul.Samuelson", "Milton.Friedman"))
+economists
+economists %>% separate(name, c("first_name", "last_name")) 
+```
+
+--
+
+</br>
+
+Ovo je "pametna" funkcija. Da bi se izbjegla dvosmislenost, definirajte separator eskplicitno `separate(..., sep=".")`.
+
+---
+
+# 3) tidyr::separate (*dalje*)
+
+Povezana funkcija je`separate_rows`, za razdvajanje ćelija koje sadrže više opservacija (frustrirajuća stvar kod npr. "survey" podataka).
+```{r sep2}
+jobs <- data.frame(
+  name = c("Jack", "Jill"),
+  occupation = c("Homemaker", "Philosopher, Philanthropist, Troublemaker") 
+  ) 
+jobs
+## Razdvoji Jill's različita zanimanja u više redova
+jobs %>% separate_rows(occupation)
+```
+---
+
+# 4) tidyr::unite
+
+```{r unite1}
+gdp <- data.frame(
+  yr = rep(2016, times = 4),
+  mnth = rep(1, times = 4),
+  dy = 1:4,
+  gdp = rnorm(4, mean = 100, sd = 2)
+  )
+gdp 
+## Kombiniraj "yr", "mnth", and "dy" u jednu "date" kolonu
+gdp %>% unite(date, c("yr", "mnth", "dy"), sep = "-")
+```
+
+---
+
+# 4) tidyr::unite (*dalje*)
+
+`unite` će automatski stvoriti karakternu varijablu. To jasnije dolazi do izražaja ako pretvorimo u tibble. 
+```{r unite2}
+gdp_u <- gdp %>% unite(date, c("yr", "mnth", "dy"), sep = "-") %>% as_tibble()
+gdp_u
+```
+
+--
+
+Za modifikaciju u nešto drugo (e.g. date ili numeric) je moguće koristiti `mutate`. Vidi primjer sa [lubridate](https://lubridate.tidyverse.org/) paketom za rad sa datumima na sljedećem slide-u.
+
+---
+
+# 4) tidyr::unite (*dalje*)
+
+
+```{r unite3, message=F}
+library(lubridate)
+gdp_u %>% mutate(date = ymd(date))
+```
+
+---
+
+# Ostale tidyr funkcionalnosti
+
+Koristite `crossing` za kombinaciju grupe varijabli.<sup>1</sup>
+
+```{r cross1}
+crossing(side=c("left", "right"), height=c("top", "bottom"))
+```
+
+.footnote[
+<sup>1</sup> Base Ralternativa: `expand.grid`.
+]  
+
+--
+
+Pogledajte `?expand` i `?complete` za specijalizirane funkcije koje omogućuju (imlicitno) rad sa nedostajućim podatcima ili kombiniranjem varijabli u podatkovnim okvirima.
+- Prije ili kasnije možete očekivati ovu potrebu.
+
+---
+class: inverse, center, middle
+name: summary
+
+# Sažetak
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Što smo naučili!?)
+---
+
+# Ključne funkcije
+
+### dplyr
+1. `filter`
+2. `arrange`
+3. `select`
+4. `mutate`
+5. `summarise`
+
+### tidyr
+1. `pivot_longer`
+2. `pivot_wider`
+3. `separate`
+4. `unite`
+
+--
+
+Drugi bitni elementi: pipe-ovi (`%>%`), grupiranje (`group_by`),funkcije za spajanje (`left_join`, `inner_join`, etc.).
+
+---
+class: inverse, center, middle
+
+# Sljedeće predavanje: Web Scraping
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Prije toga također pogledajte **data.table**)
+
+
+
+
+
+
+
+
+
+
+

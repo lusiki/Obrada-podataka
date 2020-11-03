@@ -100,9 +100,27 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 <br>
 
-<a href="/Predavanja/05_PRIKUPLJANJEdta.pdf">Predavanje 05: Prikupljanje podataka sa interneta</a>
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="">Predavanje 05: Manipulacija i prilagodba podataka</a> + <a href=""> Dodatak predavanju: data.table</a>
+<ul>
+<li> Set-up</li>
+<li> tidyverse osnove</li>
+<li> Manipulacija podatcima - dplyr</li>
+<li> Manipulacija podatcima - tidyr</li>
+<ul>
 
-<a href="/Predavanja/06_SPREMANJEdta.pdf">Predavanje 06: Spremanje i baze podataka</a>
+</div>
+
+
+<b>Format predavanja:</b> <a href="/Predavanja/05_MANIPULACIJA_tidy.html">.html</a> | <a href="/Predavanja/05_MANIPULACIJA_tidy.Rmd">.Rmd</a> + <a href="/Predavanja/05_MANIPULACIJA_dt.html">.html(data.table)</a> | <a href="/Predavanja/05_MANIPULACIJA_dt.Rmd">.Rmd(data.table)</a>
+<br><b>Čitanje: </b><a href="https://vita.had.co.nz/papers/tidy-data.pdf">Tidy Data članak od Hadley Wickham-a</a>
+<br>
+<br>
+
+
+<a href="/Predavanja/05_PRIKUPLJANJEdta.pdf">Predavanje 06: Prikupljanje podataka sa interneta - Web Scraping</a>
+
+<a href="/Predavanja/06_SPREMANJEdta.pdf">Predavanje 07: Spremanje i baze podataka</a>
 
 <a href="/Predavanja/07_MANIPULACIJAdta.pdf">Predavanje 07: Manipulacija i prilagodba podataka</a>
 

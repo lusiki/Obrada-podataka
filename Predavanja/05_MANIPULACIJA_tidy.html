@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>OBRADA PODATAKA</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Luka Sikic, PhD" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# OBRADA PODATAKA
+## Predavanje 5: Manipulacija i prilagodba podataka (tidyverse)
+### Luka Sikic, PhD
+### Fakultet hrvatskih studija | <a href="https://github.com/BrbanMiro/Obrada-podataka">OP</a>
+
+---
+
+name: toc
+
+
+
+# Pregled predavanja
+
+
+1. [Set-up](#prologue)
+
+2. [Tidyverse osnove](#basics)
+
+3. [Manipulacija podatcima sa dplyr](#dplyr)
+
+4. [Manipulacija podatcima sa tidyr](#tidyr)
+
+5. [Pregled](#summary)
+
+
+---
+class: inverse, center, middle
+name: prologue
+
+# Set-up
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Postavke za rad sa tidyverse paketima!)
+---
+
+# Što su "tidy" podatci?
+
+Resursi:
+- [Vignette](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) (iz **tidyr** paketa)
+- [Članak](https://vita.had.co.nz/papers/tidy-data.pdf) (Hadley Wickham, 2014 JSS)
+
+--
+
+&lt;/br&gt;
+
+Ključni elementi:
+1. Svaka varijabla je u koloni.
+2. Svaka opservacija je red.
+3. Opservacija formiraju tablicu.
+
+--
+
+&lt;/br&gt;
+
+*Tidy* podatci će najćešće biti u [long (i.e. narrow) formatu](https://en.wikipedia.org/wiki/Wide_and_narrow_data).
+
+---
+
+# Checklist
+
+☑ Instaliran[**tidyverse**](https://www.tidyverse.org/) paket.
+
+
+☑ Potrebno instalirati[**nycflights13**](hhttps://github.com/hadley/nycflights13) paket.
+- Izvršite naredbu: `install.packages('nycflights13', repos = 'https://cran.rstudio.com')`
+
+---
+class: inverse, center, middle
+name: basics
+
+# Tidyverse osnove
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Osnovna sintaksa.)
+---
+
+# Tidyverse vs. base R
+
+Debata na temu "tidyverse vs. base R" u R zajednici.
+
+--
+
+Nećemo ulaziti dublje u ovu raspravu jer je odgovor [očit](http://varianceexplained.org/r/teach-tidyverse/): Bilo bi najbolje naučiti tidyverse na početku (ili barem rano).
+- Dokumentacija i podrška su izvrsni.
+- Konzistentna filozofija i sintaksa što olakšava učenje.
+- Tidyverse omogućava praktičan"front-end" za neke važne big-data alate.
+- Za čišćenje, manipulaciju i vizualizaciju...tidyverse je relativno jednostavan.&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt;Altertnativni pristup je [**data.table**](http://r-datatable.com/).]
+
+--
+
+Ovo sve ne znači da treba preskočiti učenje base R.
+- Base R je ekstremno fleksibilan i moćan, posebno u kombinaciji sa drugim paketima.
+- Neke stvari se nemogu napraviti u tidyverse-u.
+- Kombinacija tidyverse i base R je često rješenje.
+
+---
+
+
+# Tidyverse vs. base R (dalje)
+
+Često postoje ekvivalenti izmedju base R i tidyverse. 
+
+Ovo se generalno odražava u pravili `tidyverse::snake_case`  vs  `base::period.case`.  E.g. Usporedi:
+
+| tidyverse  |  base |
+|---|---|
+| `?readr::read_csv`  | `?utils::read.csv` |
+|  `?dplyr::if_else` |  `?base::ifelse` |
+|  `?tibble::tibble` |  `?base::data.frame` |
+Etc...
+  
+Tidyverse alternative često nude neka poboljšanja ili druge korisne opcije (ponekad i restrikcije) u odnosu na base R. 
+- Zapamtite: Uvijek postoji mnoštvo načina da se nešto izvede u R.
+
+---
+
+# Tidyverse paketi
+
+Učitajte tidyverse meta-package i provjerite output.
+
+```r
+library(tidyverse)
+```
+
+```
+## -- Attaching packages ----------------------------------------------------------------------------- tidyverse 1.3.0 --
+```
+
+```
+## &lt;U+221A&gt; ggplot2 3.3.2     &lt;U+221A&gt; purrr   0.3.4
+## &lt;U+221A&gt; tibble  3.0.3     &lt;U+221A&gt; dplyr   1.0.2
+## &lt;U+221A&gt; tidyr   1.1.2     &lt;U+221A&gt; stringr 1.4.0
+## &lt;U+221A&gt; readr   1.3.1     &lt;U+221A&gt; forcats 0.5.0
+```
+
+```
+## -- Conflicts -------------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
+
+--
+
+Primjetite da smo učitali mnoštvo paketa (što je moguće napraviti i pojedinačno): **ggplot2**, **tibble**, **dplyr**, etc.
+- Vidljive su i informacije o vezrijama paketa i [namespace konfliktima](https://raw.githack.com/uo-ec607/lectures/master/04-rlang/04-rlang.html#59).
+
+---
+
+
+
+# Tidyverse paketi (dalje)
+
+Ttidyverse se zapravo sastoji od sa više paketa nego što se automatski učitava.&lt;sup&gt;1&lt;/sup&gt;
+
+```r
+tidyverse_packages()
+```
+
+```
+##  [1] "broom"      "cli"        "crayon"     "dbplyr"     "dplyr"     
+##  [6] "forcats"    "ggplot2"    "haven"      "hms"        "httr"      
+## [11] "jsonlite"   "lubridate"  "magrittr"   "modelr"     "pillar"    
+## [16] "purrr"      "readr"      "readxl"     "reprex"     "rlang"     
+## [21] "rstudioapi" "rvest"      "stringr"    "tibble"     "tidyr"     
+## [26] "xml2"       "tidyverse"
+```
+
+Neke od tih dodatnih paketa ćemo koristiti u okviru kolegija.
+— E.g. **Lubridate** paket za raad sa datumima i **rvest** paket za webscraping.
+- Ipak, ti se paketi moraju učitati zasebno.
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; Tidyverse uključuje *puno* zavisnosti pri instalaciji. Ovo je tema uz koju se vežu određene [kontroverze](http://www.tinyverse.org/).
+].
+
+---
+
+# Tidyverse paketi (dalje)
+
+Cilj je izložiti većinu tidyverse paketa kroz ovaj kolegij.
+
+Naglasak današnjeg predavanja je na dva paketa: 
+1. [**dplyr**](https://dplyr.tidyverse.org/)
+2. [**tidyr**](https://tidyr.tidyverse.org/)
+
+Ovo su glavni paketi za čišćenje i manipulaciju podatcima. Zbog toga će se jako često koristiti(uz **ggplot2**).
+- Na čišćenje i manipulaciju podatcima odlazi jako puno vremena u radu sa podatcima.
+
+
+---
+
+
+# Dodatak o pipe-ovima: %&gt;%
+
+U R-u, pipe operator se označava `%&gt;%` i automatski se učitava sa tidyverse-om.
+  
+Pipe operatori su sjani i njihovo korištenje znatno poboljšava iskustvo kodiranja. Usporedite:
+
+
+```r
+## Ovaj kod postiže isti cilj.
+mpg %&gt;% filter(manufacturer=="audi") %&gt;% group_by(model) %&gt;% summarise(hwy_mean = mean(hwy))
+summarise(group_by(filter(mpg, manufacturer=="audi"), model), hwy_mean = mean(hwy))
+```
+
+--
+
+Prva linija koda se čita s ijeva na desno, baš kao što nalaže intuicija. 
+- Ozmi objek (mpg), napravi ovo (filter), nakon toga ovo (group by), etc.
+
+Druga linija koda ima inverznu intuiciju (zadnja operacija dolazi prva!) 
+- Tko želi čitati stvari iznutra-van?
+
+---
+
+# Dodatak o pipe-ovima: %&gt;%
+
+Pipe verzija koda je još čitljivija ako se napiše kroz nekoliko redova:
+
+```r
+mpg %&gt;% 
+  filter(manufacturer=="audi") %&gt;% 
+  group_by(model) %&gt;% 
+  summarise(hwy_mean = mean(hwy))
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## # A tibble: 3 x 2
+##   model      hwy_mean
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 a4             28.3
+## 2 a4 quattro     25.8
+## 3 a6 quattro     24
+```
+
+Zapamtite: Korištenje prostora ne košta ništa, a doprinosi čitljivosti koda.
+
+--
+
+PS — Pipe orginalno potječe iz [**magrittr**](https://magrittr.tidyverse.org/) paketa ([geddit?](https://en.wikipedia.org/wiki/The_Treachery_of_Images)) i omogućava mnoštvo sjajnih stvari ako želite dodatno istražiti...
+
+
+---
+class: inverse, center, middle
+name: dplyr
+
+# dplyr
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Workhorse!)
+---
+
+
+# Dodatno: dplyr 1.0.0 verzija
+
+Neke od **dplyr** svojstava koja ćemo obraditi danas dolaze iz [verzije 1.0.0](https://www.tidyverse.org/blog/2020/06/dplyr-1-0-0/) paketa.
+- Verzija 1.0.0 ije bitna jer donosi stabilnu verziju paketa. Utrenutku pisanja ovih,aktualna verzija je 1.0.2. 
+- Provjerite da li imate barem **dplyr** 1.0.0.
+
+
+```r
+packageVersion('dplyr')
+```
+
+```
+## [1] '1.0.2'
+```
+
+```r
+# install.packages('dplyr') ## instaliraj update verziju ako &lt; 1.0.0
+```
+
+--
+
+*Note:* dplyr 1.0.0 javlja notifikaciju vezanu za grupirane varijable. Iako ta opcija može biti korisna, nekada ju želimo [isključiti](https://twitter.com/MattCowgill/status/1278463099272491008).
+
+```r
+options(dplyr.summarise.inform = FALSE) ## dodaj .Rprofile za trajno isključenje
+```
+---
+
+# Ključne dplyr funkcije
+
+Postoji pet osnovnih dplyr funkcija koje je jako korisno naučiti.
+
+1. `filter`: Filtriranje (i.e. subset) redova prema vrijednostima.
+
+2. `arrange`: Uređivanje (i.e. reorder) redova prema vrijednostima.
+
+3. `select`: Izaberi (i.e. subset) kolone prema nazivima: 
+
+4. `mutate`: Stvori nove kolone.
+
+5. `summarise`: Sažmi više redova u deskriptivni pregled.&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; `summarize` sa "z" također funkcionira. Nema diskriminacije u R!
+]
+
+--
+
+&lt;/br&gt;
+
+Za pregled dplyr funkcionalnosti ćemo koristiti `starwars` podatkovni skup koji dolazi sa dplyr paketom. 
+
+---
+
+# 1) dplyr::filter
+
+Moguće je koristiti više filter naredbi sa pipe (`%&gt;%`) operatorom ili ih odvojiti unutar zagrade zarezom.
+
+```r
+starwars %&gt;% 
+  filter( 
+    species == "Human", 
+    height &gt;= 190
+    ) 
+```
+
+```
+## # A tibble: 4 x 14
+##   name  height  mass hair_color skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Dart~    202   136 none       white      yellow          41.9 male  mascu~
+## 2 Qui-~    193    89 brown      fair       blue            92   male  mascu~
+## 3 Dooku    193    80 white      fair       brown          102   male  mascu~
+## 4 Bail~    191    NA black      tan        brown           67   male  mascu~
+## # ... with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
+```
+
+---
+
+# 1) dplyr::filter (*dalje*)
+
+Regularni izrazi također funkcioniraju.
+
+
+```r
+starwars %&gt;% 
+  filter(grepl("Skywalker", name))
+```
+
+```
+## # A tibble: 3 x 14
+##   name  height  mass hair_color skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Luke~    172    77 blond      fair       blue            19   male  mascu~
+## 2 Anak~    188    84 blond      fair       blue            41.9 male  mascu~
+## 3 Shmi~    163    NA black      fair       brown           72   fema~ femin~
+## # ... with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
+```
+
+---
+
+
+# 1) dplyr::filter (*dalje*)
+
+`Filter` se često koristi za identifikaciju (ili midanje) nedostajećih opservacija. 
+
+```r
+starwars %&gt;% 
+  filter(is.na(height))
+```
+
+```
+## # A tibble: 6 x 14
+##   name  height  mass hair_color skin_color eye_color birth_year sex   gender
+##   &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 Arve~     NA    NA brown      fair       brown             NA male  mascu~
+## 2 Finn      NA    NA black      dark       dark              NA male  mascu~
+## 3 Rey       NA    NA brown      light      hazel             NA fema~ femin~
+## 4 Poe ~     NA    NA brown      light      brown             NA male  mascu~
+## 5 BB8       NA    NA none       none       black             NA none  mascu~
+## 6 Capt~     NA    NA unknown    unknown    unknown           NA &lt;NA&gt;  &lt;NA&gt;  
+## # ... with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+## #   vehicles &lt;list&gt;, starships &lt;list&gt;
+```
+
+--
+
+&lt;/br&gt;
+
+Za micanje nedostajećih opservacija je moguće koristiti negaciju: `filter(!is.na(height))`. Isprobajte!
+
+---
+
+# 2) dplyr::arrange
+
+
+```r
+starwars %&gt;% 
+  arrange(birth_year)
+```
+
+```
+## # A tibble: 87 x 14
+##    name  height  mass hair_color skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Wick~     88  20   brown      brown      brown            8   male  mascu~
+##  2 IG-88    200 140   none       metal      red             15   none  mascu~
+##  3 Luke~    172  77   blond      fair       blue            19   male  mascu~
+##  4 Leia~    150  49   brown      light      brown           19   fema~ femin~
+##  5 Wedg~    170  77   brown      fair       hazel           21   male  mascu~
+##  6 Plo ~    188  80   none       orange     black           22   male  mascu~
+##  7 Bigg~    183  84   black      light      brown           24   male  mascu~
+##  8 Han ~    180  80   brown      fair       brown           29   male  mascu~
+##  9 Land~    177  79   black      dark       brown           31   male  mascu~
+## 10 Boba~    183  78.2 black      fair       brown           31.5 male  mascu~
+## # ... with 77 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+## #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+```
+
+--
+
+*Note:* Uređivanje na osnovi karakterne (i.e. string) varijable (kolone) će biti abecedno. 
+
+---
+
+
+# 2) dplyr::arrange (*dalje*)
+
+Moguće je i uređivanje po pdajućem redosljedu `arrange(desc())`.
+
+```r
+starwars %&gt;% 
+  arrange(desc(birth_year))
+```
+
+```
+## # A tibble: 87 x 14
+##    name  height  mass hair_color skin_color eye_color birth_year sex   gender
+##    &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+##  1 Yoda      66    17 white      green      brown            896 male  mascu~
+##  2 Jabb~    175  1358 &lt;NA&gt;       green-tan~ orange           600 herm~ mascu~
+##  3 Chew~    228   112 brown      unknown    blue             200 male  mascu~
+##  4 C-3PO    167    75 &lt;NA&gt;       gold       yellow           112 none  mascu~
+##  5 Dooku    193    80 white      fair       brown            102 male  mascu~
+##  6 Qui-~    193    89 brown      fair       blue              92 male  mascu~
+##  7 Ki-A~    198    82 white      pale       yellow            92 male  mascu~
+##  8 Fini~    170    NA blond      fair       blue              91 male  mascu~
+##  9 Palp~    170    75 grey       pale       yellow            82 male  mascu~
+## 10 Clie~    183    NA brown      fair       blue              82 male  mascu~
+## # ... with 77 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+## #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+```
+
+---
+
+# 3) dplyr::select
+
+Zarezi se mogu koristiti za izbor više kolona df-a.(Dozvoljena je i sintaksa "first:last" za sukcesivne kolone). Makni kolonu sa `-`.
+
+```r
+starwars %&gt;% 
+  select(name:skin_color, species, -height)
+```
+
+```
+## # A tibble: 87 x 5
+##    name                mass hair_color    skin_color  species
+##    &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;  
+##  1 Luke Skywalker        77 blond         fair        Human  
+##  2 C-3PO                 75 &lt;NA&gt;          gold        Droid  
+##  3 R2-D2                 32 &lt;NA&gt;          white, blue Droid  
+##  4 Darth Vader          136 none          white       Human  
+##  5 Leia Organa           49 brown         light       Human  
+##  6 Owen Lars            120 brown, grey   light       Human  
+##  7 Beru Whitesun lars    75 brown         light       Human  
+##  8 R5-D4                 32 &lt;NA&gt;          white, red  Droid  
+##  9 Biggs Darklighter     84 black         light       Human  
+## 10 Obi-Wan Kenobi        77 auburn, white fair        Human  
+## # ... with 77 more rows
+```
+
+---
+
+# 3) dplyr::select (*dalje*)
+
+Moguće je promijeniti naziv jedne ili više kolona.
+
+```r
+starwars %&gt;%
+  select(alias=name, crib=homeworld, sex=gender) 
+```
+
+```
+## # A tibble: 87 x 3
+##    alias              crib     sex      
+##    &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt;    
+##  1 Luke Skywalker     Tatooine masculine
+##  2 C-3PO              Tatooine masculine
+##  3 R2-D2              Naboo    masculine
+##  4 Darth Vader        Tatooine masculine
+##  5 Leia Organa        Alderaan feminine 
+##  6 Owen Lars          Tatooine masculine
+##  7 Beru Whitesun lars Tatooine feminine 
+##  8 R5-D4              Tatooine masculine
+##  9 Biggs Darklighter  Tatooine masculine
+## 10 Obi-Wan Kenobi     Stewjon  masculine
+## # ... with 77 more rows
+```
+
+--
+
+Promjena naziva kolone bez subseting-a je moguće sa `rename` funkcijom. Probajte izvršiti gornji kod sa  `rename(...)` funkcijom.
+
+---
+
+
+# 3) dplyr::select (*dalje*)
+
+`select(contains(PATTERN))` opcija je jako korisna u nekim slučajevima.
+
+```r
+starwars %&gt;% 
+  select(name, contains("color"))
+```
+
+```
+## # A tibble: 87 x 4
+##    name               hair_color    skin_color  eye_color
+##    &lt;chr&gt;              &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;    
+##  1 Luke Skywalker     blond         fair        blue     
+##  2 C-3PO              &lt;NA&gt;          gold        yellow   
+##  3 R2-D2              &lt;NA&gt;          white, blue red      
+##  4 Darth Vader        none          white       yellow   
+##  5 Leia Organa        brown         light       brown    
+##  6 Owen Lars          brown, grey   light       blue     
+##  7 Beru Whitesun lars brown         light       blue     
+##  8 R5-D4              &lt;NA&gt;          white, red  red      
+##  9 Biggs Darklighter  black         light       brown    
+## 10 Obi-Wan Kenobi     auburn, white fair        blue-gray
+## # ... with 77 more rows
+```
+
+---
+
+# 3) dplyr::select (*dalje*)
+
+`select(..., everything())` opcija je također korisna ukoliko želite sortirati nazive kolona (i.e. staviti neke na prvo mjesto).
+
+
+```r
+starwars %&gt;% 
+  select(species, homeworld, everything()) %&gt;%
+  head(5)
+```
+
+```
+## # A tibble: 5 x 14
+##   species homeworld name  height  mass hair_color skin_color eye_color
+##   &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;    
+## 1 Human   Tatooine  Luke~    172    77 blond      fair       blue     
+## 2 Droid   Tatooine  C-3PO    167    75 &lt;NA&gt;       gold       yellow   
+## 3 Droid   Naboo     R2-D2     96    32 &lt;NA&gt;       white, bl~ red      
+## 4 Human   Tatooine  Dart~    202   136 none       white      yellow   
+## 5 Human   Alderaan  Leia~    150    49 brown      light      brown    
+## # ... with 6 more variables: birth_year &lt;dbl&gt;, sex &lt;chr&gt;, gender &lt;chr&gt;,
+## #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+```
+
+--
+
+&lt;/br&gt;
+*Note:* Nova `relocate` funkcija je dostupna u dplyr 1.0.0 i nudi još funkcionalnosti kod uređivanja redosljeda kolona. [Pogledaj detaljnije!](https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-select-rename-relocate/).
+
+---
+
+# 4) dplyr::mutate
+
+Nove kolone možete stvoriti ni iz čega ili (češće) kao transformaciju postojećih kolona.
+
+```r
+starwars %&gt;% 
+  select(name, birth_year) %&gt;%
+  mutate(dog_years = birth_year * 7) %&gt;%
+  mutate(comment = paste0(name, " is ", dog_years, " in dog years."))
+```
+
+```
+## # A tibble: 87 x 4
+##    name               birth_year dog_years comment                              
+##    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;                                
+##  1 Luke Skywalker           19        133  Luke Skywalker is 133 in dog years.  
+##  2 C-3PO                   112        784  C-3PO is 784 in dog years.           
+##  3 R2-D2                    33        231  R2-D2 is 231 in dog years.           
+##  4 Darth Vader              41.9      293. Darth Vader is 293.3 in dog years.   
+##  5 Leia Organa              19        133  Leia Organa is 133 in dog years.     
+##  6 Owen Lars                52        364  Owen Lars is 364 in dog years.       
+##  7 Beru Whitesun lars       47        329  Beru Whitesun lars is 329 in dog yea~
+##  8 R5-D4                    NA         NA  R5-D4 is NA in dog years.            
+##  9 Biggs Darklighter        24        168  Biggs Darklighter is 168 in dog year~
+## 10 Obi-Wan Kenobi           57        399  Obi-Wan Kenobi is 399 in dog years.  
+## # ... with 77 more rows
+```
+
+---
+
+
+# 4) dplyr::mutate (*dalje*)
+
+*Note:* `mutate` funkcija uvažava redosljed. Moguće je napraviti više lančanih funkcija u jednom pozivu.
+
+```r
+starwars %&gt;% 
+  select(name, birth_year) %&gt;%
+  mutate(
+    dog_years = birth_year * 7, ## Separate with a comma
+    comment = paste0(name, " is ", dog_years, " in dog years.")
+    )
+```
+
+```
+## # A tibble: 87 x 4
+##    name               birth_year dog_years comment                              
+##    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;                                
+##  1 Luke Skywalker           19        133  Luke Skywalker is 133 in dog years.  
+##  2 C-3PO                   112        784  C-3PO is 784 in dog years.           
+##  3 R2-D2                    33        231  R2-D2 is 231 in dog years.           
+##  4 Darth Vader              41.9      293. Darth Vader is 293.3 in dog years.   
+##  5 Leia Organa              19        133  Leia Organa is 133 in dog years.     
+##  6 Owen Lars                52        364  Owen Lars is 364 in dog years.       
+##  7 Beru Whitesun lars       47        329  Beru Whitesun lars is 329 in dog yea~
+##  8 R5-D4                    NA         NA  R5-D4 is NA in dog years.            
+##  9 Biggs Darklighter        24        168  Biggs Darklighter is 168 in dog year~
+## 10 Obi-Wan Kenobi           57        399  Obi-Wan Kenobi is 399 in dog years.  
+## # ... with 77 more rows
+```
+
+---
+
+# 4) dplyr::mutate (*dalje*)
+
+Boolean, logički i kondicionalni operatori se mogu dobro kombinirati sa `mutate`
+
+```r
+starwars %&gt;% 
+  select(name, height) %&gt;%
+  filter(name %in% c("Luke Skywalker", "Anakin Skywalker")) %&gt;% 
+  mutate(tall1 = height &gt; 180) %&gt;%
+  mutate(tall2 = ifelse(height &gt; 180, "Tall", "Short")) ## Isti rezultat;izaberi nazive
+```
+
+```
+## # A tibble: 2 x 4
+##   name             height tall1 tall2
+##   &lt;chr&gt;             &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;
+## 1 Luke Skywalker      172 FALSE Short
+## 2 Anakin Skywalker    188 TRUE  Tall
+```
+
+---
+
+# 4) dplyr::mutate (*dalje*)
+
+Kombiniranje `mutate` sa novim `across` dodatkom u dplyr 1.0.0+ omogućava jednostavan rad na selekciji varijabli. Primjerice:
+
+
+```r
+starwars %&gt;% 
+  select(name:eye_color) %&gt;% 
+* mutate(across(where(is.character), toupper)) %&gt;%
+  head(5)
+```
+
+```
+## # A tibble: 5 x 6
+##   name           height  mass hair_color skin_color  eye_color
+##   &lt;chr&gt;           &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;    
+## 1 LUKE SKYWALKER    172    77 BLOND      FAIR        BLUE     
+## 2 C-3PO             167    75 &lt;NA&gt;       GOLD        YELLOW   
+## 3 R2-D2              96    32 &lt;NA&gt;       WHITE, BLUE RED      
+## 4 DARTH VADER       202   136 NONE       WHITE       YELLOW   
+## 5 LEIA ORGANA       150    49 BROWN      LIGHT       BROWN
+```
+
+--
+
+&lt;/br&gt;
+*Note:* Ovaj workflow (i.e. kombinacija `mutate` i `across`) nadrasta stare "scoped" verzije `mutate` koje ste možda koristili prije. Za više detalja pogledajte [ovdje](https://www.tidyverse.org/blog/2020/04/dplyr-1-0-0-colwise/) i [ovdje](https://dplyr.tidyverse.org/dev/articles/colwise.html).
+
+---
+
+# 5) dplyr::summarise
+
+Posebno korisno u kombinaciji sa `group_by` funkcijom.
+
+```r
+starwars %&gt;% 
+  group_by(species, gender) %&gt;% 
+  summarise(mean_height = mean(height, na.rm = TRUE))
+```
+
+```
+## `summarise()` regrouping output by 'species' (override with `.groups` argument)
+```
+
+```
+## # A tibble: 42 x 3
+## # Groups:   species [38]
+##    species   gender    mean_height
+##    &lt;chr&gt;     &lt;chr&gt;           &lt;dbl&gt;
+##  1 Aleena    masculine          79
+##  2 Besalisk  masculine         198
+##  3 Cerean    masculine         198
+##  4 Chagrian  masculine         196
+##  5 Clawdite  feminine          168
+##  6 Droid     feminine           96
+##  7 Droid     masculine         140
+##  8 Dug       masculine         112
+##  9 Ewok      masculine          88
+## 10 Geonosian masculine         183
+## # ... with 32 more rows
+```
+
+---
+
+# 5) dplyr::summarise (*dalje*)
+
+Uključite funkcijski argument **na.rm = TRUE*** (ili **na.rm = T**) kod `summarise` funkcija. U suprotnom će nedostajeće vrijednosti biti uključene u output :-/
+
+```r
+## Vjerojatno nepoželjno
+starwars %&gt;% 
+  summarise(mean_height = mean(height))
+```
+
+```
+## # A tibble: 1 x 1
+##   mean_height
+##         &lt;dbl&gt;
+## 1          NA
+```
+
+```r
+## Bolje
+starwars %&gt;% 
+  summarise(mean_height = mean(height, na.rm = TRUE))
+```
+
+```
+## # A tibble: 1 x 1
+##   mean_height
+##         &lt;dbl&gt;
+## 1        174.
+```
+
+---
+
+# 5) dplyr::summarise (*dalje*)
+
+ `across` pristup koji smo vidjeli sa `mutate` maloprije također funkcionira sa `summarise` funkcijom. Primjerice:
+
+
+```r
+starwars %&gt;% 
+  group_by(species) %&gt;% 
+* summarise(across(where(is.numeric), mean, na.rm=T)) %&gt;%
+  head(5)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```
+## # A tibble: 5 x 4
+##   species  height  mass birth_year
+##   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Aleena       79    15        NaN
+## 2 Besalisk    198   102        NaN
+## 3 Cerean      198    82         92
+## 4 Chagrian    196   NaN        NaN
+## 5 Clawdite    168    55        NaN
+```
+
+--
+
+&lt;/br&gt;
+*Note:* Ova funkcionalnost nadrasta stare "scoped" verzije `summarise` funkcije koje prethode dplyr 1.0.0. Za detalje vidi [ovdje](https://www.tidyverse.org/blog/2020/04/dplyr-1-0-0-colwise/) i [ovdje](https://dplyr.tidyverse.org/dev/articles/colwise.html).
+
+---
+
+# Ostale dplyr funkcionalnosti
+
+`group_by` i `ungroup`: Za (un)grouping.
+- Posebno korisno sa `summarise` i `mutate` naredbama,kao što smo već vidjeli.
+
+--
+
+`slice`: Izaberi redove prema poziciji reda.
+- E.g. `starwars %&gt;% slice(c(1, 5))`
+
+--
+
+`pull`: Izvadi kolonu iz podatkovnog skupa kao vektor ili skalar.
+- E.g. `starwars %&gt;% filter(gender=="female") %&gt;% pull(height)`
+
+--
+
+`count` i `distinct`: Pobroji i izoliraj jedinstvene opservacije.
+- E.g. `starwars %&gt;% count(species)`, ili `starwars %&gt;% distinct(species)`
+- Također moguće koristiti kombinaciju `mutate`, `group_by`, i `n()`, e.g. `starwars %&gt;% group_by(species) %&gt;% mutate(num = n())`.
+
+
+---
+
+# Ostale dplyr funkcionalnosti (dalje)
+
+Postoji još i klasa [window funkcija](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html) za stvaranje lead-ova i lag-ova, rengiranje, stvaranje kumulativnih agregata, etc.
+- Vidi `vignette("window-functions")`.
+
+--
+
+&lt;/br&gt;
+
+Zadnja skupina dodatnih dplyr funkcionalnosti je familija `join` funkcija. Riječ je o jako bitnim funkcijama pa ćemo pogledati njihove mogućnosti...
+- Ove funkcije ćemo sretati često do kraja kolegija.
+
+
+---
+
+
+
+# Joining operacije 
+
+Jedna od glavnih funkcionalnosti dplyr-a je mogućnost spajanja podataka [(join operacija)](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html).
+- `inner_join(df1, df2)`
+- `left_join(df1, df2)`
+- `right_join(df1, df2)`
+- `full_join(df1, df2)`
+- `semi_join(df1, df2)`
+- `anti_join(df1, df2)`
+
+(Vizualni pregled operacija spajanja pogledajte [ovdje](https://r4ds.had.co.nz/relational-data.html).)
+
+--
+
+Za sljedeće primjere su nam potrebni podatci iz [**nycflights13**](http://github.com/hadley/nycflights13) paketa. 
+- Učitajte paket i pregledajte podatke.
+
+
+```
+## Warning: package 'nycflights13' was built under R version 4.0.3
+```
+
+```r
+library(nycflights13)
+flights 
+planes
+```
+
+---
+
+# Joining operacije (dalje)
+
+Izvedimo [left join](https://stat545.com/bit001_dplyr-cheatsheet.html#left_joinsuperheroes-publishers) na `flights` i `planes` podatkovnim sklupovima. 
+- *Note*: Kolone ćemo subsetirati nakon spajanja, ali zadržavamo tekst sa strane.
+
+--
+
+
+```r
+left_join(flights, planes) %&gt;%
+  select(year, month, day, dep_time, arr_time, carrier, flight, tailnum, type, model)
+```
+
+```
+## Joining, by = c("year", "tailnum")
+```
+
+```
+## # A tibble: 336,776 x 10
+##     year month   day dep_time arr_time carrier flight tailnum type  model
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;
+##  1  2013     1     1      517      830 UA        1545 N14228  &lt;NA&gt;  &lt;NA&gt; 
+##  2  2013     1     1      533      850 UA        1714 N24211  &lt;NA&gt;  &lt;NA&gt; 
+##  3  2013     1     1      542      923 AA        1141 N619AA  &lt;NA&gt;  &lt;NA&gt; 
+##  4  2013     1     1      544     1004 B6         725 N804JB  &lt;NA&gt;  &lt;NA&gt; 
+##  5  2013     1     1      554      812 DL         461 N668DN  &lt;NA&gt;  &lt;NA&gt; 
+##  6  2013     1     1      554      740 UA        1696 N39463  &lt;NA&gt;  &lt;NA&gt; 
+##  7  2013     1     1      555      913 B6         507 N516JB  &lt;NA&gt;  &lt;NA&gt; 
+##  8  2013     1     1      557      709 EV        5708 N829AS  &lt;NA&gt;  &lt;NA&gt; 
+##  9  2013     1     1      557      838 B6          79 N593JB  &lt;NA&gt;  &lt;NA&gt; 
+## 10  2013     1     1      558      753 AA         301 N3ALAA  &lt;NA&gt;  &lt;NA&gt; 
+## # ... with 336,766 more rows
+```
+
+---
+
+# Joining operacije (dalje)
+
+
+dplyr je napravio razumnu pretpostavku na kojim kolonama će izvršiti spajanje (i.e. kolone sa istim nazivom). Također smo dobili obavjest: 
+
+```
+*## Joining, by = c("year", "tailnum")
+```
+
+Ipak, ovdje se javlja očiti problem: varijabla `year` nema konzitentno značenje u skupovima podataka koje spajamo!
+- U jednom se odnosi na *year of flight*, a u drugom na *year of construction*.
+
+--
+
+Postoji jednostavan način izbjegavanja ovog problema. 
+- Probajte razmisliti sami!
+- Isprobajte `?dplyr::join`.
+
+---
+
+# Joining operacije (dalje)
+
+
+Potrebna je eksplicitnost u funkcijskom pozivu sa `by = ` argumentom.
+- Promjena naziva kolona je drugo legitimno rješenje. 
+
+```r
+left_join(
+  flights,
+  planes %&gt;% rename(year_built = year), ## Nije nužno ali pomaže
+  by = "tailnum" ## Eksplicitnost
+  ) %&gt;%
+  select(year, month, day, dep_time, arr_time, carrier, flight, tailnum, year_built, type, model) %&gt;%
+  head(3) ## Preglednost
+```
+
+```
+## # A tibble: 3 x 11
+##    year month   day dep_time arr_time carrier flight tailnum year_built type 
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;
+## 1  2013     1     1      517      830 UA        1545 N14228        1999 Fixe~
+## 2  2013     1     1      533      850 UA        1714 N24211        1998 Fixe~
+## 3  2013     1     1      542      923 AA        1141 N619AA        1990 Fixe~
+## # ... with 1 more variable: model &lt;chr&gt;
+```
+
+---
+
+# Joining operacije (dalje)
+
+Što ako specificiramo kolonu `by` argmentom bez prethodne promjene naziva kolone.
+
+```r
+left_join(
+  flights,
+  planes, ## Bez promjene naziva
+  by = "tailnum"
+  ) %&gt;%
+  select(contains("year"), month, day, dep_time, arr_time, carrier, flight, tailnum, type, model) %&gt;%
+  head(3)
+```
+
+```
+## # A tibble: 3 x 11
+##   year.x year.y month   day dep_time arr_time carrier flight tailnum type  model
+##    &lt;int&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;
+## 1   2013   1999     1     1      517      830 UA        1545 N14228  Fixe~ 737-~
+## 2   2013   1998     1     1      533      850 UA        1714 N24211  Fixe~ 737-~
+## 3   2013   1990     1     1      542      923 AA        1141 N619AA  Fixe~ 757-~
+```
+
+--
+
+Provjerite što su "year.x" i "year.y".  Eksplicitnost pomaže!
+
+---
+
+class: inverse, center, middle
+name: tidyr
+
+# tidyr
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Nezaobilazne funkcionalnosti...)
+---
+
+# Ključne tidyr riječi
+
+1. `pivot_longer`: Pivot "wide" podatke u "long" format (i.e. "melt").&lt;sup&gt;1&lt;/sup&gt; 
+
+2. `pivot_wider`: Pivot "long" podatke u "wide" format (i.e. "cast").&lt;sup&gt;2&lt;/sup&gt; 
+
+3. `separate`: Razdvoji (i.e. split) jednu kolonu u više njih.
+
+4. `unite`: Ujedini (i.e. combine) Više kolona u jednu.
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; Updated verzija `tidyr::gather`.
+
+&lt;sup&gt;2&lt;/sup&gt; Updated verzija `tidyr::spread`.
+]  
+
+--
+
+&lt;/br&gt;
+
+Praktični primjeri...
+- Pitanje: Koja funkcija `pivot_longer` ili `pivot_wider` stvara "tidy" podatke?
+  
+---
+
+# 1) tidyr::pivot_longer
+
+
+```r
+stocks &lt;- data.frame( ## Možete koristiti i "tibble" umjesto "data.frame" 
+  time = as.Date('2009-01-01') + 0:1,
+  X = rnorm(2, 0, 1),
+  Y = rnorm(2, 0, 2),
+  Z = rnorm(2, 0, 4)
+  )
+stocks
+```
+
+```
+##         time          X         Y        Z
+## 1 2009-01-01  0.8215350 -3.317781 -4.33142
+## 2 2009-01-02 -0.6587778 -2.355878  2.15046
+```
+
+```r
+stocks %&gt;% pivot_longer(-time, names_to="stock", values_to="price")
+```
+
+```
+## # A tibble: 6 x 3
+##   time       stock  price
+##   &lt;date&gt;     &lt;chr&gt;  &lt;dbl&gt;
+## 1 2009-01-01 X      0.822
+## 2 2009-01-01 Y     -3.32 
+## 3 2009-01-01 Z     -4.33 
+## 4 2009-01-02 X     -0.659
+## 5 2009-01-02 Y     -2.36 
+## 6 2009-01-02 Z      2.15
+```
+
+---
+
+# 1) tidyr::pivot_longe  (*dalje*)
+
+Spremi "tidy" (i.e. long) stocks podatkovni okvir za sljedeći slide. 
+
+
+```r
+## Specificirajte nazive argumenata: i.e. "names_to=" i "values_to="
+tidy_stocks &lt;- 
+  stocks %&gt;% 
+  pivot_longer(-time, names_to="stock", values_to="price")
+```
+
+---
+
+# 2) tidyr::pivot_wider
+
+
+```r
+tidy_stocks %&gt;% pivot_wider(names_from=stock, values_from=price)
+```
+
+```
+## # A tibble: 2 x 4
+##   time            X     Y     Z
+##   &lt;date&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 2009-01-01  0.822 -3.32 -4.33
+## 2 2009-01-02 -0.659 -2.36  2.15
+```
+
+```r
+tidy_stocks %&gt;% pivot_wider(names_from=time, values_from=price)
+```
+
+```
+## # A tibble: 3 x 3
+##   stock `2009-01-01` `2009-01-02`
+##   &lt;chr&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+## 1 X            0.822       -0.659
+## 2 Y           -3.32        -2.36 
+## 3 Z           -4.33         2.15
+```
+
+--
+
+&lt;/br&gt;
+Drugi primjer &amp;mdash; koji je iskombinirao različite pivoting argumente &amp;mdash; je uspješno transponirao podatke.
+
+
+---
+
+# Dodatno: Zapamtite pivot_* sintaksu
+
+Za one koji se (još) uvijek sijećaju Stata-ine "reshape" naredbe...([Exhibit A](https://twitter.com/scottimberman/status/1036801308785864704).)
+
+Ista situacija je lako zamisliva i sa `pivot_*` funkcijama. Prijedlog je zapamtiti redosljed funkcijskih argumenata: prvo *"names"*, potom *"values"*.
+
+---
+
+# 3) tidyr::separate
+
+
+```r
+economists &lt;- data.frame(name = c("Adam.Smith", "Paul.Samuelson", "Milton.Friedman"))
+economists
+```
+
+```
+##              name
+## 1      Adam.Smith
+## 2  Paul.Samuelson
+## 3 Milton.Friedman
+```
+
+```r
+economists %&gt;% separate(name, c("first_name", "last_name")) 
+```
+
+```
+##   first_name last_name
+## 1       Adam     Smith
+## 2       Paul Samuelson
+## 3     Milton  Friedman
+```
+
+--
+
+&lt;/br&gt;
+
+Ovo je "pametna" funkcija. Da bi se izbjegla dvosmislenost, definirajte separator eskplicitno `separate(..., sep=".")`.
+
+---
+
+# 3) tidyr::separate (*dalje*)
+
+Povezana funkcija je`separate_rows`, za razdvajanje ćelija koje sadrže više opservacija (frustrirajuća stvar kod npr. "survey" podataka).
+
+```r
+jobs &lt;- data.frame(
+  name = c("Jack", "Jill"),
+  occupation = c("Homemaker", "Philosopher, Philanthropist, Troublemaker") 
+  ) 
+jobs
+```
+
+```
+##   name                                occupation
+## 1 Jack                                 Homemaker
+## 2 Jill Philosopher, Philanthropist, Troublemaker
+```
+
+```r
+## Razdvoji Jill's različita zanimanja u više redova
+jobs %&gt;% separate_rows(occupation)
+```
+
+```
+## # A tibble: 4 x 2
+##   name  occupation    
+##   &lt;chr&gt; &lt;chr&gt;         
+## 1 Jack  Homemaker     
+## 2 Jill  Philosopher   
+## 3 Jill  Philanthropist
+## 4 Jill  Troublemaker
+```
+---
+
+# 4) tidyr::unite
+
+
+```r
+gdp &lt;- data.frame(
+  yr = rep(2016, times = 4),
+  mnth = rep(1, times = 4),
+  dy = 1:4,
+  gdp = rnorm(4, mean = 100, sd = 2)
+  )
+gdp 
+```
+
+```
+##     yr mnth dy       gdp
+## 1 2016    1  1  98.45415
+## 2 2016    1  2  99.87936
+## 3 2016    1  3  97.57094
+## 4 2016    1  4 102.85668
+```
+
+```r
+## Kombiniraj "yr", "mnth", and "dy" u jednu "date" kolonu
+gdp %&gt;% unite(date, c("yr", "mnth", "dy"), sep = "-")
+```
+
+```
+##       date       gdp
+## 1 2016-1-1  98.45415
+## 2 2016-1-2  99.87936
+## 3 2016-1-3  97.57094
+## 4 2016-1-4 102.85668
+```
+
+---
+
+# 4) tidyr::unite (*dalje*)
+
+`unite` će automatski stvoriti karakternu varijablu. To jasnije dolazi do izražaja ako pretvorimo u tibble. 
+
+```r
+gdp_u &lt;- gdp %&gt;% unite(date, c("yr", "mnth", "dy"), sep = "-") %&gt;% as_tibble()
+gdp_u
+```
+
+```
+## # A tibble: 4 x 2
+##   date       gdp
+##   &lt;chr&gt;    &lt;dbl&gt;
+## 1 2016-1-1  98.5
+## 2 2016-1-2  99.9
+## 3 2016-1-3  97.6
+## 4 2016-1-4 103.
+```
+
+--
+
+Za modifikaciju u nešto drugo (e.g. date ili numeric) je moguće koristiti `mutate`. Vidi primjer sa [lubridate](https://lubridate.tidyverse.org/) paketom za rad sa datumima na sljedećem slide-u.
+
+---
+
+# 4) tidyr::unite (*dalje*)
+
+
+
+```r
+library(lubridate)
+gdp_u %&gt;% mutate(date = ymd(date))
+```
+
+```
+## # A tibble: 4 x 2
+##   date         gdp
+##   &lt;date&gt;     &lt;dbl&gt;
+## 1 2016-01-01  98.5
+## 2 2016-01-02  99.9
+## 3 2016-01-03  97.6
+## 4 2016-01-04 103.
+```
+
+---
+
+# Ostale tidyr funkcionalnosti
+
+Koristite `crossing` za kombinaciju grupe varijabli.&lt;sup&gt;1&lt;/sup&gt;
+
+
+```r
+crossing(side=c("left", "right"), height=c("top", "bottom"))
+```
+
+```
+## # A tibble: 4 x 2
+##   side  height
+##   &lt;chr&gt; &lt;chr&gt; 
+## 1 left  bottom
+## 2 left  top   
+## 3 right bottom
+## 4 right top
+```
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; Base Ralternativa: `expand.grid`.
+]  
+
+--
+
+Pogledajte `?expand` i `?complete` za specijalizirane funkcije koje omogućuju (imlicitno) rad sa nedostajućim podatcima ili kombiniranjem varijabli u podatkovnim okvirima.
+- Prije ili kasnije možete očekivati ovu potrebu.
+
+---
+class: inverse, center, middle
+name: summary
+
+# Sažetak
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Što smo naučili!?)
+---
+
+# Ključne funkcije
+
+### dplyr
+1. `filter`
+2. `arrange`
+3. `select`
+4. `mutate`
+5. `summarise`
+
+### tidyr
+1. `pivot_longer`
+2. `pivot_wider`
+3. `separate`
+4. `unite`
+
+--
+
+Drugi bitni elementi: pipe-ovi (`%&gt;%`), grupiranje (`group_by`),funkcije za spajanje (`left_join`, `inner_join`, etc.).
+
+---
+class: inverse, center, middle
+
+# Sljedeće predavanje: Web Scraping
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Prije toga također pogledajte **data.table**)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
