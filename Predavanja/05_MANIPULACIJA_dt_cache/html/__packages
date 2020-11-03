@@ -1,0 +1,10 @@
+base
+knitr
+pacman
+dplyr
+data.table
+dtplyr
+tidyfast
+microbenchmark
+ggplot2
+nycflights13

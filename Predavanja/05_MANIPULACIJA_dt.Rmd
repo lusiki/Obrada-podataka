@@ -1,0 +1,1146 @@
+---
+title: "OBRADA PODATAKA"
+# subtitle: "<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>"
+subtitle: "Predavanje 5: Manipulacija i prilagodba podataka (data.table)"
+author: "Luka Sikic, PhD"
+date: "Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)" #"`r format(Sys.time(), '%d %B %Y')`"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts] 
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+name: toc
+
+```{css, echo=FALSE}
+.large4 { font-size: 400% }
+.large2 { font-size: 200% }
+.small90 { font-size: 90% }
+.small75 { font-size: 75% }
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(knitr)
+opts_chunk$set(
+  fig.align="center", #fig.width=6, fig.height=4.5, 
+  # out.width="748px", #out.length="520.75px",
+  dpi=300, #fig.path='Figs/',
+  cache=T#, echo=F, warning=F, message=F
+  )
+```
+
+# Pregled predavanja
+
+
+1. [Set-up](#prologue)
+
+2. [Uvod](#intro)
+
+3. [data.table osnove](#basics)
+
+4. [Manipulacija redovima: DT[i, ]](#i)
+
+5. [Manipulacija kolonama: DT[, j]](#j)
+
+6. [Grupiranje: DT[, , by]](#by)
+
+7. [Ključevi](#keys)
+
+8. [Spajanje podataka](#merge)
+
+9. [Preoblikovanje](#reshape)
+
+10. [data.table + tidyverse](#tidyverse)
+
+10. [Sažetak](#summary)
+
+
+---
+class: inverse, center, middle
+name: prologue
+
+# Set-up
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Postavke za rad sa data.table paketom!)
+---
+
+# Checklist
+
+We'll be using the following packages in today's lecture:
+- Already installed: **dplyr**, **ggplot2**, **nycflights13**
+- New: **data.table**, **tidyfast**, **dtplyr**, **microbenchmark**
+
+--
+
+Ovaj kod će instalirati (ako je potrebno) i učitati sve potrebne pakete za predavanje.
+
+```{r libs, cache=FALSE, message=FALSE}
+if (!require(pacman)) install.packages('pacman', repos = 'https://cran.rstudio.com')
+pacman::p_load(dplyr, data.table, dtplyr, tidyfast, microbenchmark, ggplot2, nycflights13)
+options(dplyr.summarise.inform = FALSE) ## Isključi dplyr group_by poruke 
+```
+
+---
+class: inverse, center, middle
+name: intro
+
+# Uvod
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Osnova za korištenje data.table paketa!)
+
+
+
+---
+
+# Zašto uopće data.table?
+
+**tidyverse** je sjajan način za manipulaciju podatcima. Također, može se koristiti za rad sa Big Data podatcima  (SQL databases, Spark, etc.)
+
+--
+
+Zašto je potrebna druga sintaksa za manipulaciju podatcima?
+
+--
+
+Nekoliko je razloga za  **data.table**:
+
+1. Koncizna sintaksa
+2. Nevjerojatna brznia
+3. Memorijska efikasnost
+4. Mnoštvo mogućnosti (+ stabilnost)
+5. Nema zavisnosti (o drugim paketima, instalacijama, etc.)
+
+--
+
+Prije detalja, pogledajte nekoliko primjera...
+
+---
+
+# Zašto uopće data.table? (dalje)
+
+### 1) Konciznost
+
+Ova dva koda postižu istu stvar:
+
+```r
+# library(dplyr) ## Učitano
+# data(starwars, package = "dplyr") ## Uvezi podatke u GEnvir
+starwars %>% 
+  filter(species=="Human") %>% 
+  group_by(homeworld) %>% 
+  summarise(mean_height=mean(height)) 
+```
+vs
+```r
+# library(data.table) ## Učitano
+starwars_dt = as.data.table(starwars)
+starwars_dt[species=="Human", mean(height), by=homeworld]
+```
+
+---
+name:fast
+
+# Zašto uopće data.table? (dalje)
+
+### 2) Brzina
+
+.small90[
+
+```{r collapse_comp}
+collapse_dplyr = function() {
+  storms %>%
+    group_by(name, year, month, day) %>% 
+    summarize(wind = mean(wind), pressure = mean(pressure), category = dplyr::first(category))
+  }
+storms_dt = as.data.table(storms)
+collapse_dt = function() {
+  storms_dt[, .(wind = mean(wind), pressure = mean(pressure), category = first(category)),
+            by = .(name, year, month, day)]
+  }
+microbenchmark(collapse_dplyr(), collapse_dt(), times = 10)
+```
+]
+
+--
+
+.small90[
+**Rezultat:** data.table je 75x brža! 
+]
+
+---
+
+# Zašto uopće data.table? (dalje)
+
+### 3) Efikasnost
+
+Mjerenje i usporedba memorijske efikasnosti [je relativno komplicirano](https://stackoverflow.com/a/61376971). Za detalje [pogledajte](https://jangorecki.gitlab.io/r-talks/2019-06-18_Poznan_why-data.table/why-data.table.pdf) (nakon 12-og slide) za detaljnjiji pregled data.table efikasnosti.
+
+### 4) Mogućnosti i 5) Nezavisnost
+
+Ova dva čimbenika idu zajedno jer su povezani sa stabilnošću koda. Nezavisnost se ondosi na  [na](http://www.tinyverse.org/):
+
+```{r dependencies_dt, eval=FALSE}
+tools::package_dependencies("data.table", recursive = TRUE)[[1]]
+```
+```
+## [1] "methods"
+```
+
+```{r dependencies_dplyr, eval=FALSE}
+tools::package_dependencies("dplyr", recursive = TRUE)[[1]]
+```
+```
+##  [1] "ellipsis"   "assertthat" "glue"       "magrittr"   "methods"    "pkgconfig" 
+##  [7] "R6"         "Rcpp"       "rlang"      "tibble"     "tidyselect" "utils"     
+## [13] "BH"         "plogr"      "tools"      "cli"        "crayon"     "fansi"     
+## [19] "lifecycle"  "pillar"     "vctrs"      "purrr"      "grDevices"  "utf8"      
+## [25] "digest"  
+```
+
+---
+
+# Prije nastavka...
+
+Cilj ovog predavanja *nije* pokazati da je data.table superiorniji pristup od tidyverse. (Niti  vice versa.)
+
+Ljudi imaju različite stavove i to je u redu...
+
+Cilje je prikazati još jedan alat kojim se može manipulirati velikim (i malim) skupovima podataka na efikasan način u programosm jeziku R..
+
+--
+
+
+- Poznavanje oba pristupa će vam povećati efikasnost i napraviti od vas boljeg R korisnika/istraživača/podatkovnog znanstvenika/etc.
+
+--
+
+Aspekt komplementarnosti ćemo obraditi na kraju predavanja. 
+
+---
+
+class: inverse, center, middle
+name: basics
+
+# data.table osnove
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Snalaženje u sintaksi paketa!)
+---
+
+# data.table objekt
+
+Već smo vidjeli da `tidyerse` omogućava specifičnu i unaprijeđenu varijantu `data.frame`-a u formi `tibble` .
+
+--
+
+Jednako vrijedi i za `data.table` . `data.table` zapravo rade samo na objektima koji su prvo pretvoreni u `data.table`.slično kao `tibble`), specijalna interna struktura `data.table` objekta je glavni razlog zašto je paket tako brz. (Više pogledajte [ovdje](https://rdatatable.gitlab.io/data.table/articles/datatable-intro.html#what-is-datatable-1a) i [ovdje](https://twitter.com/matloff/status/1131372631372918784).)
+
+--
+
+Nekoliko je opcija za napravit `data.table`:
+- `fread('mydata.csv')` učitava `CSV` u `R` kao `data.table` (i extremno brzo).<sup>1</sup>
+- `data.table(x = 1:10)` stvara novi `data.table` ni iz čega
+- `as.data.table(df)` pretvara postojeći `data.frame` (dalje: `df`) u `data.table`.
+- `setDT(df)` pretvara postojeći `df` u `data.table` *prema referenci*; i.e. nije potreban (re)assign
+
+
+.footnote[<sup>1</sup> Funkciju `fread()` ćemo detaljnije spominjati u nadolazećim predavanjima.]
+
+---
+
+# Što znači "pretvaranje prema referenci"?
+
+Upravo je to ono što čini data.table tako izvrsnim: modifikacije se, u slučaju gdje je to moguće, izvode *prema referenci*.
+
+--
+
+Što to znači? 
+
+--
+
+Bez da ulazimo u detalje, kratko objašnjenje se odnosi na to da R ima dva načina za izmjenu i pripisivanje objekata.
+1. **Copy-on-modify:** Stvara kopiju podataka. Implicira dodate računalne resurse.<sup>*</sup>
+2. **Modify-in-place:** Ne stvara kopiju nego direktno utječe na memoriju. 
+
+.footnote[<sup>*</sup> Valja spomenuti da je važno  napraviti distinkciju između <i>shallow</i> i <i>deep copies</i>.]
+
+--
+
+data.table "modificira prema referenci" jer modificira objekte na **modify-in-place:** način. Upravo to povećava efikasnost i smanjuje memorisjku zahtjevnost!
+
+--
+
+P.S.Dodatno pogledajte ako vas ovo zanima: (a) [Reference semantics](https://rdatatable.gitlab.io/data.table/articles/datatable-reference-semantics.html) data.table vignette, (b) [Names and Values](https://adv-r.hadley.nz/names-values.html) poglavlja *Advanced R* (Hadley Wickham), (c) Izvrstan i protočan [blog post](https://tysonbarrett.com//jekyll/update/2019/07/12/datatable/).
+
+---
+
+# data.table sintaksa
+
+Sve data.table objekti prihvaćaju jednaku osnovnu sintaksu:
+
+.center[
+.large2[DT[<span style='color: #66C2A5;'>i</span>, <span style='color: #FC8D62;'>j</span>, <span style='color: #8DA0CB;'>by</span>]]
+]
+
+![:col_row <span style='color: #66C2A5;'>Po kojim redovima?</span>, <span style='color: #FC8D62;'>Što učiniti?</span>, <span style='color: #8DA0CB;'>Grupiranje prema...</span>]
+
+--
+
+.center[dplyr "equivalents":]
+![:col_list <span style='color: #66C2A5;'>filter(); slice(); arrange()</span>, <span style='color: #FC8D62;'>select(); mutate()</span>, <span style='color: #8DA0CB;'>group_by()</span>]
+
+--
+
+tidyverse izvršava operacije korok po korak, a data.table izvršava sve u jednom koraku.
+- Na taj je način moguće izvršiti kompleksnu naredbu kao jednu fluidnu misao.
+- Ulančavanje pitem pipe operatora je također moguće.
+
+---
+
+# Brzi primjer
+
+Detalji sljede nakon kratkog data.table primjera. 
+
+Brza paralelna usporedba sa dplyr jer će to motivirati predavanje. Na stawars podatcima postavimo pitanje:
+> Koja je prosječna visina ljudi po spolu?
+
+--
+
+.pull-left[
+### dplyr
+```{r, eval=FALSE}
+data(starwars, package = "dplyr")
+starwars %>%
+  filter(species=="Human") %>%
+  group_by(gender) %>%
+  summarise(mean(height, na.rm=T))
+```
+
+]
+
+.pull-right[
+### data.table
+```{r, eval=FALSE}
+starwars_dt = as.data.table(starwars)
+starwars_dt[
+  species=="Human", 
+  mean(height, na.rm=T), 
+  by = gender]
+```
+]
+
+---
+
+# Brzi primjer
+
+Detalji sljede nakon kratkog data.table primjera. 
+
+Brza paralelna usporedba sa dplyr jer će to motivirati predavanje. Na stawars podatcima postavimo pitanje:
+> Koja je prosječna visina ljudi po spolu?
+.pull-left[
+### dplyr
+```{r, eval=FALSE}
+data(starwars, package = "dplyr")
+starwars %>%
+  filter(species=="Human") %>% #<<
+  group_by(gender) %>%
+  summarise(mean(height, na.rm=T))
+```
+
+]
+
+.pull-right[
+### data.table
+```{r, eval=FALSE}
+starwars_dt = as.data.table(starwars)
+starwars_dt[
+  species=="Human", ## i #<<
+  mean(height, na.rm=T), 
+  by = gender]
+```
+]
+
+---
+
+# Brzi primjer
+
+Detalji sljede nakon kratkog data.table primjera. 
+
+Brza paralelna usporedba sa dplyr jer će to motivirati predavanje. Na stawars podatcima postavimo pitanje:
+> Koja je prosječna visina ljudi po spolu?
+.pull-left[
+### dplyr
+```{r, eval=FALSE}
+data(starwars, package = "dplyr")
+starwars %>%
+  filter(species=="Human") %>% 
+  group_by(gender) %>%
+  summarise(mean(height, na.rm=T)) #<<
+```
+
+]
+
+.pull-right[
+### data.table
+```{r, eval=FALSE}
+starwars_dt = as.data.table(starwars)
+starwars_dt[
+  species=="Human",
+  mean(height, na.rm=T),  ## j #<<
+  by = gender]
+```
+]
+
+---
+
+
+# Brzi primjer
+
+Detalji sljede nakon kratkog data.table primjera. 
+
+Brza paralelna usporedba sa dplyr jer će to motivirati predavanje. Na stawars podatcima postavimo pitanje:
+> Koja je prosječna visina ljudi po spolu?
+.pull-left[
+### dplyr
+```{r, eval=FALSE}
+data(starwars, package = "dplyr")
+starwars %>%
+  filter(species=="Human") %>% 
+  group_by(gender) %>% #<<
+  summarise(mean(height, na.rm=T)) 
+```
+
+]
+
+.pull-right[
+### data.table
+```{r, eval=FALSE}
+starwars_dt = as.data.table(starwars)
+starwars_dt[
+  species=="Human",
+  mean(height, na.rm=T),  
+  by = gender] ## by #<<
+```
+]
+
+---
+
+
+# Brzi primjer
+
+Detalji sljede nakon kratkog data.table primjera. 
+
+Brza paralelna usporedba sa dplyr jer će to motivirati predavanje. Na stawars podatcima postavimo pitanje:
+> Koja je prosječna visina ljudi po spolu?
+.pull-left[
+### dplyr
+```{r sw_dplyr}
+data(starwars, package = "dplyr")
+starwars %>%
+  filter(species=="Human") %>%
+  group_by(gender) %>%
+  summarise(mean(height, na.rm=T))
+```
+
+]
+
+.pull-right[
+### data.table
+```{r sw_dt, cache=FALSE}
+starwars_dt = as.data.table(starwars)
+starwars_dt[
+  species=="Human", 
+  mean(height, na.rm=T), 
+  by = gender]
+```
+]
+
+---
+class: inverse, center, middle
+name: i
+
+# Manipulacija redovima: DT[i, ]
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Smjer prema dolje!)
+---
+
+# Indeksiranje po redovima (filter)
+
+Indeksiranje po redovima je jednostavnu u data.table. ESve radi kao očekivano ako imate iskustvo sa dplyr. 
+
+- `DT[x == "string", ]`: Izdvoji redove x koji su jednaki "string"
+
+- `DT[y > 5, ]`: Izdvoji redove u kojima je varijabla y veća od 5
+
+- `DT[1:10, ]`: Izdvoji prvih 10 redova
+
+--
+
+Mnogostruki uvjeti su također dozvoljeni:
+
+- `DT[x=="string" & y>5, ]`: Izdvoji redove gdje je x  "string" **I** y je veći od 5
+
+--
+
+Primijetite da ne trebamo zareze kada indeksiramo po `i` (i.e. niti `j` niti `by` funkcijske argumente).
+- `DT[x=="string"]` je isto kao `DT[x=="string", ]`
+- `DT[1:10]` je isto kao `DT[1:10, ]`
+- etc.
+
+---
+
+# Indeksiranje po redovima (filter) (*dalje*)
+
+Ovdje je prethodni primjer indeksiranja na starwars data.table podatcima (objektu).
+
+```{r sub_rows1}
+starwars_dt[height>190 & species=='Human']
+```
+
+---
+
+# Posloži po redovima (arrange)
+
+```r
+starwars_dt[order(birth_year)]  ## (privremeno) sortiraj od najmlađeg prema najstarijem
+starwars_dt[order(-birth_year)] ## (privremeno) sortiraj od najstarijeg prema najmlađem
+```
+
+--
+
+data.table također omogućava optimiziranu `setorder()` funkciju uz slaganje *prema referenci* (*by reference*).
+
+--
+
+```{r sw_setorder}
+setorder(starwars_dt, birth_year, na.last = TRUE)
+starwars_dt[1:5, name:birth_year] ## Prikaži samo dio podataka
+```
+
+
+
+
+---
+class: inverse, center, middle
+name: j
+
+# Manipulacija kolonama: DT[, j]
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Smjer desno!)
+---
+
+# j: jedno pravilo za sve
+
+Prisjetimo se nekih dplyr funkcija:
+
+- `select()`
+- `mutate()`
+- `summarise()`
+- `count()`
+
+--
+
+data.table prepoznaje sve pobrojane funkcije... 
+>"*Učini nešto sa ovom varijablom u mojem podatkovnom skupu!*"
+... i omogućava da se sve napravi na jednom mjestu: u `j` slot-u.
+
+--
+Ipak, potrebno je par sintaktičkih hack-ova vezanih uz način kako pripisujemo varijable u podatkovnom skupu.
+- Neki će smatrati ovo odbojnim (ili barem, čudnim) kada se prvi put susretnu sa data.table.
+- Zapravo se ne radi ni o čemu posebno kompleksnom, a za uzvrat daje *puno* moći.
+
+---
+
+# Modifikacija kolona sa :=
+
+Za dodavanje, brisanje, mijenjanje u data.table se koristi **`:=`** operator.
+- Drugi naziv je *walrus* operator.
+
+--
+
+Na primjer,
+
+- `DT[, xsq := x^2]`: Napravi novu kolonu (`xsq`) od postojeće (`x`)
+- `DT[, x := as.character(x)]`: Promijeni postojeću kolonu
+
+--
+
+**Važno:** `:=` je *modifikacija prema referenci*, i.e. "na mjestu". Zbog toga nije potrebno pripisivati promjene novom objektu.
+
+--
+
+Zbog toga promjene na objektu nisu vidljive ukoliko to eksplicitno ne tražimo od R.
+
+```{r mod_col}
+DT = data.table(x = 1:2)
+# DT[, xsq := x^2] ## Promjena na mjestu bez prikaza
+DT[, x_sq := x^2][] ## Dodaj [] za prikaz razultata
+```
+
+---
+
+# Modifikacija kolona sa := (dalje)
+
+
+*Modifikacija prema referenci* ima važne implikacije za manipulaciju podatcima. Razmislite što se događa ako kopiramo data.table i nakon toga meknemo kolonu.
+
+```{r mod_copy1}
+DT_copy = DT
+DT_copy[, x_sq := NULL]
+```
+
+--
+
+Očito, "x_sq" je izbrisan iz `DT_copy` objekta. ...ali što se dogodilo sa originalnim `DT` objektom?
+
+--
+
+```{r mod_copy2}
+DT
+```
+
+--
+Također izbrisano...baš kao što modifikacij prema referenci traži. Kako bismo izbjegli ovakvo "ponašanje", moguće je koristit [`data.table::copy()`](https://rdatatable.gitlab.io/data.table/reference/copy.html) funkciju. Probajte izvšiti sljedeću naredbu:
+
+```{r, highlightSpans = TRUE, eval = FALSE}
+DT[, x_sq := x^2]     
+DT_copy = copy(DT)  
+DT_copy[, x_sq := NULL]
+DT ## x_sq je još uvijek tu!
+```
+```{r mod_copy3, include=FALSE}
+DT[, x_sq := x^2]     
+DT_copy = copy(DT)  
+DT_copy[, x_sq := NULL]
+DT ## x_sq je još uvijek tu
+```
+
+---
+
+# Modifikacija kolona sa := (dalje)
+
+### Pod-pripisivanje prema referenci
+
+Jedna fantastična funkcionalnost `:=` je data.table [sub-assign by reference](https://rdatatable.gitlab.io/data.table/articles/datatable-reference-semantics.html#ref-i-j) functionality. ZA primjer razmotrimo jedan (lažni) skup podataka.
+
+```{r subassign1, cache=FALSE}
+DT2 = data.table(a = -2:2, b = LETTERS[1:5])
+```
+
+--
+
+Zamislite da želimo locirati redove gdje je "a" negativan i zamijeniti pripadajuću "b" ćeliju sa NA. 
+
+--
+
+- U dplyr je potrebno napraviti `...mutate(b = ifelse(a < 0, NA, b))`.
+--
+
+- U data.table, jednstavno specificirajte redove (`i`) i onda pod-pripišite (`j`) direktno.
+
+```{r subassign2, cache=FALSE}
+DT2[a < 0, b := NA][] ## Dodajte [] za prikaz na eranu
+```
+
+
+---
+
+# Modifikacija kolona sa := (dalje)
+
+Dvije su mogućnosti za manipulaciju više kolna odjednom.
+
+1. LHS `:=` RHS forma: `DT[, c("var1", "var2") := .(val1, val2)]`
+
+2. Funkcionalna forma: `DT[, ':=' (var1=val1, var2=val2)]`
+
+--
+
+Osobno preporučam funkcionalnu formu pa ćemo to koristiti dalje. E.g.
+
+```{r mod_cols, cache=FALSE}
+DT[, ':=' (y = 3:4, y_name = c("three", "four"))]
+DT ## Drugi način za print pored []
+```
+
+--
+
+Dinamičko pripisivanje zavisnih kolona u jednom koraku (kao kod dplyr::mutate) ne funkcionira.
+
+```{r mod_cols2, error=TRUE}
+DT[, ':=' (z = 5:6, z_sq = z^2)][]
+```
+
+---
+
+# Dodatak: Ulančavanje data.table operacija
+
+Zadnji primjer je ne poakzuje da nije moguće raditi ulančane operacije sa data.table.
+
+--
+
+Prirodni data.table način je dodavanje sukcesivnih `[]` operatora.
+
+```{r mod_cols3, cache=FALSE}
+DT[, z := 5:6][, z_sq := z^2][] 
+```
+
+--
+
+Ako preferirate **magrittr** pipe operator...dodajte prefiks na `.` na svakom koraku:
+
+```{r mod_cols4, cache=FALSE}
+# library(magrittr) ## Nije potrebno jer je %>% već učitan via dplyr
+DT %>%
+  .[, xyz := x+y+z] %>%
+  .[, xyz_sq := xyz^2] %>%
+  .[] 
+```
+
+---
+
+# Modifikacija kolona sa := (dalje)
+
+Za brisanje kolone u podatkovnom skupu možete koristiti NULL.
+
+```{r mod_cols5, cache=FALSE}
+DT[, y_name := NULL]
+DT
+```
+
+
+---
+
+# Indeksiranje po kolonama (select)
+
+Moguće je koristiti `j` slot za indeksiranje podataka po kolonama. Pogledajmo starwars podatke za ove primjere...
+
+--
+
+Indeksiraj prema poziciji kolone:
+```{r sub_cols1}
+starwars_dt[1:2, c(1:3, 10)]
+```
+
+--
+...ili po nazivu:
+
+```{r sub_cols2}
+# starwars_dt[, c("name", "height", "mass", "homeworld")] ## također radi
+# starwars_dt[, list(name, height, mass, homeworld)] ## i ovo isto
+starwars_dt[1:2, .(name, height, mass, homeworld)]
+```
+
+---
+
+# Dodatak: Zašto pak .()?
+
+Već smo vidjeli `.()`na par mjestas, e.g trethodni i [ovaj](#fast) slide ako se sijećate.
+- `.()` je samo data.table kratica za `list()`. 
+
+Obilato ćemo koristiti `.()` kada krenemo sa indeksiranjem i/ili grupiranjem više varijabli od jednom.
+
+Možete si objasniti da su to sintaktičke osobine data.table ali zapravo je riječ o pristupu koristiti ovo izmjenično u data.table:
+- `.(var1, var2, ...)`
+- `list(var1, var2, ...)`
+- `c("var1", "var2", ...)`
+
+--
+
+Meni je `.()` sintaksa izvrsna &mdash; manje tipkanja! &mdash; ali svatko kako voli!
+
+--
+
+Vratimo se indeksiranju kolona...
+
+---
+
+# Indeksiranje po kolonama (select)
+
+Kolone također možete obrisati negacijom. Isprobajte sljedeći kod:
+
+```{r, eval = FALSE}
+starwars_dt[, !c("name", "height")]
+```
+
+--
+
+### Preimenovanje kolona
+
+Preimenovanje kolona/e prema referenci. Isprobajte sljedeći kod sami:
+
+```{r, eval=FALSE}
+setnames(starwars_dt, old = c("name", "homeworld"), new = c"(alias", "crib"))[]
+## Promijeni nazad, možda će varijable "name" ili "homeworld" trebati za poslje
+setnames(starwars_dt, old = c("alias", "crib"), new = c("name", "homeworld"))
+```
+
+--
+
+`setnames()` pruža neke prednosti  u performansama, nekada želite dinamički preimenovati kolone pri indeksiranju. Primjerice:
+
+```{r rename1}
+starwars_dt[1:2, .(alias = name, crib = homeworld)]
+```
+
+---
+
+# Indeksiranje po kolonama (select)
+
+Također valja napomenuti da dplyr gramatika radi i na data.table objektima. 
+
+Probajte izvšiti sljedeći kod. (Dobiti ćete upozorenje o gubitku efikasnosti.)
+
+```{r rename2, eval=FALSE}
+starwars_dt[1:5, ] %>% 
+  select(crib = homeworld, everything())
+```
+
+--
+
+Vratiti ćemo se još jednom na dplyr+data.table funkcionalnost na kraju predavanja....
+
+---
+
+# Agregacija
+
+Moguće su i operacije agregiranja na `j`.
+
+```{r simple_agg1, cache=FALSE}
+starwars_dt[, mean(height, na.rm=T)]
+```
+
+--
+
+Sjetite se da ne zadržavamo ništa ako ne pripišemo rezultat novom objektu. Za dodavanje nove kolone sa rezultatima originalnom podatkovnom skupu koristite `:=`.
+
+```{r simple_agg2,cache=FALSE}
+starwars_dt[, mean_height := mean(height, na.rm=T)] %>% ## Dodaj prosječnu visinu kao kolonu
+  .[1:5, .(name, height, mean_height)] ## Zadrži sve
+```
+
+---
+# Agregacija (dalje)
+
+
+data.table također omogućava [special convenience symbols](https://rdatatable.gitlab.io/data.table/reference/special-symbols.html) za uobičajne agregacijske operacije na `j`.
+
+Na primjer, moguće je izbrojati opervacije sa `.N`.
+
+```{r starwars_N, cache=FALSE}
+starwars_dt[, .N]
+```
+
+--
+
+Naravno,to je poprilično stiliziran primjer jer ćemo dobiti samo ukupni broj redova u podatcima. Kao i druge agregacijske funkcije `.N` je puno interesantniji kada je primjenjen na grupirane podatke.
+- Ovo je uvod u narednu temu...
+
+
+
+
+---
+name: by
+class: inverse, center, middle
+
+# Grupiranje: DT[, , by]
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+(Jako korisno!)
+---
+
+# by
+
+data.table `by` argument funkcinira slično `dplyr::group_by` ekvivalentu. Isprobajte sljedeće naredbe u vlastitoj R konzoli:
+
+- `starwars_dt[, mean(height, na.rm=T), by = species]`: Kolapsiraj po varijabli
+- `starwars_dt[, .(species_height = mean(height, na.rm=T)), by = species]`: Kao gore ali po nazivu summary varijable
+- `starwars_dt[, mean(mass, na.rm=T), by = height>190]`: Uvjeti također rade.
+- `starwars_dt[, species_n := .N, by = species][]`: Dodaj agregiranu kolonu podatcima (ovdje: broj opservacija po grupama)
+
+--
+
+Za agregaciju po više varijabli možete koristit `.()` sintaksu.
+
+```{r by1, cache=FALSE}
+starwars_dt[, .(mean_height = mean(height, na.rm=T)), by = .(species, homeworld)] %>%
+  head(4) ## stane na slide
+```
+
+---
+
+# Efikasno indeksiranje sa .SD
+
+Vidjeli smo kao grupirati više varijabli. Što ako želimo *summarise* više varijabli, nevezano uz to kako grupiramo?
+
+Jedno rješenje je ponovno`.()` Raspišite sve, e.g.
+
+```{r, eval=FALSE}
+## isprobajte sami
+starwars_dt[, 
+            .(mean(height, na.rm=T), mean(mass, na.rm=T), mean(birth_year, na.rm=T)), 
+            by = species]
+```
+--
+
+Ovo može postati zamorno. zamislite još varijabli... DDa li stvarno moramo pisati `mean(..., na.rm=T)` za svaku varijablu?
+
+--
+
+Odgovor je naravno, "ne". data.table ima `.SD` simbol za **s**ubsetting **d**ata. .SD može [i mnogo više](https://rdatatable.gitlab.io/data.table/articles/datatable-sd-usage.html) nego što ćemo prikazati, ali ovako bismo to primijenili u trenutnom slučaju...
+
+.right[**See next slide*Vidi sljedeći slide.*]
+
+---
+
+# Efikasno indeksiranje sa .SD (nastavak)
+
+```{r sd_cols1}
+starwars_dt[, 
+            lapply(.SD, mean, na.rm=T),
+            .SDcols = c("height", "mass", "birth_year"),
+            by = species] %>% 
+  head(2) ## Zadrži sve na jednom slide
+```
+
+---
+count: false
+
+# Efikasno indeksiranje sa .SD (nastavak)
+
+```{r sd_cols2}
+starwars_dt[, 
+            lapply(.SD, mean, na.rm=T), #<<
+            .SDcols = c("height", "mass", "birth_year"),
+            by = species] %>%
+  head(2) ## adrži sve na jednom slide
+```
+
+Prvo, specificirajmo što želimo *učiniti* na dijelu podataka (i.e. `.SD`). U ovom slučaju želimo prosjek za svaku varijablu, što postižemo sa base R funkcijom `lapply()`.<sup>1</sup>
+
+.footnote[
+<sup>1</sup> Riječ je o iteracijskoj funkciji. Dio R koji se bavi radom sa funkcijama.
+]
+
+---
+count: false
+
+# Efikasno indeksiranje sa .SD (nastavak)
+
+```{r sd_cols3}
+starwars_dt[, 
+            lapply(.SD, mean, na.rm=T), 
+            .SDcols = c("height", "mass", "birth_year"), #<<
+            by = species] %>%
+  head(2) ## Zadrži sve na slide
+```
+
+Prvo, specificirajmo što želimo *učiniti* na dijelu podataka (i.e. `.SD`). U ovom slučaju želimo prosjek za svaku varijablu, što postižemo sa base R funkcijom `lapply()`.<sup>1</sup>
+
+Potom specificiramo *koje kolone* želimo indeksirati sa `.SDcols` argumentom.
+
+.footnote[
+<sup>1</sup> Riječ je o iteracijskoj funkciji. Dio R koji se bavi radom sa funkcijama.
+]
+
+---
+count: false
+
+# Efficient subsetting with .SD (cont.)
+
+```{r sd_cols4}
+starwars_dt[, 
+            lapply(.SD, mean, na.rm=T), 
+            .SDcols = c("height", "mass", "birth_year"), 
+            by = species] %>%
+  head(2) ## Just keep everything on the slide
+```
+
+Prvo, specificirajmo što želimo *učiniti* na dijelu podataka (i.e. `.SD`). U ovom slučaju želimo prosjek za svaku varijablu, što postižemo sa base R funkcijom `lapply()`.<sup>1</sup>
+
+Potom specificiramo *koje kolone* želimo indeksirati sa `.SDcols` argumentom.
+
+P.S. `.()` ne funkcionira sa `.SDcols`. Ipak,moguće je korisiti navodnike, e.g. `.SDcols = height:mass`. [Vidi za detalje](https://rdatatable.gitlab.io/data.table/articles/datatable-intro.html#how-can-we-specify-just-the-columns-we-would-like-to-compute-the-mean-on).
+.footnote[
+<sup>1</sup> Riječ je o iteracijskoj funkciji. Dio R koji se bavi radom sa funkcijama.
+]
+---
+
+# Efficient subsetting with .SD (cont.)
+
+Dodatak: `.SDcols` je potrebno specificirati samo ako želimo indeksirati dio podataka. (Ovakve naredbe su također dozvoljene `.SDcols = is.numeric` ili `.SDcols = patterns('abc')`.)
+
+Ako želimo istu funkciju primijeniti na *sve* varijable u podatkovnom skupu, tada će `.SD` biti dovoljno. 
+
+--
+
+Za brzi primjer se prisjetite DT objekta koji ima samo numeričke varijable.
+
+```{r, cache=FALSE}
+DT
+```
+
+--
+
+Projske za svaku varijablu možemo dobiti na sljedeći način.
+
+```{r, cache=FALSE}
+DT[, lapply(.SD, mean)]
+```
+
+---
+
+# keyby
+
+Zadnja stvar koju treba spomenuti vezano uz `by` je srodna funkcija: `keyby`.
+
+`keyby` argument funkcionira isto kao `by` &mdash; također se može koristit i drop-in zamjena &mdash; osim što poreda opservacije i stvara **key**.
+- Postavljanje ključa za data.table će omogućiti razne (i često zapanjujuće) funkcionalnosti i poboljšanje performansi.<sup>1</sup>
+- Ključevi su toliko važni (i korisni) da će ćemo ih obraditi detaljnije u sljedećem dijelu...
+
+.footnote[<sup>1</sup> Nećete vidjeti trenutno poboljšanje performansi sa `keyby`, ali naknadne operacije će "profitirati". (Trenutno poboljšanje je ipak mogue ako unaprijed postavite ključ, ali to ćemo objasniti na sljedećem slide-u...)]
+
+
+
+---
+name: keys
+class: inverse, center, middle
+
+# Keys
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
+
+---
+
+# What are keys?
+
+Keys are a way of ordering the data that allows for *extremely* fast subsetting.
+
+The data.table [vignette](https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html) describes them as "supercharged rownames". I know that might sound a bit abstract, but here's the idea in a nutshell...
+
+--
+
+Imagine that we want to filter a dataset based on a particular value (e.g. find all the human characters in our starwars dataset).
+- Normally, we'd have to search through the whole dataset to identify matching cases.
+- But, if we've set an appropriate key, then the data are already ordered in such a way that we (i.e. our computer) only has to search through a much smaller subset.
+
+--
+
+**Analogy:** Think of the way a filing cabinet might divide items by alphabetical order: Files starting "ABC" in the top drawer, "DEF" in the second drawer, etc. To find *Alice's* file, you'd only have to search the top draw. For *Fred*, the second draw, and so on.
+
+--
+
+Not only is this much quicker, but the same idea also carries over to *all other* forms of data manipulation that rely on subsetting (aggregation by group, joins, etc.)
+
+--
+
+P.S. We'll get there later in the course, but keys are also the secret sauce in databases.
+
+---
+
+# How do I set a key?
+
+You can set a key when you first create a data.table. E.g.
+- `DT = data.table(x = 1:10, y = LETTERS[1:10], key = "x")`
+- `DT = as.data.table(DF, key = "x")`
+- `setDT(DF, key = "x")`
+
+--
+
+Or, you can set keys on an existing data.table with the `setkey()` function.
+- `setkey(DT, x)`: Note that the key doesn't have to be quoted this time
+
+--
+
+**Important:** Since keys just describe a particular ordering of the data, you can set a key on *multiple* columns. (More [here](https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html#key-properties).) E.g.
+- `DT = as.data.table(DF, key = c("x", "y"))`
+- `setkey(DT, x, y)`: Again, no quotes needed
+
+--
+
+</br>
+P.S. Use the `key()` function to see what keys are currently set for your data.table. You can only ever have one key per table at a time, but it's very easy to change them using one of the above commands.
+---
+
+# Example
+
+Recall the [speed benchmark](#fast) that we saw at the very beginning of the lecture: data.table ended up being 75x faster than dplyr for a fairly standard summarising task.
+
+--
+
+Let's redo the benchmark, but this time include a version where we pre-assign a key. For optimal performance, the key should match the same variables that we're grouping/subsetting on. 
+- Again, a key can be set on multiple variables, although the lead grouping variable (in the below case: "name") is the most important.
+
+--
+
+.small90[
+```{r, eval=FALSE}
+## First create a keyed version of the storms data.table.
+## Note that key variables match the 'by' grouping variables below.
+storms_dt_key = as.data.table(storms, key = c("name", "year", "month", "day"))
+## Collapse function for this keyed data.table. Everything else stays the same.
+collapse_dt_key = function() {
+  storms_dt_key[, .(wind = mean(wind), pressure = mean(pressure), category = first(category)), 
+                by = .(name, year, month, day)]
+}
+## Run the benchmark on all three functions.
+microbenchmark(collapse_dplyr(), collapse_dt(), collapse_dt_key(), times = 10)
+```
+]
+
+.right[*See next slide for results*]
+---
+
+# Example (cont.)
+
+```{r collapse_comp_key, dependson=collapse_dt, dependson=collapse_dplyr, echo=FALSE, message=FALSE}
+storms_dt_key = as.data.table(storms, key = c("name", "year", "month", "day"))
+collapse_dt_key = function() {
+  storms_dt_key[, .(wind = mean(wind), pressure = mean(pressure), category = first(category)),
+            by = .(name, year, month, day)]
+}
+mb_key = microbenchmark::microbenchmark(collapse_dplyr(), collapse_dt(), collapse_dt_key(), times = 10)
+mb_key_dt = as.data.table(mb_key) ## For easy calculation in text
+mb_key ## print result
+```
+
+--
+
+The keyed data.table version is now **`r round(mb_key_dt[expr=="collapse_dplyr()", median(time)]/mb_key_dt[expr=="collapse_dt_key()", median(time)])`** (!!!) faster than dplyr.
+--
+
+- That thing you feel... is your face melting.
+
+--
+
+It's not just this toy example. In working with real-life data, my experience is that setting keys almost always leads to huge speed-ups... and those gains tend to scale as the datasets increase in size.
+
+--
+
+**Bottom line:** data.table is already plenty fast. But use keys if you're really serious about performance.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
