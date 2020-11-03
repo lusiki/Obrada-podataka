@@ -101,7 +101,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="">Predavanje 05: Manipulacija i prilagodba podataka</a> + <a href=""> Dodatak predavanju: data.table</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/05_MANIPULACIJA_tidy.html">Predavanje 05: Manipulacija i prilagodba podataka</a> + <a href=""> Dodatak predavanju: data.table</a>
 <ul>
 <li> Set-up</li>
 <li> tidyverse osnove</li>
