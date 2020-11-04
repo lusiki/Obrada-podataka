@@ -107,6 +107,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <li> tidyverse osnove</li>
 <li> Manipulacija podatcima - dplyr</li>
 <li> Manipulacija podatcima - tidyr</li>
+<li> + Dodatak predavanju: data.table</li>
 <ul>
 
 </div>
