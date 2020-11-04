@@ -7,6 +7,7 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="libs\cols.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -294,9 +295,10 @@ P.S.Dodatno pogledajte ako vas ovo zanima: (a) [Reference semantics](https://rda
 
 ---
 
+
 # data.table sintaksa
 
-Sve data.table objekti prihvaćaju jednaku osnovnu sintaksu:
+Svi data.table objekti imaju istu osnovnu sintaksu:
 
 .center[
 .large2[DT[&lt;span style='color: #66C2A5;'&gt;i&lt;/span&gt;, &lt;span style='color: #FC8D62;'&gt;j&lt;/span&gt;, &lt;span style='color: #8DA0CB;'&gt;by&lt;/span&gt;]]
@@ -312,7 +314,7 @@ Sve data.table objekti prihvaćaju jednaku osnovnu sintaksu:
 --
 
 tidyverse izvršava operacije korok po korak, a data.table izvršava sve u jednom koraku.
-- Na taj je način moguće izvršiti kompleksnu naredbu kao jednu fluidnu misao.
+- Na taj je nacin moguće izvršiti kompleksnu naredbu kao jednu fluidnu misao.
 - Ulančavanje pitem pipe operatora je također moguće.
 
 ---
@@ -1152,7 +1154,7 @@ Potom specificiramo *koje kolone* želimo indeksirati sa `.SDcols` argumentom.
 ---
 count: false
 
-# Efficient subsetting with .SD (cont.)
+# Efikasno indeksiranje sa .SD (nastavak)
 
 
 ```r
@@ -1179,7 +1181,7 @@ P.S. `.()` ne funkcionira sa `.SDcols`. Ipak,moguće je korisiti navodnike, e.g.
 ]
 ---
 
-# Efficient subsetting with .SD (cont.)
+# Efikasno indeksiranje sa .SD (nastavak)
 
 Dodatak: `.SDcols` je potrebno specificirati samo ako želimo indeksirati dio podataka. (Ovakve naredbe su također dozvoljene `.SDcols = is.numeric` ili `.SDcols = patterns('abc')`.)
 
@@ -1202,7 +1204,7 @@ DT
 
 --
 
-Projske za svaku varijablu možemo dobiti na sljedeći način.
+Prosjeke za svaku varijablu možemo dobiti na sljedeći način.
 
 
 ```r
@@ -1237,95 +1239,95 @@ class: inverse, center, middle
 
 ---
 
-# What are keys?
+# Što su *keyes*?
 
-Keys are a way of ordering the data that allows for *extremely* fast subsetting.
+*Keys* predstavljaju način aranžiranja podataka koji omogućava *ekstremno* brzo indeksiranje.
 
-The data.table [vignette](https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html) describes them as "supercharged rownames". I know that might sound a bit abstract, but here's the idea in a nutshell...
-
---
-
-Imagine that we want to filter a dataset based on a particular value (e.g. find all the human characters in our starwars dataset).
-- Normally, we'd have to search through the whole dataset to identify matching cases.
-- But, if we've set an appropriate key, then the data are already ordered in such a way that we (i.e. our computer) only has to search through a much smaller subset.
+data.table [vignette](https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html) ih opisuje kao "supercharged rownames". Iako to zvuči pomalo apstraktno, osnovna ideja je sljedeća...
 
 --
 
-**Analogy:** Think of the way a filing cabinet might divide items by alphabetical order: Files starting "ABC" in the top drawer, "DEF" in the second drawer, etc. To find *Alice's* file, you'd only have to search the top draw. For *Fred*, the second draw, and so on.
+Zamislite da želimo filtrirati podatkovni skup po nekoj vrijednosti(e.g. pronaći sve ljudske karakteristike u  starwars podatcima).
+- STandardni način bi bio pretraga po opservacijama dok ne nađemo sve koji odgovaraju kriteriju.
+- No ukoliko zadamo ključ, podatci su već posloženi na način da računalo mora pretražiti mnogo manji dio podataka.
 
 --
 
-Not only is this much quicker, but the same idea also carries over to *all other* forms of data manipulation that rely on subsetting (aggregation by group, joins, etc.)
+**Analogija:** Razmislite o načinu ispunjavanja ormara dokumentima: Dokumenti koji počinju sa "ABC" idu u gornju policu, "DEF" u nižu policu, etc. Da bismo našli *Anin* dokument, potrebno je pretražiti samo gornju policu. Za *Franka* samo drugu, i tako dalje.
 
 --
 
-P.S. We'll get there later in the course, but keys are also the secret sauce in databases.
+Ne samo da je ovo puno brži pristup, nego se i ista ideja odnosi na *sve ostale* varijante manipulacije podataka koje uključuju indeksiranje (agregacija po grupama, spajanje, etc.)
+
+--
+
+P.S. doći ćemo do toga kasnije ali *keyes* su tajni sastojak i u bazama podataka.
 
 ---
 
-# How do I set a key?
+# Kako postraviti *key*?
 
-You can set a key when you first create a data.table. E.g.
+*Key* je moguće postaviti kada stvaramo data.table objekt E.g.
 - `DT = data.table(x = 1:10, y = LETTERS[1:10], key = "x")`
 - `DT = as.data.table(DF, key = "x")`
 - `setDT(DF, key = "x")`
 
 --
 
-Or, you can set keys on an existing data.table with the `setkey()` function.
-- `setkey(DT, x)`: Note that the key doesn't have to be quoted this time
+...ili, *key* je moguće postaviti na već postojeći data.table objekt sa `setkey()`funkcijom.
+- `setkey(DT, x)`: Primijetite da *key* ne mora biti u navodnicima u ovom slučaju.
 
 --
 
-**Important:** Since keys just describe a particular ordering of the data, you can set a key on *multiple* columns. (More [here](https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html#key-properties).) E.g.
+**Važno:** Pošto *keys* samo opisuju određeni način aranžiranja podataka, moguće ih je postaviti na  *više* kolona (Više o tome pogledajte [ovdje](https://rdatatable.gitlab.io/data.table/articles/datatable-keys-fast-subset.html#key-properties).) E.g.
 - `DT = as.data.table(DF, key = c("x", "y"))`
-- `setkey(DT, x, y)`: Again, no quotes needed
+- `setkey(DT, x, y)`: Još jednom, nisu potrebni navodnici
 
 --
 
 &lt;/br&gt;
-P.S. Use the `key()` function to see what keys are currently set for your data.table. You can only ever have one key per table at a time, but it's very easy to change them using one of the above commands.
+P.S. Koristite `key()` funkciju koji ključevi su postavljeni za vašu data.table. Moguće je imati samo jedan ključ za jedan data.table objekt u jednom trenutku. Ključeve je vrlo jednostavno promijeniti na maločas opisan način.
 ---
 
-# Example
+# Primjer
 
-Recall the [speed benchmark](#fast) that we saw at the very beginning of the lecture: data.table ended up being 75x faster than dplyr for a fairly standard summarising task.
+Sjetite se [benchmark brzine](#fast) sa početka predavanja: data.table je otprilike 75x brža od dplyr u uobičajenim slučajevima.
 
 --
 
-Let's redo the benchmark, but this time include a version where we pre-assign a key. For optimal performance, the key should match the same variables that we're grouping/subsetting on. 
-- Again, a key can be set on multiple variables, although the lead grouping variable (in the below case: "name") is the most important.
+Provjerimo ovaj benchmark, ali ovaj put sa pred-pripisanim *key*-em. Za optimalne performanse, ključ bi trebao odgovarati varijablama na kojima radimo grupiranje/indeksiranje. 
+- Još jednom se podsjetimo, *key* može biti postavljen za više varijabli, iako je glavna grupacijska varijabla (u donjem slučaju: "name") najvažnija.
 
 --
 
 .small90[
 
 ```r
-## First create a keyed version of the storms data.table.
-## Note that key variables match the 'by' grouping variables below.
+## Stvori storms data.table objekt koji ima postavljene ključeve.
+## Primijetite da su podatci grupirani sa 'by' na dolje navedenim varijablama.
 storms_dt_key = as.data.table(storms, key = c("name", "year", "month", "day"))
-## Collapse function for this keyed data.table. Everything else stays the same.
+## Kolapsiraj funkciju za ovaj (keyed) data.table. Sve ostalo je isto.
 collapse_dt_key = function() {
   storms_dt_key[, .(wind = mean(wind), pressure = mean(pressure), category = first(category)), 
                 by = .(name, year, month, day)]
 }
-## Run the benchmark on all three functions.
+## Izvrši benchmark.
 microbenchmark(collapse_dplyr(), collapse_dt(), collapse_dt_key(), times = 10)
 ```
 ]
 
-.right[*See next slide for results*]
+.right[*Rezultati na sljedećem slide-u*]
 ---
 
-# Example (cont.)
+# Primjer (nastavak)
 
 
 ```
 ## Unit: milliseconds
 ##               expr      min       lq      mean    median       uq      max
-##   collapse_dplyr() 118.0601 118.8709 126.01164 123.63910 125.3982 154.1213
-##      collapse_dt()   2.5544   2.7035   3.73972   3.18630   4.2228   7.7561
-##  collapse_dt_key()   1.4000   1.5337   2.26978   1.80365   2.0338   6.6836
+##   collapse_dplyr() 114.1986 118.7084 126.35483 120.81490 127.3391 168.0286
+##      collapse_dt()   2.3566   2.4222   3.63297   3.22265   4.2166   7.4705
+##  collapse_dt_key()   1.5008   1.6584   2.38242   1.96500   2.0896   6.7864
 ##  neval
 ##     10
 ##     10
@@ -1334,50 +1336,484 @@ microbenchmark(collapse_dplyr(), collapse_dt(), collapse_dt_key(), times = 10)
 
 --
 
-The keyed data.table version is now **69** (!!!) faster than dplyr.
+data.table verzija sa ključem je sada **61** (!!!) brža nego dplyr.
 --
 
-- That thing you feel... is your face melting.
-
---
-
-It's not just this toy example. In working with real-life data, my experience is that setting keys almost always leads to huge speed-ups... and those gains tend to scale as the datasets increase in size.
+- To je to... jako brzo!.
 
 --
 
-**Bottom line:** data.table is already plenty fast. But use keys if you're really serious about performance.
+Ovo nije samo obični primjer. U praktičnom radu sa podatcima, korištenje *key*-eva skoro uvijek doprinosi brzini...a tu su na djelu i rastući prinosi na opseg...kako raste veličina podataka.
 
----
+--
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+**Zaključak:** data.table je super brza. Korištenje ključeva je izvanredno brzo.
 
 
 ---
+name: merge
+class: inverse, center, middle
+
+# Spajanje podataka
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+
+---
+
+# Operacije (aka join) spajanja
+
+data.table nudi dva načina za spajanje pdataka.
+- `DT1[DT2, on = "id"]`
+- `merge(DT1, DT2, by = "id")`
+
+--
+
+Prporučam drugi način zbog dodane funkcionalnosti (vidi `?merge.data.table`), ali neka svatko odluči za sebe.&lt;sup&gt;1&lt;/sup&gt;
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt; Za izvrstan pregled operacija spajanja (left, right, full, anti, etc.) koristeći ove dvije metode, a također i dplyr ekvivalente, pogledajte  [ovdje](https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#joinbind-data-sets).]
+
+--
+
+Prisjetimo se spajanja podataka iz prethodnog predavanja gdje smo obradili  [dplyr](hhttps://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/05_MANIPULACIJA_tidy.html#54). Ovdje koristimo **nycflights13** paket.
+
+
+```r
+# library(nycflights13) ## Učitano
+flights_dt = as.data.table(flights) 
+planes_dt = as.data.table(planes)
+```
+
+---
+
+# Left join primjer 
+
+Ovdje je usporedba sa dplyr ekvivalentomk. Izvršite u konzoli za provjeru. (Redosljed redova se može razlikovati!)
+
+.pull-left[
+**dplyr**
+
+```r
+left_join(
+  flights, 
+  planes, 
+  by = "tailnum"
+  )
+```
+]
+
+.pull-right[
+**data.table**
+
+```r
+merge(
+  flights_dt, 
+  planes_dt, 
+  all.x = TRUE, ## makni za inner join
+  by = "tailnum")
+```
+]
+
+--
+
+Ako izvršite ove naredbe, vidjeti ćete da se konflikti oko naziva kolona "year" rješavaju stvaranjem "year.x" i "year.y" varijanti. U dplyr smo ovo izbjegli korištenjem `rename()` funkcije. kako možemo izbjeći isto u  data.table? 
+
+--
+&lt;b&gt;Mogući odgovor:&lt;/b&gt; Koristi `setnames()`.
+
+
+```r
+merge(
+* setnames(flights_dt, old = "year", new = "year_built"),
+  planes_dt, 
+  all.x = TRUE, 
+  by = "tailnum")
+```
+
+---
+
+# Korištenje ključeva za izvanredno brzo spajanje
+
+valja još dodati da [ključevi](#keys) jako povećavaju brzinu kod spajanje data.table objekata. Pogledajmo slučaj sa inner join.
+
+
+```r
+merge_dt = function() merge(flights_dt, planes_dt, by = "tailnum")
+flights_dt_key = as.data.table(flights, key = "tailnum")
+planes_dt_key = as.data.table(planes, key = "tailnum")
+merge_dt_key = function() merge(flights_dt_key, planes_dt_key, by = "tailnum")
+microbenchmark(merge_dt(), merge_dt_key(), times = 10)
+```
+
+```
+## Unit: milliseconds
+##            expr     min      lq      mean   median       uq      max neval
+##      merge_dt() 64.0946 72.5997 100.91993 78.67835 140.3384 149.5627    10
+##  merge_dt_key() 34.0703 35.0698  50.29729 43.48270  49.4745 125.6161    10
+```
+
+--
+
+Rezultat he 2x veća brzina u ovom jednostavnom slučaju. Za velike skupove podataka i komplicirana spajanja, korištenje ključeva uistinu čini razliku. (Ista stvar vrijedi i za dplyr. Pogledajte [ovdje](https://tysonbarrett.com//jekyll/update/2019/10/11/speed_of_joins/).) 
+
+---
+name: reshape
+class: inverse, center, middle
+
+# Preoblikovanje podataka Reshaping data
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(*eng.Reshaping data*)
+---
+
+# Opcije za preoblikovanje sa data.table
+
+U tidyverse predavanju smo vidjeli kako koristiti tidyr::pivot* funkcije.
+
+data.table ima spacifične funkcije za fleksibilno preoblikovanje podataka:
+- `melt()`: prebaci iz wide u long 
+- `dcast()`: prebaci iz long u wide 
+
+--
+
+Ovdje je korisno spomenuti i [**tidyfast**](https://tysonbarrett.com/tidyfast/index.html) paket od Tyson Barrett-a, koji implementira data.table verzije tidyr::pivot* funkcija (i još neke druge stvari).
+- `tidyfast::dt_pivot_longer()`: wide u long
+- `tidyfast::dt_pivot_wider()`: long u wide
+
+--
+
+Pogledajet obje opcije na (*falšanim*) "stocks" podatcima: 
+
+
+```r
+stocks = data.table(time = as.Date('2009-01-01') + 0:1,
+                    X = rnorm(2, 0, 1),
+                    Y = rnorm(2, 0, 2),
+                    Z = rnorm(2, 0, 4))
+```
+
+---
+
+# Preoblikovanje od wide u long
+
+Naši podatci su trenutno u wide formatu.
+
+```r
+stocks
+```
+
+```
+##          time          X          Y          Z
+## 1: 2009-01-01 -0.9023656  0.9551291 -0.9163725
+## 2: 2009-01-02  0.5213462 -4.3692013 -0.5253797
+```
+
+Za prebacivanje u long format, možete koristiti sljedeće naredbe:
+
+.pull-left[.small90[
+
+```r
+# Vidi ?melt.data.table za mogućnosti
+melt(stocks, id.vars ="time")
+```
+
+```
+##          time variable      value
+## 1: 2009-01-01        X -0.9023656
+## 2: 2009-01-02        X  0.5213462
+## 3: 2009-01-01        Y  0.9551291
+## 4: 2009-01-02        Y -4.3692013
+## 5: 2009-01-01        Z -0.9163725
+## 6: 2009-01-02        Z -0.5253797
+```
+]]
+
+.pull-right[.small90[
+
+```r
+stocks %&gt;% 
+  dt_pivot_longer(X:Z, names_to="stock", values_to="price")
+```
+
+```
+##          time stock      price
+## 1: 2009-01-01     X -0.9023656
+## 2: 2009-01-02     X  0.5213462
+## 3: 2009-01-01     Y  0.9551291
+## 4: 2009-01-02     Y -4.3692013
+## 5: 2009-01-01     Z -0.9163725
+## 6: 2009-01-02     Z -0.5253797
+```
+]]
+
+---
+
+# Problikovanje od long u wide
+
+Spremimo *long-format stocks data.table*. Pogledajte kako `melt()` pristup daje neke dodatne opcije za preimenovanje varijabli:
+
+
+```r
+stocks_long = melt(stocks, id.vars ="time", 
+                   variable.name = "stock", value.name = "price")
+stocks_long
+```
+
+```
+##          time stock      price
+## 1: 2009-01-01     X -0.9023656
+## 2: 2009-01-02     X  0.5213462
+## 3: 2009-01-01     Y  0.9551291
+## 4: 2009-01-02     Y -4.3692013
+## 5: 2009-01-01     Z -0.9163725
+## 6: 2009-01-02     Z -0.5253797
+```
+
+--
+
+.pull-left[.small90[
+
+```r
+dcast(stocks_long, 
+      time ~ stock, 
+      value.var = "price")
+```
+
+```
+##          time          X          Y          Z
+## 1: 2009-01-01 -0.9023656  0.9551291 -0.9163725
+## 2: 2009-01-02  0.5213462 -4.3692013 -0.5253797
+```
+]]
+
+.pull-right[.small90[
+
+```r
+stocks_long %&gt;% 
+  dt_pivot_wider(names_from=stock, 
+                 values_from=price)
+```
+
+```
+##          time          X          Y          Z
+## 1: 2009-01-01 -0.9023656  0.9551291 -0.9163725
+## 2: 2009-01-02  0.5213462 -4.3692013 -0.5253797
+```
+]]
+
+---
+name: tidyverse
+class: inverse, center, middle
+
+# data.table + tidyverse kombinacije
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Konvergencijski pristup!)
+---
+
+#Izaberite najbolji pristup za svoje potrebe
+
+Što se tiče radad sa podatcima u R, uistinu postoji obilje izbora. 
+
+Postoje dva sjajna pristupa:
+- **tidyverse** (esp. **dplyr** i **tidyr**)
+- **data.table**
+
+
+U prethodna dva predavanja smo istražili glavne karakteristike ovih pristupa. Korisnici će najčešće preferirati jedan ili drugi.
+- Netko voli izražajnost i modularnost tidyverse pristupa.
+- Drugi vole jednostavnost i moć data.table pristupa.
+
+--
+
+...baš kao što smo spomenuli u prethodnom dijelu predavanja: najbolje je koristiti oba ekosustava!
+
+Naredni slide-ovi daju nekoliko savjeta kako kombinirati data.table i tidyverse na optimalan način.
+
+---
+
+# Odaberi i izaberi
+
+Prvi način je očit: tidyverse se sastoji od mnoštva paketa. Iako možda preferirate data.table umjesto dplyr+tidyr za manipulaciju podatcima, to ne znači da ne možete koristiti funkcionalnosti iz drugih tidyverse paketa.
+
+npr. gotovo svaki HC data.table korisnik je i HC **ggplot2** korisnik također.
+
+.pull-left[
+.small75[
+
+```r
+## library(ggplot2) # učitano
+storms_dt[, .(wind = mean(wind), 
+                  pressure = mean(pressure), 
+                  category = first(category)), 
+                by = .(name, year, month, day)] %&gt;%
+  ggplot(aes(x = pressure, y = wind, col=category)) +
+  geom_point(alpha = 0.3) + 
+  theme_minimal()
+```
+]]
+.pull-right[
+&lt;img src="05_MANIPULACIJA_dt_files/figure-html/storms_ggplot-1.png" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Nemojte biti (radikalni) fanatik 
+
+Vezano uz prvi način: Nemojte na silu svaki manipulacijski problem gurati u  tidyverse ili data.table okvir.
+- Sjetite se da je kombinacija tidyverse i base R često najbolje rješenje. Jednostavno dodajte data.table u tu priču.
+
+--
+
+Postoje neke operacije u kojima je tidyverse (dplyr+tidyr) jednostavno bolji i druge u kojima je data.table bolji pristup.
+- Ako nađete dobro rješenje na StackOverflow koje koristi "drugi" paket...primjenite ga.
+
+--
+
+Dodatno, kao što smo već spomenuli prije tidyverse funkcije je *moguće* koristiti i sa data.table. Isprobajte:
+
+
+```r
+starwars_dt %&gt;% group_by(homeworld) %&gt;% summarise(height = mean(height, na.rm=T))
+```
+
+.footnote[&lt;sup&gt;1&lt;/sup&gt; Ovo će [izazvati](https://stackoverflow.com/a/27513921) penalizaciju performansi. Bolje rješenje na sljedećem slide-u...]
+
+--
+
+**Zaključak:** Ne budi fanatik. Inzistiranje na odrđenom ekosistemu nije nabolji način. 
+
+---
+
+# dtplyr
+
+Sviđa vam se dplyr's sintaksa, ali želite data.table performanse? 
+--
+Well, you're in luck!
+
+--
+
+Hadley Wickham- ov paket **dtplyr** omogućuje data.table "back-end" za dplyr.
+- Pišite kod kao da radite sa dplyr i on će automatski biti preveden (i evaluiran) kao data.table.
+
+--
+
+Ako ovo zvuči primamljivo (a trebalo bi) pogledajte [dokumentaciju paketa](https://dtplyr.tidyverse.org/) za detalje. Pogledajmo još jedan brzi primjer:
+
+.font80[
+
+```r
+# library(dtplyr) ## učitano
+storms_dtplyr = lazy_dt(storms) ## dtplyr moraju biti postavljeni kao "lazy" data.table
+collapse_dtplyr = function() {
+  storms_dtplyr %&gt;%
+    group_by(name, year, month, day) %&gt;% 
+    summarize(wind = mean(wind), pressure = mean(pressure), category = first(category)) %&gt;%
+    as_tibble()
+}
+## usporedite dtplyr sa dplyr i data.table verzijama(i.e. bez ključeva)
+microbenchmark::microbenchmark(collapse_dplyr(), collapse_dt(), collapse_dtplyr(), times = 10)
+```
+]
+
+.right[*Rezultati na sljdećem slide-u*]
+
+---
+
+# dtplyr (dalje)
+
+
+```
+## Unit: milliseconds
+##               expr      min       lq      mean    median       uq      max
+##   collapse_dplyr() 127.4010 127.7612 134.61065 131.85095 134.0036 168.1635
+##      collapse_dt()   2.8034   3.1070   3.71065   3.31620   3.6284   7.1798
+##  collapse_dtplyr()   4.3457   4.7902   6.41724   5.06125   5.8229  14.5550
+##  neval
+##     10
+##     10
+##     10
+```
+
+--
+
+Ne baš tako brzo kao data.table, ali ipak &gt;30x povećanje brzine!
+
+--
+
+**Dodatak:** dtplyr automatski ispisuje data.table prijevod kao output. Ovo može biti od pomoći ako u data.table dolazte iz tidyverse.
+
+
+```r
+lazy_dt(starwars) %&gt;% filter(species=="Human") %&gt;% group_by(gender) %&gt;% summarise(height = mean(height, na.rm=TRUE))
+```
+
+```
+## Source: local data table [?? x 2]
+## Call:   `_DT2`[species == "Human"][, .(height = mean(height, na.rm = TRUE)), 
+##     keyby = .(gender)]
+## 
+##   gender    height
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 feminine    160.
+## 2 masculine   182.
+## 
+## # Use as.data.table()/as.data.frame()/as_tibble() to access results
+```
+
+
+---
+name: summary
+class: inverse, center, middle
+
+# Sažetak
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Prošli smo stvarno dosta toga!)
+---
+# Sažetak
+
+data.table je moćan paket za manipulaciju podatcima koji ima konciznu sintaksu i fascinantne performanse. Također je riječ o vrlo lightweight paketu, koji ima mnogo opcija.
+
+Osnovna sintaksa je `DT[i, j, by]`
+- `i` Na kojim redovima?
+- `j` Što raditi?
+- `by` Grupiranje po...?
+
+data.table uvodi neke nove ideje kao modifikacije prema referenci (e.g. `:=`), kao i sintaksu (e.g. `.()`, `.SD` `.SDcols`, etc.).
+- Sve ovo podržava glavne ideje i ciljeve data.table: Maksimizacija performansi i fleksibilnosti uz zadržavanje koncizne i funkcionalne sintakse. Vrijedi to naučiti!.
+
+Savjet: Koristite ključeve za galaktičke brzine!
+
+tidyverse i data.table se često promatraju kao substituti, ali možete dosta profitirati od njihovih kombinacija... čak i ako preferirate neku u manipulaciji podataka.
+
+---
+
+# Neki dodatni resursi
+
+Postoji mnoštvo data.table funkcionalnosti koje nismo stigli spomenuti. Neke ćemo vidjei u narednim predavanjima (e.g. brzo učitavanje `fread()` i `fwrite()` CSV I/O funkcije). Druge možete potražiti sami.
+
+Ovdje su neki korisni izvori:
+- http://r-datatable.com (Službeni web. posebno pogledajte vignette!)
+- https://github.com/Rdatatable/data.table#cheatsheets (Cheatsheet.)
+- https://atrebas.github.io/post/2019-03-03-datatable-dplyr (Izvrsno, pregledne usporedbe data.table i dplyr operacija.)
+- https://brooksandrew.github.io/simpleblog/articles/advanced-data-table/ (Neki napredni data.table trikovi.)
+
+Povezani paketi:
+- https://tysonbarrett.com/tidyfast
+- https://dtplyr.tidyverse.org
+
+
+
+---
+class: inverse, center, middle
+
+# HVALA NA PAŽNJI!
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=796px&gt;&lt;/html&gt;
+(Sljedeće predavanje: Websrcaping)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="libs/cols_macro.js"></script>
 <script>var slideshow = remark.create({
 "highlightStyle": "github",
 "highlightLines": true,
+"highlightSpans": false,
 "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
