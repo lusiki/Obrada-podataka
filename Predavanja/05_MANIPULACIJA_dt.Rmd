@@ -1511,7 +1511,7 @@ class: inverse, center, middle
 
 # HVALA NA PAŽNJI!
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=796px></html>
-(Sljedeće predavanje: Websrcaping)
+(Sljedeće predavanje: Web Scraping)
 
 
 

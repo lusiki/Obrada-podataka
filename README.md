@@ -88,14 +88,13 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <li> Objektno orjentirano programiranje u R</li>
 <li> "Sve je objekt"</li>
 <li> "Sve ima naziv"</li>
-<li> Društvene mreže</li>
 <li> Indeksiranje</li>
 <li> Čišćenje radnog prostora</li>
 <ul>
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/04_OSNOVE_R.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R.Rmd">.Rmd</a> + <a href="/Predavanja/04_OSNOVE_R_ggplot2.html">.html(ggplot2)</a> | <a href="/Predavanja/04_OSNOVE_R_ggplot2.Rmd">.Rmd(ggplot2)</a>
+<b>Format predavanja:</b> <a href="/Predavanja/04_OSNOVE_R.html">.html</a> | <a href="/Predavanja/04_OSNOVE_R.Rmd">.Rmd</a> + <a href="/Predavanja/04_OSNOVE_R_ggplot2.html">.html (ggplot2)</a> | <a href="/Predavanja/04_OSNOVE_R_ggplot2.Rmd">.Rmd (ggplot2)</a>
 <br><b>Čitanje: </b><a href="https://www.srce.unizg.hr/files/srce/docs/edu/R/s720_polaznik.pdf">Uvod u R - skripta I</a> + </b><a href="https://cran.r-project.org/doc/contrib/Kasum+Legovic-UvodUr.pdf">Uvod u R - skripta II</a> + </b><a href="https://learningstatisticswithr.com/lsr-0.6.pdf">LSR, poglavlja 3 i 4</a>
 <br>
 <br>
@@ -113,7 +112,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 
-<b>Format predavanja:</b> <a href="/Predavanja/05_MANIPULACIJA_tidy.html">.html</a> | <a href="/Predavanja/05_MANIPULACIJA_tidy.Rmd">.Rmd</a> + <a href="/Predavanja/05_MANIPULACIJA_dt.html">.html(data.table)</a> | <a href="/Predavanja/05_MANIPULACIJA_dt.Rmd">.Rmd(data.table)</a>
+<b>Format predavanja:</b> <a href="/Predavanja/05_MANIPULACIJA_tidy.html">.html</a> | <a href="/Predavanja/05_MANIPULACIJA_tidy.Rmd">.Rmd</a> + <a href="/Predavanja/05_MANIPULACIJA_dt.html">.html (data.table)</a> | <a href="/Predavanja/05_MANIPULACIJA_dt.Rmd">.Rmd (data.table)</a>
 <br><b>Čitanje: </b><a href="https://vita.had.co.nz/papers/tidy-data.pdf">Tidy Data članak od Hadley Wickham-a</a>
 <br>
 <br>
