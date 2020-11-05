@@ -75,10 +75,10 @@ Ključni elementi:
 
 # Checklist
 
-☑ Instaliran[**tidyverse**](https://www.tidyverse.org/) paket.
+☑ Instaliran [**tidyverse**](https://www.tidyverse.org/) paket.
 
 
-☑ Potrebno instalirati[**nycflights13**](hhttps://github.com/hadley/nycflights13) paket.
+☑ Potrebno instalirati [**nycflights13**](hhttps://github.com/hadley/nycflights13) paket.
 - Izvršite naredbu: `install.packages('nycflights13', repos = 'https://cran.rstudio.com')`
 
 ---
@@ -158,8 +158,10 @@ tidyverse_packages()
 ```
 
 Neke od tih dodatnih paketa ćemo koristiti u okviru kolegija.
-— E.g. **Lubridate** paket za raad sa datumima i **rvest** paket za webscraping.
+
+— Npr. **Lubridate** paket za raad sa datumima i **rvest** paket za webscraping.
 - Ipak, ti se paketi moraju učitati zasebno.
+
 
 .footnote[
 <sup>1</sup> Tidyverse uključuje *puno* zavisnosti pri instalaciji. Ovo je tema uz koju se vežu određene [kontroverze](http://www.tinyverse.org/).
@@ -175,7 +177,7 @@ Naglasak današnjeg predavanja je na dva paketa:
 1. [**dplyr**](https://dplyr.tidyverse.org/)
 2. [**tidyr**](https://tidyr.tidyverse.org/)
 
-Ovo su glavni paketi za čišćenje i manipulaciju podatcima. Zbog toga će se jako često koristiti(uz **ggplot2**).
+Ovo su glavni paketi za čišćenje i manipulaciju podatcima. Zbog toga će se jako često koristiti (uz **ggplot2**).
 - Na čišćenje i manipulaciju podatcima odlazi jako puno vremena u radu sa podatcima.
 
 
@@ -197,7 +199,7 @@ summarise(group_by(filter(mpg, manufacturer=="audi"), model), hwy_mean = mean(hw
 --
 
 Prva linija koda se čita s ijeva na desno, baš kao što nalaže intuicija. 
-- Ozmi objek (mpg), napravi ovo (filter), nakon toga ovo (group by), etc.
+- Uzmi objekt (mpg), napravi ovo (filter), nakon toga ovo (group by), etc.
 
 Druga linija koda ima inverznu intuiciju (zadnja operacija dolazi prva!) 
 - Tko želi čitati stvari iznutra-van?
@@ -235,7 +237,7 @@ name: dplyr
 # Dodatno: dplyr 1.0.0 verzija
 
 Neke od **dplyr** svojstava koja ćemo obraditi danas dolaze iz [verzije 1.0.0](https://www.tidyverse.org/blog/2020/06/dplyr-1-0-0/) paketa.
-- Verzija 1.0.0 ije bitna jer donosi stabilnu verziju paketa. Utrenutku pisanja ovih,aktualna verzija je 1.0.2. 
+- Verzija 1.0.0 je bitna jer donosi stabilnu verziju paketa. Utrenutku pisanja ovih, aktualna verzija je 1.0.2. 
 - Provjerite da li imate barem **dplyr** 1.0.0.
 
 ```{r dplyr_vers, cache=FALSE}
@@ -424,7 +426,7 @@ starwars %>%
 
 # 4) dplyr::mutate (*dalje*)
 
-Boolean, logički i kondicionalni operatori se mogu dobro kombinirati sa `mutate`
+Boolean, logički i kondicionalni operatori se mogu dobro kombinirati sa `mutate`:
 ```{r mutate3}
 starwars %>% 
   select(name, height) %>%
@@ -437,7 +439,7 @@ starwars %>%
 
 # 4) dplyr::mutate (*dalje*)
 
-Kombiniranje `mutate` sa novim `across` dodatkom u dplyr 1.0.0+ omogućava jednostavan rad na selekciji varijabli. Primjerice:
+Kombiniranje `mutate` sa novom `across` funkcijom u dplyr 1.0.0+ omogućava jednostavan rad na selekciji varijabli. Primjerice:
 
 ```{r, mutate4}
 starwars %>% 
@@ -805,7 +807,7 @@ crossing(side=c("left", "right"), height=c("top", "bottom"))
 --
 
 Pogledajte `?expand` i `?complete` za specijalizirane funkcije koje omogućuju (imlicitno) rad sa nedostajućim podatcima ili kombiniranjem varijabli u podatkovnim okvirima.
-- Prije ili kasnije možete očekivati ovu potrebu.
+- Prije ili kasnije možete očekivati ovu potrebu za ovom funkcijom!
 
 ---
 class: inverse, center, middle
