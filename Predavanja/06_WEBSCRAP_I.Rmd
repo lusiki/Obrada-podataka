@@ -1,0 +1,527 @@
+---
+title: "Obrada podataka"
+author:
+  name: Luka Sikic, PhD
+  affiliation: Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)
+subtitle: 'Predavanje 6: Preuzimanje podataka sa interneta (Webscraping II)'
+output:
+  html_document:
+    theme: flatly
+    highlight: haddock
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+    keep_md: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
+```
+
+
+## Registracija i softwerski set-up
+
+### Registracija
+
+U ovom dijelu predavanja ćemo preuzeti ekonomske podatke (između ostalog) sa FRED API-ja. To zatijeva [registraciju](https://research.stlouisfed.org/useraccount/apikey) i pohranu [API ključa](https://research.stlouisfed.org/useraccount/apikey).
+
+### "Vanjski" software
+
+Koristiti ćemo [JSONView](https://jsonview.com/) browser ekstenziju koja omogućava pregled JSON output-a u Chrome i Firefox. (Nije nužno ali preporučeno!)
+
+### R paketi 
+
+- New: **jsonlite**, **httr**, **listviewer**, **usethis**, **fredr**
+- Already used: **tidyverse**, **lubridate**, **hrbrthemes**, **janitor**
+
+Prigodan način da instalirate i učitate sve prethodno pobrojane pakete ukoliko to niste već napravili.
+
+```{r packages, cache=F, message=F}
+## učitaj i instaliraj pakete
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, httr, lubridate, hrbrthemes, janitor, jsonlite, listviewer, usethis)
+pacman::p_install_gh("sboysel/fredr") ## https://github.com/sboysel/fredr/issues/75
+#tema
+theme_set(hrbrthemes::theme_ipsum())
+```
+
+
+
+## Prisjetimo se...
+
+U prvom dijelu preavanja o preuzimanju sadržaja sa interneta smo vidjeli da web stranice i web aplikacije mogu biti 1) na strani servera i 2) na strani klijenta. U tom dijelu smo pokazali kako preuzeti podatke koji su procesuirani na strani servera koristeći **rvest** paket. Ta se tehnika fokusira na CSS selektore [(i SelectorGadget)](http://selectorgadget.com/) i HTML tagove. Također smo vidjeli da webscraping nije egzaktna zanost već dijelom i umjetnost! Mnoštvo CSS opcija i fleksibilnost HTML-a čine preuzimanje podataka specifičnim za svaku pojedinu stranicu i vrijeme. To ne znači da opći principi ne funkcioniraju!
+
+Fokus ovog dijela predavanja je druga kategorija: preuzimanje podataka koji su procesuirani na strani klijenta (**client-side**). Ovaj je pristup u najvećem broju slučajeva jednostavniji način za preuzimanje podataka sa web-a.To također ne znači da određena nijansa umjetnosti nije potrebna! Još jednom valja naglasiti **etičke** i **zakonske** aspekte preuzimanja web sadržaja...pogledajte u prvom dijelu predavanja!
+
+## Strana klijenta (*Client-side*), API i API "izvori"
+
+
+Webstranice i aplikacije koje su procesuirane na **strani klijenta**  zahtijevaju sljedeći pristup:
+
+- Posjetite URL koji koristi predložak statičkog sadržaja (HTML tablice, CSS, itd). Taj predložak se sadržava podate "u sebi".
+- U procesu otvaranja URL-a, browser šalje zahtijev (*request*) na (host) server.
+- Ukoliko je zahtjev ispravan (*valid*), server će vratiti odgovor (*response*) koji poziva tražene podatke i dinamički ih procesuirati u browseru.
+- Stranica koju vidite u browseru je stoga mješavina statičkog sadržaja (predloška) i dinamički generiranih informacija koje su procesuirane u browseru (i.e. *klijent*).
+
+Cijelokupni proces slanja zahtjeva, odgovora i procesuiranja se odvija kroz **API** (or **A**pplication **P**rogram **I**nterface) (host) aplikacije.
+
+### API
+
+Ako prvi put čujete za API, pogledajte Zapier- ov pregled: [An Introduction to APIs](https://zapier.com/learn/apis/). Pregled je opširan ali ne morate proći sve detalje...Zaključak je da API predstavlja skup pravila i metoda koje omogućavaju interakciju različitih software-skih aplikacija u razmjeni informacija. To se ne odnosi samo na web servere i browser-e nego i na npr. neke pakete koje smo sveć koristili u ovom kolegiju.^[Zanimljivost: Brojn i paketi koje ćemo koristiti u ovom kolegiju (npr. **leaflet**, **plotly**, etc.) su samo skup *wrapper* funkcija koje komuniciraju sa API-jima i pretvaraju R kod u neki drugi jezik (npr. JavaScript).] Ključni koncepti su:
+
+- **Server:** Računalo koje izvršava (*engl. run*).
+- **Klijent:** Program koji izmjenjuje podatke sa serverom kroz API.
+- **Protokol:** "Bonton" koji odrđuje način međusobne interakcije između računala (npr. HTTP).
+- **Metode:** "Naredbe" koje klijenti koriste za komunikaciju sa serverom. Glavna naredba koju ćemo koristiti u ovom dijelu predavanja je  `GET` (i.e. "zamoli" server za informaciju), a neke druge su `POST`, `PUT` i `DELETE`.
+- **Zahtjevi:** Ono što klijent traži od servera (vidi Metode!).
+- **Odgovor:** Odgovor servera. Odgovor uključuje *Status Code* (npr. "404" *if not found*, ili "200" *if successfu*l),  *Header* (i.e. meta-informacije o odgovoru) i *Body* (i.e sadržaj onoga što zahtjevamo od servera).
+- Etc.
+
+### API "izvori"
+
+Ključna točka u razumijevanju API-ja je da možemo pristupiti informacijama *direktno* iz API baze podataka ukoliko na ispravan način specificiramo URL-ove. Ti URL-ovi su ono što nazivamo API izvorima (*engl. API endpoints*).
+
+API izvori su u mnogočemu sličini normalnim web URL-ovima koje stalno posjećjemo. Za početak, možete navigirati do njih u browser-u. Iako "normalne" web stranice prikazuju informacije u HTML kontekstu --- slike, video, GFI itd. --- API izvori su znatno manje "lijepi". Navigirajte browser do API izvora i vidjeti ćete samo hrpu neformatiranog teksta. Ono što uistinu vidite je najvjerojatnije [JSON](https://en.wikipedia.org/wiki/JSON) (**J**ava**S**cript **O**bject **No**tation) ili [XML](https://en.wikipedia.org/wiki/XML) (E**x**tensible **M**arkup **L**anguage). 
+
+Sintaksa tih jezika (JSON i XML) vas ne treba zabrinjavati. Važno je da objekt u vašem browser-u --- koji učitava hrpu nestrukturiranog teksta --- zapravo ima vrlo precizno definiranu strukturu (i format). Taj objekt akođer sadžava informacije (podatke) koje je moguće vrlo jednostavno učitati u R (ili Python, Julia, etc.)). Potrebno je samo znati točan API izvor za podatke koje želimo!
+
+Vrijeme je za nekoliko primjera...Započeti ćemo sa najjednostavnijim slučajem (bez API ključa i sa eksplicitnim API izvorom), a nakon toga nastaviti sa složenijim primjerima.
+
+
+## Praktični primjer 1: Drveće u New York-u
+
+[NYC Open Data](https://opendata.cityofnewyork.us/) je zanimljiva inicijativa. Njezina misija je *"make the wealth of public data generated by various New York City agencies and other City organizations available for public use*". Podatci koje možete preuzeti uključuju uhićenja, lokacije wifi spotova, oglase za posao, broj beskućnika, licenci za pse, popis wc-a u javnim parkovima...POgledajte popis dostupnih podataka kada stignete! U ovom primjeru ćemo preuzeti podatke o drveću [**2015 NYC Street Tree Census**](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh).
+
+Ovaj izvor koristimo na početku pošto nije potrebno postaviti API ključ unaprijed
+
+I wanted to begin with an example from NYC Open Data, because you don't need to set up an API key in advance.^[Ipak, da biste smanjili opterećenje na server --- i.e. broj zahtjeva u vremenu --- najbolje je napraviti [registraciju](https://data.cityofnewyork.us/profile/app_tokens) za **NYC Open Data app token**. Za svrhe ovog predavanja ćemo napraviti jedan ili dva zahtjeva na server pa registracija nije potrebna.] Podatke ćemo preuzeti u nekoliko koraka:
+
+- Otvorite [web stranicu](https://data.cityofnewyork.us/Environment/2015-Street-Tree-Census-Tree-Data/uvpi-gqnh) u browseru. 
+- Odmah ćete vidjeti **API** tab. Kliknite na njega!. 
+- Kopirajte [API izvor](https://data.cityofnewyork.us/resource/nwxe-4ae8.json) koji se pojavi u *pop-up* prozoru. 
+- *Doatano:* Zalijepite taj izvor u novi tab u browser-u. Pojaviti će se hrpa JSON teksta, koji možete procesuirati sa JSONView browser ekstenziji koju smo instalirali na početku predavanja.
+
+Pogledajte animirani prikaz:
+
+![](../Foto/trees.gif)
+Sada kada smo locirali API izvor, možemo učitati podatke u R. To ćemo napraviti pomoću`fromJSON()` funkcije iz **jsonlite** paketa([vidi!](https://cran.r-project.org/web/packages/jsonlite/index.html)). To će automatski prisiliti JSON *array* (vrsta objetka;slično kao data frame) objekt u R data frame. Ovdje ćemo taj data frame pretvoriti u tibble (pogledajte prethodno predavanje o manipulaciji sa podatcima) zbog funkcionalnosti koje taj objekt pruža.
+
+```{r nyc1}
+# library(jsonlite) ## već učitano
+nyc_trees <- 
+  fromJSON("https://data.cityofnewyork.us/resource/nwxe-4ae8.json") %>%
+  as_tibble()
+nyc_trees
+```
+
+**Komentar:** Primjetite da puni podatkovni skup sadržava skoro 700.000 drveća. U ovonm primjeru ćemo preuzeti samo mali dio toga, zbog *default* postavke API limita od 1000 redova. Ionako nije potrebno preuzeti sve podatke u ovom demonstrativnom primjeru. Važno je znati ([pročitajte API upute](https://dev.socrata.com/docs/queries/limit.html)) da ostatak podataka možete preuzeti tako da dodate `?$limit=LIMIT` u API izvor. Da biste učitali prvih pet redova:
+
+```{r nyc2, eval=F}
+## !izvrši
+fromJSON("https://data.cityofnewyork.us/resource/nwxe-4ae8.json?$limit=5")
+```
+
+Vratimo se primjeru sa drvećem i vizualizirajmo podatke koje smo preuzeli. Još jedan dodatni komentar je da `jsonlite::fromJSON()` funkcija automatski pretvara sav sadržaj u string (character ) pa je potrebno promijeniti kolone u numeričke prije vizualizacije.
+
+```{r nyc3, warning=F}
+nyc_trees %>% 
+  select(longitude, latitude, stump_diam, spc_common, spc_latin, tree_id) %>% 
+  mutate_at(vars(longitude:stump_diam), as.numeric) %>% 
+  ggplot(aes(x=longitude, y=latitude, size=stump_diam)) + 
+  geom_point(alpha=0.5) +
+  scale_size_continuous(name = "Stump diameter") +
+  labs(
+    x = "Longituda", y = "Latituda",
+    title = "Uzorak drveća u New York-u",
+    caption = "Izvor: NYC Open Data"
+    )
+```
+
+Ovo bi bilo zanimljivje kada bi mapa sadržavala prave geolokacijske podatke New York-a. Prostorna analiza je zanimljivo istraživačko područje, a vizualizacija tog tipa bi zahtijvela zasabno predavanje...
+
+Cilj ovog praktičnog primjera je pokazazati kako za preuzimanje API podataka nije uvijek potrebna registracija. To nije tipično jer najveći broj API sučelja dozvoljava pristup isključivo nakon registracije (*potreban je ključ!*). To je u najvećem broju slučajeva kada preuzimate javne podatke ( npr. sudski registar, HNB, etc.). Pogledajmo sada jedan primjer gdje je potrebna API registracija...
+
+
+## Praktični primjer 2: FRED podatci
+
+Drugi primjer uključuje preuzimanje podataka sa [**FRED API**](https://research.stlouisfed.org/docs/api/fred/). Potrebna je [registracija API ključa](https://research.stlouisfed.org/useraccount/apikey) ako želite provesti primjer sami. 
+
+
+[FRED](https://fred.stlouisfed.org/) je ekonomska baza Federalne banke u St. Louis-u, podružnice Američke središnje banke. Stranica ima ugrađene alate za vizualizaciju podataka [poput ovog](https://fred.stlouisfed.org/series/GNPCA#0) za seriju BDP/per capita SAD-a od 1929. godine.
+
+<iframe src="https://fred.stlouisfed.org/graph/graph-landing.php?g=mPCo&width=670&height=475" scrolling="no" frameborder="0"style="overflow:hidden; width:670px; height:525px;" allowTransparency="true"></iframe>
+
+
+</br>
+
+U ovoj aplikaciji ćemo preuzeti podatke na osnovi kojih je napravljen prethodni grafikon kroz **FRED API** kako biste naučili što se događa "u pozadini". Nakon toga ćemo preuzeti iste podatke kroz specifičan R paket za tu svrhu.
+
+
+### Napravite sami
+
+Njabolje je započeti sa [FRED API dokumentacijom](https://research.stlouisfed.org/docs/api/fred/). Na osnovi pročitanog je moguće zaključiti da se pripadajući API izvor nalazi pod [**series/observations**](https://research.stlouisfed.org/docs/api/fred/series_observations.html). 
+Ovaj izvor "*gets the observations or data values for an economic data series*". U API dokumentaciji sa linka ćete pronaći više detalja, uključujući i parametre koji su dozvoljeni u API pozivu.^[API *parameteri* su nešto kao funkcijski *argumenti*. To su imputi (upute) koji karakteriziraju API zahtjev.] Parametri koje ovdje koristimo (i.e. kalibriramo):
+
+- **file_type:** "json" (Nije nužno ali želimo JSON output.)
+- **series_id:** "GNPCA" (Nužno. Serija koju tražimo.)
+- **api_key:** "YOUR_API_KEY" (Nužno. Sada dohvatite vaš ključ.)
+
+Sada ćemo podesiti ove parametreprema izvoru kako bismo pogledali podatke direktno u browser-u. Unesite [https://api.stlouisfed.org/fred/series/observations?series_id=GNPCA&api_key=<mark>YOUR_API_KEY</mark>&file_type=json](https://api.stlouisfed.org/fred/series/observations?series_id=GNPCA&api_key=YOUR_API_KEY&file_type=json), uz vaš specifični "YOUR_API_KEY". Trebali biste vidjeti nešto poput ovoga:
+
+![](../Foto/fred-redacted.png)
+
+U ovom trenutku zasigurno želite učitati JSON objekt direktno u radni prostor R koristeći `jsonlite::readJSON()` funkciju. To bi ujedno i funkcioniralo! Ipak, ovdje ćemo koristiti **httr** [paket](https://httr.r-lib.org/). Zašto? Zbog toga što **httr** ima mnoštvo funkcionalnosti koje omogućuju fleksibilnu i sigurnu interakciju sa web API-jem. 
+
+Definirajmo prvo neke verijable poput puta (*path*) do API izvora i pripadajućih parametara. Spremiti ćemo sve u list-e.
+
+```{r fred1, include=F, cache=F}
+endpoint = "series/observations"
+params = list(
+  api_key = Sys.getenv("FRED_API_KEY"),
+  file_type="json", 
+  series_id="GNPCA"
+  )
+```
+```{r fred1_false, eval=FALSE}
+endpoint = "series/observations"
+params = list(
+  api_key= "YOUR_FRED_KEY", ## Unesite svoj ključ
+  file_type="json", 
+  series_id="GNPCA"
+  )
+```
+
+Potom ćemo koristiti `httr::GET()` funkciju za zahtijev (i.e. download) podataka. To ćemo pripisati objektu `fred`.
+
+```{r fred2, cache=F}
+# library(httr) ## Učitano
+fred <- 
+  httr::GET(
+    url = "https://api.stlouisfed.org/", ## Osnovni URL
+    path = paste0("fred/", endpoint), ## API izvor
+    query = params ## Popis parametara
+    )
+```
+
+Pogkledajte`fred` objekt u konzoli. To što vidite je pravi API odgovor (i.e. response), uključujući *Status Code* i *Content*. Otprilike ovako::
+
+```
+## Response [https://api.stlouisfed.org/fred/series/observations?api_key=YOUR_API_KEY&file_type=json&series_id=GNPCA]
+##   Date: 2020-11-11 00:06
+##   Status: 200
+##   Content-Type: application/json; charset=UTF-8
+##   Size: 9.09 kB
+```
+
+Da bismno uzeli sadržaj (i.e. podatke)  iz ovog odgovora, koristiti ćemo `httr::content()` funkciju. Pošto već znamo da je riječ o JSON array-u, nožemo koristiti `jsonlite::fromJSON()` kao u prethodnom slučaju. Možemo očekivati da će taj objekt u R biti učitan kao lista, a za provjeru je moguće koristiti`str()` funkciju za provjeru objekta. Ovdje ima smisla ukazati na **listviewer**  [paket](https://github.com/timelyportfolio/listviewer) ::jsonedit()`koji omogućava interaktivni pregled podataka.^[Ugnježđene liste (*engl.nested lists*) su karakteristika JSON podataka. Ovo nije previše važno jer R ima podršku za procesuiranje takvih formata.]
+```{r fred3, cache=F, out.width="100%", out.height="10%"}
+fred %>% 
+  httr::content("text") %>%
+  jsonlite::fromJSON() %>%
+  listviewer::jsonedit(mode = "view")
+```
+
+OPreuzeti objekt nije posebno složen. Ono što nas zanima je `fred$observations` pod-element. Sada ćemo izvršiti gornji kod i izvući element od interesa. To je moguće napraviti na više načina ali ovdje ćemo koristiti `purrr::pluck()` funkciju.
+
+```{r fred4, cache=F}
+fred <-
+  fred %>% 
+  httr::content("text") %>%
+  jsonlite::fromJSON() %>%
+  purrr::pluck("observations") %>% ## izvuci"$observations" element iz liste
+  # .$observations %>% ## Alternativno...
+  # magrittr::extract("observations") %>% ## Alternativno...
+  as_tibble() ## Zbog formatiranja
+fred
+```
+
+
+U redu! Sada smo povukli podatke i sve je spremno za vizualizaciju. Sjetite se da `jsonlite::fromJSON()` sve automatski prebacije u stringove pa ćemo prilagoditi datume (koristeći `lubridate::ymd()`) i prebaciti neke kolone u numeričke.
+
+```{r fred5, message=F}
+# library(lubridate) ## Već učitano
+fred <-
+  fred %>%
+  mutate_at(vars(realtime_start:date), ymd) %>%
+  mutate(value = as.numeric(value)) 
+```
+
+Konačno...vizualizacija!
+
+```{r fred6, warning=F}
+fred %>%
+  ggplot(aes(date, value)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    x="Datum", y="2012 USD (Milijarde)",
+    title="Realni BDP u SAD", caption="Izvor: FRED"
+    )
+```
+
+
+
+### Doatak primjeru: Spremite API ključeve kao varijable u radnom prostoru
+
+
+U gornjem primjeru je bilo potrebno unijeti vaš osobni "YOUR_FRED_KEY" API ključ. To nije baš sigurno jer implicira otkrivanje vašeg (privatnog) ključa.^[Isto vrijedi i za kompilirane R Markdown dokumente poput ovih predavanjas.] Postoji sigurniji način za rad sa API ključevim i lozinkama: Jednostavno ih spremite kao R [**environment variables**](https://stat.ethz.ch/R-manual/R-devel/library/base/html/EnvVar.html). Dva su načina:
+
+1. Postavite *environment variabl* za tekuću R sesiju (*session*).
+2. Postavite *environment variable* za sve R sesije.
+
+Pregledajmo svaku opciju.
+
+#### 1) Postavite *environment variabl* samo za tekuću R sesiju
+
+Definiranje *environment variable* za tekuću R sesiju je jednostavno. Koristite `Sys.setenv()` funkciju iz base R, npr.:
+
+```{r set_renviron_current}
+## postavite novu environmet variable MY_API_KEY. Samo za tekuću sesiju.
+Sys.setenv(MY_API_KEY="xyxyzaqzazsda13e3243") 
+```
+
+Once this is done, you can then safely assign your key to an object --- including within an R Markdown document that you're going to knit and share --- using the `Sys.getenv()` function. For example:
+
+```{r get_renviron_current}
+## Pripišite environment variable R objektu
+my_api_key <- Sys.getenv("MY_API_KEY")
+## Pregled
+my_api_key
+```
+
+**Važno:** Iako je ovo jednostavno, valja primijetiti da `Sys.setenv()` dio trebate izvršiti u konzoli. *Nikada* nemojte uključivati osjetljive podatke poput `Sys.setenv()` poziva u R Markdown ili druge dokomente koje dijelite.^[Pošto je nova environment variable definirana samo u trajanju tekuće sesije R Markdown neće imati pristup do nje osim ako nije eksplicitno zadržana u skripti unutar dokumenta.] Cilj je sakriti ovakve podatke!Alternativna opcija isključuje da se sistemske varijable unose svaki put kada otvorite R. Ovo može biti posebno korisno za API izvore koje često koristite.
+
+#### 2) Postavite *environment variable* za sve R sesije
+
+Postavljanje R environment variable koja je dostupna u svim sesijama uključuje manipulaciju  `~/.Renviron` file-a. To je tekstualni file u vašem *home drectoriju* --- primjetite `~/` path --- koji R automatski učitava kada se podiže. Pošto je `~/.Renviron` obični tekstualni file, možete ga prilagoditi u bilo kojem text editor-u. Ipak, možda taj file morate prvo stvoriti, u slučaju da ga već nemate. Način za to u RStudio-u je korištenje `usethis::edit_r_environ()` funkcije. Izvršite sljdeći kod interaktivno:
+
+```{r edit_r_environ, eval = F}
+## otvorite .Renviron file. Ovdje dodajemo API ključeve koji vrijede u svim R sesijama.
+usethis::edit_r_environ() 
+```
+
+Ovo će otvoriti vaš `~/.Renviron` file u novom RStudio prozoru, koji onda možete prilagoditi po potrebi. Postavite za primjer vaš FRED API ključ kao environment variable koja vrijedi u svim sesijama. Jednostavo dodajte donju liniju u  `~/.Renviron` file i spremite ga.^[Prijedlog je koristit neki intuitivan naziv poput "FRED_API_KEY".]
+
+```
+FRED_API_KEY="abcdefghijklmnopqrstuvwxyz0123456789" ## Zamijenite sa vašim ključem.
+```
+
+Kada ste spremili promjene, potrebno je restartati R sesiju tako da nova varijabla postane dostupna u svim sljedećim sesijama.
+
+```{r readRenviron, eval = F}
+## Opcionalno: Osvježite .Renviron file.  
+readRenviron("~/.Renviron") ## Potrebno samo ako učitavate u novi R environment
+```
+
+**Izazov:** Kada ste podesili vaš `~/.Renviron` file, pokušajte preuzeti FRED podatke od prije... Ovaj put pozovite vaš FRED API kluč kao environment variable u vašoj listi parametara koristeći `Sys.getenv()`na ovaj način:
+
+```{r params_challenge, eval=F}
+params = list(
+  api_key= Sys.getenv("FRED_API_KEY"), ## uzmi API direktno kao environment variable
+  file_type="json", 
+  series_id="GNPCA"
+  )
+```
+
+Environment variable su važne za interakciju sa *cloud*-om pa je korisno znati raditi s njima.
+
+### Koristite paket
+
+Sjana stvar kod R je da vjerojatno postoji paket za to....! Ovdje vrijedi istaknuti **fredr** [paket](http://sboysel.github.io/fredr/index.html). Pokušajte sada put iste podatke preuzeti kroz paket!
+
+
+## Application 3: World rugby rankings
+
+Our final application will involve a more challenging case where the API endpoint is *hidden from view*. In particular, I'm going to show you how to access data on [**World Rugby rankings**](https://www.world.rugby/rankings/mru). Because --- real talk --- what's more important than teaching Americans about rugby?
+
+*<b>Disclaimer:</b> World Rugby's [Terms & Conditions](https://www.world.rugby/terms-and-conditions) permits data downloading for own non-commerical use. It seems reasonable to me that these lecture notes fall under this use category.^[If you're reading this from World Rugby and disagree, please [contact me](mailto:grantmcd@uoregon.edu). In my defence, I am still awaiting a reply to my initial email confirming my interpretation of your T&Cs...] None of the methods presented below should be construed as an endorsement of data acquisition and use that violates these terms. Again: Just because you can scrape something, doesn't mean you should.*
+
+Start by taking a look at the complicated structure of the website in a [live session](http://www.worldrugby.org/rankings). Pay attention to the various tables and other interactive elements like calendars. Now take a minute or two for a quick challenge: Try to scrape the full country rankings using the `rvest` + CSS selectors approach that we practiced last time...
+
+.
+
+.
+
+.
+
+.
+
+.
+
+If you're anything like me, you would have struggled to scrape the desired information using the `rvest` + CSS selectors approach. Even if you managed to extract some kind of information, you're likely only getting a subset of what you wanted. (For example, just the column names, or the first ten rows before the "VIEW MORE RANKINGS" button). And we haven't even considered trying to get information from a different date.^[Note that the URL doesn't change even when we select a different date on the calendar.]
+
+### Locating the hidden API endpoint
+
+Fortunately, there's a better way: Access the full database of rankings through the API. First we have to find the endpoint, though. Here's a step-by-step guide of how to that that. It's fairly tedious, but pretty intuitive once you get the hang of it. You can just skip to the GIF below if you would rather see what I did instead of reading through all the steps. 
+
+- Start by inspecting the page. (**Ctr+Shift+I** in Chrome. **Ctrl+Shift+Q** in Firefox.) 
+- Head to the **Network** tab at the top of the inspect element panel. 
+- Click on the **XHR** button.^[XHR stands for **X**ML**H**ttp**R**equest and is the type of request used to fetch XML or JSON data.]
+- Refresh the page (**Ctrl+R**). This will allow us to see all the web traffic coming to and from the page in our inspect panel. 
+- Our task now is to scroll these different traffic links and see which one contains the information that we're after.
+- The top traffic link item references a URL called [https://cms<b>api</b>.pulselive.com/rugby/<b>rankings</b>/mru?language=en&client=pulse](https://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse). *Hmmm. "API" you say? "Rankings" you say? Sounds promising...* 
+- Click on this item and open up the **Preview** tab.
+- In this case, we can see what looks to be the first row of the rankings table ("New Zealand", etc.) 
+- To make sure, you can grab that [https://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse](URL), and paste it into our browser (using the [JSONView](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc?hl=en) plugin) from before.
+
+Sweet. Looks like we've located our API endpoint. As promised, here's GIF of me walking through these steps in my browser:
+
+![](pics/inspect-rugby.gif)
+
+### Pulling the data into R
+
+Let's pull the data from the API endpoint into R. Again, I'll be using `jsonlite::readJSON()` function. 
+
+```{r rugby1}
+endpoint <- "https://cmsapi.pulselive.com/rugby/rankings/mru?language=en&client=pulse"
+rugby <- fromJSON(endpoint)
+str(rugby)
+```
+
+We have a nested list, where what looks to be the main element of interest, `$entries`, is itself a list.^[I know that R says `rugby$entries` is a data.frame, but we can tell from the `str()` call that it follows a list structure. In particular, the `rugby$entries$team` sub-element is a itself data frame.] Let's extract the `$entries` element and have a look at its structure. We could use the `str()` base function, but again the interactivity of `listviewer::jsonedit()` is hard to beat for complicated list structures. 
+
+```{r rugby2, out.width="100%", out.height="10%"}
+# str(rugby$entries) ## Base option
+listviewer::jsonedit(rugby, mode = "view")
+```
+
+For completeness, let's take a peak at the `rugby$entries$team` data frame to confirm that it has information that is useful to us. 
+
+```{r rugby 2a}
+head(rugby$entries$team)
+```
+
+Okay, a clearer picture is starting to emerge. It looks like we can just bind the columns of the `rugby$entries$team` data frame directly to the other elements of the parent `$team` "data frame" (actually: "list"). Let's do that using `dplyr::bind_cols()` and then clean things up a bit. I'm going to call the resulting data frame `rankings`.
+
+```{r rugby3, message=F}
+# library(janitor) ## Already loaded above
+rankings <-
+  bind_cols(
+    rugby$entries$team,
+    rugby$entries %>% select(matches:previousPos)
+    ) %>%
+  clean_names() %>%
+  select(-c(id, alt_id, annotations)) %>% ## These columns aren't adding much of interest
+  select(pos, pts, everything()) %>% ## Reorder remaining columns
+  as_tibble() ## "Enhanced" tidyverse version of a data frame
+rankings
+```
+
+### BONUS: Get and plot the rankings history
+
+*NOTE: This bonus section involves some programming and loops. I know that we haven't gotten to the programming section of the course, so don't worry about the specifics of the next few code chunks. I'll try to comment my code quite explicitly, but I mostly want you to focus on the big picture.*
+
+The above table looks great, except for the fact that it's just a single snapshot of the most recent rankings. We are probably more interested in looking back at changes in the ratings over time. 
+
+But how to do this? Well, in the spirit of art-vs-science, let's open up the Inspect window of the rankings page again and start exploring. What happens if we click on the calendar element, say, change the year to "2018" and month to "April"? (Do this yourself.)
+
+This looks promising! Essentially, we get the same API endpoint that we saw previously, but now appended with a date, https://cmsapi.pulselive.com/rugby/rankings/mru?date=2018-05-01&client=pulse. If you were to continue along in this manner --- clicking on the website calendar and looking for XHR traffic --- you would soon realise that these date suffixes follow a predictable pattern: They are spaced out a week apart and always fall on a Monday. In other words, World Rugby updates its international rankings table weekly and publishes the results on Mondays. 
+
+We now have enough information to write a function that will loop over a set of dates and pull data from the relevant API endpoint.  To start, we need a vector of valid dates to loop over. I'm going to use various functions from the `lubridate` package to help with this. Note that I'm only to extract a few data points --- one observation a year for the last decade or so --- since I only want to demonstrate the principle. No need to hammer the host server. (More on that below.)
+
+```{r rugby4}
+## We'll look at rankings around Jan 1st each year. I'll use 2004 as an
+## arbitrary start year and then proceed until the present year.
+start_date <- ymd("2004-01-01")
+end_date <- floor_date(today(), unit="years")
+dates <- seq(start_date, end_date, by="years")
+## Get the nearest Monday to Jan 1st to coincide with rankings release dates.
+dates <- floor_date(dates, "week", week_start = getOption("lubridate.week.start", 1))
+dates
+```
+
+Next, I'll write out a function that I'll call `rugby_scrape`. This function will take a single argument: a date that it will use to construct a new API endpoint during each iteration. Beyond that, it will pretty do much exactly the same things that we did in our previous, manual data scrape. The only other difference is that it will wait three seconds after running (i.e. `Sys.sleep(3)`). I'm adding this final line to avoid hammering the server with instantaneous requests when we put everything into a loop.
+
+```{r rugby5}
+## First remove our existing variables. This is not really necessary, since R is smart enough
+## to distinguish named objects in functions from named objects in our global environment.
+## But I want to emphasise that we're creating new data here and avoid any confusion.
+rm(rugby, rankings, endpoint)
+## Now, create the function. I'll call it "rugby_scrape".
+rugby_scrape <- 
+  function(x) {
+    endpoint <- paste0("https://cmsapi.pulselive.com/rugby/rankings/mru?date=", x, "&client=pulse")
+    rugby <- fromJSON(endpoint)
+    rankings <-
+      bind_cols(
+        rugby$entries$team,
+        rugby$entries %>% select(matches:previousPos)
+        ) %>%
+      clean_names() %>%
+      mutate(date = x) %>% ## New column to keep track of the date 
+      select(-c(id, alt_id, annotations)) %>% ## These columns aren't adding much of interest
+      select(date, pos, pts, everything()) %>% ## Reorder remaining columns
+      as_tibble() ## "Enhanced" tidyverse version of a data frame
+    Sys.sleep(3) ## Be nice!
+    return(rankings)
+  }
+```
+
+Finally, we can now iterate (i.e. loop) over our `dates` vector, by plugging the values sequentially into our `rugby_scrape` function. There are a variety of ways to iterate in R, but I'm going to use an `lapply()` call below.^[Again, don't worry too much about this now. We'll cover iteration and programming in more depth in a later lecture.] We'll then bind everything into a single data frame using `dplyr::bind_rows()` and name the resulting object `rankings_history`.
+
+```{r rugby6}
+rankings_history <-
+  lapply(dates, rugby_scrape) %>% ## Run the iteration
+  bind_rows() ## Bind the resulting list of data frames into a single data frame
+rankings_history
+```
+
+Let's review what we just did:
+
+- We created a vector of dates --- creatively called `dates` --- with observations evenly spaced (about) a year apart, falling on the Monday closest to Jan 1st for that year.
+- We then iterated (i.e. looped) over these dates using a function, `rugby_scrape`, which downloaded and cleaned data from the relevant API endpoint. 
+- At the end of each iteration, we told R to wait a few seconds before executing the next step. Remember that R can execute these steps much, much quicker than we could ever type them manually. It probably doesn't matter for this example, but you can easily "overwhelm" a host server by hammering it with a loop of automated requests. (Or, just as likely: They have safeguards against this type of behaviour and will start denying your requests as a suspected malicious attack.) As ever, the "be nice" motto holds sway when scraping web data.
+- Note that each run of our iteration will have produced a separate data frame, which `lapply()` by default appends into a list. We used `dplyr::bind_rows()` to bid these separate data frames into a single data frame.
+
+Okay! Let's plot the data and highlight a select few countries in the process.
+
+```{r rugby7}
+teams <- c("NZL", "RSA", "ENG", "JPN")
+team_cols <- c("NZL"="black", "RSA"="#4DAF4A", "ENG"="#377EB8", "JPN" = "red")
+rankings_history %>%
+  ggplot(aes(x=date, y=pts, group=abbreviation)) +
+  geom_line(col = "grey") + 
+  geom_line(
+    data = rankings_history %>% filter(abbreviation %in% teams), 
+    aes(col=fct_reorder2(abbreviation, date, pts)),
+    lwd = 1
+    ) +
+  scale_color_manual(values = team_cols) +
+  labs(
+    x = "Date", y = "Points", 
+    title = "International rugby rankings", caption = "Source: World Rugby"
+    ) +
+  theme(legend.title = element_blank())
+```
+
+New Zealand's extended dominance in the global game is extraordinary, especially given its tiny population size. They truly do have a legimate claim to being the [greatest international team](https://www.dailytelegraph.com.au/sport/rugby/are-the-all-blacks-the-greatest-international-team-in-the-history-of-sport/news-story/f61ad2d65623a9586929bbfba386b157) in the history of professional sport.^[Obligatory link to the [best ever haka](https://www.youtube.com/watch?v=BFNCpzGnTTs).] OTOH, South African rugby supporters can finally (finally!) rejoice after a long dry spell. Bring 'er, Siya!
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Forbz3lizUk" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Summary
+
+- An API is a set of rules and methods that allow one computer or program (e.g. host server) to talk to another (e.g. client or browser).
+- We can access information through an API directly by specifying a valid API endpoint.
+  - The API endpoint for most web-based applications will be a URL with either JSON or XML content.
+- Some APIs don't require an access key or token, but most do. You can add this key as a parameter to the API endpoint.
+- Downloading content from an API endpoint to our local computer (i.e. R environment) can be done in a variety of ways.
+   - E.g. `jsonlite::readJSON()` to read the the JSON array directly, or `httr::GET()` to download the entire response, or installing a package that does the job for us.
+- Next lecture: Regression analysis in R. (The start of the analysis and programming section of the course.)
+
+
+## Further resources and exercises
+
+- [Tyler Clavelle](https://twitter.com/tclavl) has written several cool [blog posts](https://tclavelle.github.io/blog/) on interacting with APIs through R. I especially recommend going over --- and replicating --- his excellent [tutorial on the GitHub API](https://tclavelle.github.io/blog/r_and_apis/). 
+
+- Jonathan Regenstein has a nice post on RStudio's *R Views* blog, "[GDP Data via API](https://rviews.rstudio.com/2018/09/12/gdp-via-api/)", which treads a similar path to my FRED example. Except he uses the Bureau of Economic Analysis (BEA) API.
+
+- Greg Reda's "[Web Scraping 201: finding the API](http://www.gregreda.com/2015/02/15/web-scraping-finding-the-api/)" covers much of the same ground as we have here. While he focuses on Python tools, I've found it to be a handy reference over the years. (You can also take a look at the earlier posts in Greg's webscraping series --- [Part 1](http://www.gregreda.com/2013/03/03/web-scraping-101-with-python/) and [Part 2](http://www.gregreda.com/2013/04/29/more-web-scraping-with-python/) --- to see some Python equivalents of the `rvest` tools that we've been using.) 
+
+- Ian London (another Python user) has a nice blog post on "[Discovering hidden APIs](https://ianlondon.github.io/blog/web-scraping-discovering-hidden-apis/)" from Airbnb.
+
+
+
+

@@ -3,7 +3,7 @@ title: "Obrada podataka"
 author:
   name: Luka Sikic, PhD
   affiliation: Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)
-subtitle: 'Predavanje 6: Preuzimanje podataka sa interneta (Webscraping)'
+subtitle: 'Predavanje 6: Preuzimanje podataka sa interneta (Webscraping I)'
 output:
   html_document:
     theme: flatly
@@ -43,12 +43,12 @@ theme_set(hrbrthemes::theme_ipsum())
 
 ## Webscraping osnove
 
-Ovo predavanje se odnosi na preuzimanje sadržaja sa web-a na lokalno računalo. Svi već imamo iskustvo sa pregledom web sadržaja u našem browser-u (Chrome, Firefox,...) pa razumijemo da taj sadržaj mora postojati negdje (podatci). Važno je razumjeti da postoje dva osnovna načina na koja se web sadržaj prikazuje (*engl.render*) u browser-u:
+Ovo predavanje se odnosi na preuzimanje sadržaja sa web-a na lokalno računalo. Svi već imamo iskustvo sa pregledom web sadržaja u browser-u (Chrome, Firefox,...) pa razumijemo da taj sadržaj mora postojati negdje (podatci). Važno je razumjeti da postoje dva osnovna načina na koja se web sadržaj prikazuje (*engl.render*) u browser-u:
 
 1. na strani servera (*Server-side*)
 2. na strani klijenta (*Client side*)
 
-[Pročitajte](https://www.codeconquest.com/website/client-side-vs-server-side/) za više detalje (uključijući primjere). Za potrebe ovog predavanja, glavni su sljedeći elementi: 
+[Pročitajte](https://www.codeconquest.com/website/client-side-vs-server-side/) za više detalje (uključujući primjere). Za potrebe ovog predavanja, glavni su sljedeći elementi: 
 
 
 

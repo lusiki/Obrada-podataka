@@ -136,7 +136,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/06_WEBSCRAP.html">.html(WebScrap I)</a> | <a href="/Predavanja/06_WEBSCRAP.Rmd">.Rmd(WebScrap I)</a> + <a href="/Predavanja/06_WEBSCRAP_I.html">.html (WebScrap II)</a> | <a href="/Predavanja/06_WEBSCRAP_I.Rmd">.Rmd ((WebScrap II)</a>
+<b>Format predavanja:</b> <a href="/Predavanja/06_WEBSCRAP.html">.html (WebScrap I)</a> | <a href="/Predavanja/06_WEBSCRAP.Rmd">.Rmd (WebScrap I)</a> + <a href="/Predavanja/06_WEBSCRAP_I.html">.html (WebScrap II)</a> | <a href="/Predavanja/06_WEBSCRAP_I.Rmd">.Rmd ((WebScrap II)</a>
 <br><b>Čitanje: </b><a href="">Pokušajte "scrapati" nešto sa Web-a!</a>
 <br>
 <br>
@@ -182,7 +182,7 @@ Seminari osim prezentacije uključuju: povezivanje teorijskih koncepata s prakti
 # Korisni resursi
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<H3>Statistika</h3>
+<H3>Beletristika</h3>
 
 <ul>
 <li><a href="https://www.pdfdrive.com/penguin-books-how-to-lie-with-statistics-darrell-huff-e119748826.html">How to lie with statistics</a></li>
