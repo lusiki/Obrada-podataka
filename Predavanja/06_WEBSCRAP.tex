@@ -1,0 +1,609 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Obrada podataka},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Obrada podataka}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Predavanje 6: Preuzimanje podataka sa interneta (Webscraping)}
+\author{true}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{4}
+\tableofcontents
+}
+\hypertarget{software-podrux161ka}{%
+\subsection{Software podrška}\label{software-podrux161ka}}
+
+\hypertarget{vanjski-software}{%
+\subsubsection{``Vanjski'' software}\label{vanjski-software}}
+
+Za današnje pedavanje je potrebno instaliriati
+\href{https://selectorgadget.com/}{SelectorGadget}. SelectorGadget je
+Chrome ekstenzija koja omogućava jednostavno pronalaženje CSS
+selektora.(Instalacija je moguća preko
+\href{https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb}{linka}.)
+SelectorGadget je dostupan isključivo za Chrome. U slučaju da
+preferirate Firefox, opcija je
+\href{https://addons.mozilla.org/en-US/firefox/addon/scrapemate/}{ScrapeMate}.
+
+\hypertarget{r-paketi}{%
+\subsubsection{R paketi}\label{r-paketi}}
+
+\begin{itemize}
+\tightlist
+\item
+  Novi: \textbf{rvest}, \textbf{janitor}
+\item
+  Korišteni u prethodnim predavanjima: \textbf{tidyverse},
+  \textbf{lubridate}, \textbf{hrbrthemes}
+\end{itemize}
+
+Prisjetite se da je \textbf{rvest} automatski instaliran sa
+\emph{tidyverse} paketom. Ipak, ovo je prigodan način da instalirate i
+učitate sve prethodno pobrojane pakete ukoliko to niste već napravili.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## učitaj i instaliraj pakete}
+\ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{require}\NormalTok{(}\StringTok{"pacman"}\NormalTok{)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{"pacman"}\NormalTok{)}
+\NormalTok{pacman}\OperatorTok{::}\KeywordTok{p_load}\NormalTok{(tidyverse, rvest, lubridate, janitor, hrbrthemes)}
+\CommentTok{## ggplot2 tema (po želji)}
+\KeywordTok{theme_set}\NormalTok{(hrbrthemes}\OperatorTok{::}\KeywordTok{theme_ipsum}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{webscraping-osnove}{%
+\subsection{Webscraping osnove}\label{webscraping-osnove}}
+
+Ovo predavanje se odnosi na preuzimanje sadržaja sa web-a na lokalno
+računalo. Svi već imamo iskustvo sa pregledom web sadržaja u našem
+browser-u (Chrome, Firefox,\ldots) pa razumijemo da taj sadržaj mora
+postojati negdje (podatci). Važno je razumjeti da postoje dva osnovna
+načina na koja se web sadržaj prikazuje (\emph{engl.render}) u
+browser-u:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  na strani servera (\emph{Server-side})
+\item
+  na strani klijenta (\emph{Client side})
+\end{enumerate}
+
+\href{https://www.codeconquest.com/website/client-side-vs-server-side/}{Pročitajte}
+za više detalje (uključijući primjere). Za potrebe ovog predavanja,
+glavni su sljedeći elementi:
+
+\hypertarget{server-strana}{%
+\subsubsection{1. Server-strana}\label{server-strana}}
+
+\begin{itemize}
+\tightlist
+\item
+  Skripte koje ``grade'' web stranicu se ne izvršavaju na lokalnom
+  računalu nego na (host) serveru koji šalje sav HTML kod.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    npr. Wikipedia tablice su već popupunjene sa svim informacijama
+    (brojevi, datumi, nazivi\ldots) koje vidimo u browser-u.
+  \end{itemize}
+\item
+  Drugačije rečeno, sve informacije koje vidimo u našem browser-u su već
+  procesuirane od strane (host) servera.
+\item
+  ``Zamislite'' kao da su informacije ugrađene u HTML web stranice.
+\item
+  \textbf{Izazov za Webscraping:} Pronaći odgovarajuće CSS (ili Xpath)
+  ``selektore''. Snalaženje u dinamičkim web stranicama (npr. ``Next
+  page'' i ``Show More'' tabovi).
+\item
+  \textbf{Ključni koncepti:} CSS, Xpath, HTML
+\end{itemize}
+
+\hypertarget{client-strana}{%
+\subsubsection{2. Client-strana}\label{client-strana}}
+
+\begin{itemize}
+\tightlist
+\item
+  Web stranica sadržava prazni HTML ili CSS okvi.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Npr. Moguće je da se stranica sastoji od praznog predloška tablice
+    bez ikakvih vrijednosti.
+  \end{itemize}
+\item
+  Kada posjetimo URL takve web stranice, naš browser šalje zahtijev
+  (\emph{request}) na host server.
+\item
+  U slučaju da je sve u redu sa zahtjevom (\emph{valid request}), server
+  šalje odgovor (\emph{response}) kao skriptu (\emph{script}), koju naš
+  browser izivršava i koristi kako bi popunio HTML predložak sa
+  (specifičnim) informacijama koje smo zatražili.
+\item
+  \textbf{Izazov za Webscraping:} Pronaći ``API točke'' može biti
+  problematično pošto one nisu uvijek direktno vidljive.
+\item
+  \textbf{Ključni koncepti:} API, API točke
+\end{itemize}
+
+U ovom predavanju ćemo proći kroz glavne razlike između ova dva pristupa
+i dati pregled implikacija koje svaki ima za preuzimanje web sadržaja.
+Važno je istaknuti da webscraping uključuje ponešto ``detektivskog''
+posla. Često će biti potrebno prilagoditi korake s obzirom na podatke
+koje želimo preuzeti, a procedure koje funkcioniraju na jednoj stranici
+neće nužno funkcionirati i na drugoj (ponekad neće funkcionirati ni na
+istoj nakon nekog vremena!). Zbog toga se je moguće reći da webscraping
+podjednako uključuje umjetnost i znanost.
+
+Pozitivna strana priče je da server-strana i client-strana dozvoljavaju
+preuzimanje web sadržaja. Kao što ćemo vidjeti u ostatku predavanja,
+preuzimanje podataka sa web stranice koja funkcionira na client-strani
+(API) je često jednostavnije, pogotovo kada se radi o preuzimanju veće
+količine podataka (\emph{bulk}). Za webscraping vrijedi općenito
+pravilo: \emph{ako vidite podatke u browseru, možete ih i preuzeti}.
+
+\hypertarget{savjet-etiux10dka-i-zakonska-ograniux10denja}{%
+\subsubsection{Savjet: Etička i zakonska
+ograničenja}\label{savjet-etiux10dka-i-zakonska-ograniux10denja}}
+
+Prethodna rečenica ne uzima u obzir važne etičke i zakonske aspekte
+preuzimanja sadržaja sa interneta. Samo zato što možete nešto preuzeti
+sa interneta, ne zanči da biste to i trebali učiniti. Vaša je
+odgovornost procijeniti da li web stranica ima zakonska ograničenja na
+sadržaj koji se tamo nalazi. Alati koje ćemo koristiti u ovom predavanju
+su uistinu moćni i mogu prenapregnuti server i izazvati poteškoće u radu
+ili pad web stranice. Glavna krilatice kod webscraping je stoga ``budite
+pristojni''!
+
+\hypertarget{webscraping-sa-rvest-paketom-server-strana}{%
+\subsection{\texorpdfstring{Webscraping sa \textbf{rvest} paketom
+(server-strana)}{Webscraping sa rvest paketom (server-strana)}}\label{webscraping-sa-rvest-paketom-server-strana}}
+
+Glavni paket koji se u R koristi za preuzimanje web sadržaja na strani
+severa je\textbf{rvest} (\href{https://rvest.tidyverse.org/}{link}). To
+je jednostavan ali moćan paket za webscraping inspiriran Python-ovom
+\textbf{Beautiful Soup}
+(\href{https://www.crummy.com/software/BeautifulSoup/}{link})
+platformom, ali uz dodatne tidyverse funkcionalnosti :-). \textbf{rvest}
+je osmišljen za rad sa stranicama koje su procesuirane na srani severa i
+zbog toga zahtijeva razumijevanje CSS selektora\ldots pa pogledajmo što
+je to točno.
+
+\hypertarget{css-i-selectorgadget}{%
+\subsubsection{CSS i SelectorGadget}\label{css-i-selectorgadget}}
+
+Za detaljnije informacije o
+\href{https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/How_CSS_works}{CSS}
+(i.e Cascading Style Sheets) i
+\href{http://selectorgadget.com/}{SelectorGadget} pročitajte više na
+interentu. Ukratko, CSS je jezik koji određuje izled HTML dokumenata
+(uključujući i web stranice). To postiže tako što omogućuje browseru
+skup pravila za prikaz koja se formiraju na osnovi:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \emph{Properties.} CSS svojstva određuju \textbf{kako} će se nešto
+  prkazati. To su npr. fontovi, stilovi, boje, širina stranice itd.
+\item
+  \emph{Selectors.} CSS selektori odrđuju \textbf{što} što će se
+  prikazivati. Oni definirajz pravila koja se pripisuju pojedinim
+  elementima stranice. Npr Tekstualni elementi definirani kao ``.h1''
+  (i.e.~naslovi) su obično veći i naglašeniji nego elementi definirani
+  kao ``.h2'' (i.e.~podnaslovi).
+\end{enumerate}
+
+Za preuzimanje sadržaja sa web stranice je bitno identificirati CSS
+selektore sadržaja koji želimo skinuti jer tako izoliramo djelove
+stranice od interesa. Upravo tu dolazi do izražaja korisnost
+\emph{SelectorGadget-a}. U ovom predavanj ućemo proći kroz primjer
+korištenja \emph{SelectorGadget-a} no preporučljivo je pogledati
+\href{https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html}{vignette}
+prije nastavka.
+
+\hypertarget{praktiux10dni-primjer-sprint-na-100m-wikipedia}{%
+\subsection{Praktični primjer: Sprint na 100m
+(Wikipedia)}\label{praktiux10dni-primjer-sprint-na-100m-wikipedia}}
+
+Stavimo sve ovo u praktični kontekst. Želimo preuzeti podatke sa
+Wikipedia stranice
+\href{http://en.wikipedia.org/wiki/Men\%27s_100_metres_world_record_progression}{\textbf{Men's
+100 metres world record progression}}.
+
+Prvo, otvorite ovu stranicu u vašem browser-u. Upoznajte se sa
+strukturom stranice: Kakve objekte stranica sadrži? Koliko ima tablica?
+Da li tablice imaju iste kolone? Kakvi su rasponi redova i kolona? itd.
+
+Sada kada ste se upoznali sa strukturom stranice, učitajte cijelu
+stranicu u R koristeći \texttt{rvest::read\_html()} funkciju
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# library(rvest) ## već učitano}
+\NormalTok{m100 <-}\StringTok{ }\KeywordTok{read_html}\NormalTok{(}\StringTok{"http://en.wikipedia.org/wiki/Men%27s_100_metres_world_record_progression"}\NormalTok{) }
+\NormalTok{m100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## {html_document}
+## <html class="client-nojs" lang="en" dir="ltr">
+## [1] <head>\n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8 ...
+## [2] <body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject  ...
+\end{verbatim}
+
+Kao što vidite, ovo je \href{https://en.wikipedia.org/wiki/XML}{XML}
+dokument\footnote{XML je kratica za Extensible Markup Language i jedan
+  je od glavnih jezika za formatiranje web stranica.} koji sadrži sve
+potrebno za procesuiranje Wikipedia stranice. To je otprilike kao da
+promatrate cjelokupni LaTeX ili .pdf dokument (specifikacije, formule,
+itd.), a želite preuzeti samo jednu tablicu ili dio poglavlja.
+
+\hypertarget{tablica-1-pre-iaaf-18811912}{%
+\subsubsection{Tablica 1: Pre-IAAF
+(1881--1912)}\label{tablica-1-pre-iaaf-18811912}}
+
+Pokušajmo izolirati prvu tablicu sa naslovom
+\href{https://en.wikipedia.org/wiki/Men\%27s_100_metres_world_record_progression\#Unofficial_progression_before_the_IAAF}{Unofficial
+progression before the IAAF}. Kao što je objašnjeno u rvest vignette,
+možemo koristiti funkciju \texttt{rvest::html\_nodes()} kako bismo
+izolirali i preuzeli ovu tablicu iz ostatka HTML dokumenta kroz
+specifikaciju odggovarajućih CSS selektor.Potom je potrebno pretvoriti
+objekt u data frame koristeći \texttt{rvest::html\_table()} funkciju.
+Preporuča se korištenje \texttt{fill=TRUE} opcije u ovom slučaju, jer će
+se u suprotnom javiti problemi sa formatiranjem redova zbog razmaka u
+Wiki tablici.
+
+Koristiti ćemo \href{http://selectorgadget.com/}{SelectorGadget} za
+identifikaciju CSS selektora. U ovom slučaju je riječ o ``div+
+.wikitable :nth-child(1)'', pa pogledajmo kako to funkcionira.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m100 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{html_nodes}\NormalTok{(}\StringTok{"div+ .wikitable :nth-child(1)"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{html_table}\NormalTok{(}\DataTypeTok{fill=}\OtherTok{TRUE}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Error in html_table.xml_node(X[[i]], ...): html_name(x) == "table" is not TRUE
+\end{verbatim}
+
+Nešto nije u redu\ldots!? Dobili smo error. Bez da ulazimo u detalje,
+valja naglasiti da je SelectorGadget ponekad neprecizan\ldots.riječ je o
+izvrsnom alatu koji uglavnom radi dobro. Ipak, ponekad ono što izgleda
+kao dobar selektor (i.e.~naglašeno žuto) nije ono što točno tražimo. Ovo
+je prikazano namjerno radi skretanja pažnje na potencijalne probleme
+koji se mogu javiti pri korištenu SelectorGadget. Ponovno valja
+istaknuti: Webscraping je u jednakoj mjeri umjetnost i znanost!
+
+Na sreću, postoji i precizniji način određivanja točnog selektora,a
+odnosi se na korištenje ``inspect web element'' opcije koju ima
+\href{https://www.lifewire.com/get-inspect-element-tool-for-browser-756549}{većina
+modernih browser-a}. U ovom slučaju koristimo (\textbf{Ctrl+Shift+I},
+ili desni klik miša i izaberi ``Inspect''). Potom ćemo proći kroz
+\emph{source elemente} dok Chrome ne istakne tablicu koja nas zanima.
+Potom opet desni klik miša i izaberite \textbf{Copy -\textgreater{} Copy
+selector}. Ovdje je GIF anaimacija opisane procedure:
+
+\includegraphics{../Foto/inspect100m.gif}
+
+Koristeći ovu metodu dobijemo selektor ``\#mw-content-text
+\textgreater{} div \textgreater{} table:nth-child(8)''. Pogledajmo da li
+će opvaj put sve funkcionirati bez error-a. Ponovno ćemo koristiti
+\texttt{rvest::html\_table(fill=TRUE)} funkciju za prebacivanje tablice
+u data frame.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m100 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{html_nodes}\NormalTok{(}\StringTok{"#mw-content-text > div > table:nth-child(8)"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{html_table}\NormalTok{(}\DataTypeTok{fill=}\OtherTok{TRUE}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [[1]]
+##    Time               Athlete    Nationality           Location of races
+## 1  10.8           Luther Cary  United States               Paris, France
+## 2  10.8             Cecil Lee United Kingdom           Brussels, Belgium
+## 3  10.8         Étienne De Ré        Belgium           Brussels, Belgium
+## 4  10.8          L. Atcherley United Kingdom     Frankfurt/Main, Germany
+## 5  10.8          Harry Beaton United Kingdom      Rotterdam, Netherlands
+## 6  10.8 Harald Anderson-Arbin         Sweden         Helsingborg, Sweden
+## 7  10.8      Isaac Westergren         Sweden               Gävle, Sweden
+## 8  10.8                  10.8         Sweden               Gävle, Sweden
+## 9  10.8          Frank Jarvis  United States               Paris, France
+## 10 10.8      Walter Tewksbury  United States               Paris, France
+## 11 10.8            Carl Ljung         Sweden           Stockholm, Sweden
+## 12 10.8      Walter Tewksbury  United States Philadelphia, United States
+## 13 10.8          André Passat         France            Bordeaux, France
+## 14 10.8            Louis Kuhn    Switzerland            Bordeaux, France
+## 15 10.8      Harald Gronfeldt        Denmark             Aarhus, Denmark
+## 16 10.8            Eric Frick         Sweden           Jönköping, Sweden
+## 17 10.6         Knut Lindberg         Sweden          Gothenburg, Sweden
+## 18 10.5         Emil Ketterer        Germany          Karlsruhe, Germany
+## 19 10.5           Richard Rau        Germany       Braunschweig, Germany
+## 20 10.5           Richard Rau        Germany             Munich, Germany
+## 21 10.5            Erwin Kern        Germany             Munich, Germany
+##                  Date
+## 1        July 4, 1891
+## 2  September 25, 1892
+## 3      August 4, 1893
+## 4      April 13, 1895
+## 5     August 28, 1895
+## 6      August 9, 1896
+## 7  September 11, 1898
+## 8  September 10, 1899
+## 9       July 14, 1900
+## 10      July 14, 1900
+## 11 September 23, 1900
+## 12    October 6, 1900
+## 13      June 14, 1903
+## 14      June 14, 1903
+## 15       July 5, 1903
+## 16     August 9, 1903
+## 17    August 26, 1906
+## 18       July 9, 1911
+## 19    August 13, 1911
+## 20       May 12, 1912
+## 21       May 26, 1912
+\end{verbatim}
+
+Sjajno, čini se da sve radi! Sada ćemo sve pripisati novom objektu
+\texttt{pre\_iaaf} i provjeritiobjektnu klasu (class).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pre_iaaf <-}
+\StringTok{  }\NormalTok{m100 }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{html_nodes}\NormalTok{(}\StringTok{"#mw-content-text > div > table:nth-child(8)"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{html_table}\NormalTok{(}\DataTypeTok{fill=}\OtherTok{TRUE}\NormalTok{) }
+\KeywordTok{class}\NormalTok{(pre_iaaf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "list"
+\end{verbatim}
+
+Izgleda da smo dobili list-u. Pretvorimo taj objekt \emph{stvarno} u
+data frame. To je moguće učiniti na više načina. U ovom slučaju ćemo
+koristiti \texttt{dplyr::bind\_rows()} funkciju. Riječ je o izvrsnom
+načinu za pretvaranje više list-a u jedan data frame.\footnote{Ovu
+  funkciju ćemo susresti još nekoliko puta u daljem tijeku kolegija.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## pretvori list u data_frame}
+\CommentTok{# pre_iaaf <- pre_iaaf[[1]] ## također moguće}
+\CommentTok{# library(tidyverse) ## A++već učitano}
+\NormalTok{pre_iaaf <-}\StringTok{ }
+\StringTok{  }\NormalTok{pre_iaaf }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{bind_rows}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{as_tibble}\NormalTok{()}
+\NormalTok{pre_iaaf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 21 x 5
+##     Time Athlete            Nationality    `Location of races`   Date           
+##    <dbl> <chr>              <chr>          <chr>                 <chr>          
+##  1  10.8 Luther Cary        United States  Paris, France         July 4, 1891   
+##  2  10.8 Cecil Lee          United Kingdom Brussels, Belgium     September 25, ~
+##  3  10.8 Étienne De Ré      Belgium        Brussels, Belgium     August 4, 1893 
+##  4  10.8 L. Atcherley       United Kingdom Frankfurt/Main, Germ~ April 13, 1895 
+##  5  10.8 Harry Beaton       United Kingdom Rotterdam, Netherlan~ August 28, 1895
+##  6  10.8 Harald Anderson-A~ Sweden         Helsingborg, Sweden   August 9, 1896 
+##  7  10.8 Isaac Westergren   Sweden         Gävle, Sweden         September 11, ~
+##  8  10.8 10.8               Sweden         Gävle, Sweden         September 10, ~
+##  9  10.8 Frank Jarvis       United States  Paris, France         July 14, 1900  
+## 10  10.8 Walter Tewksbury   United States  Paris, France         July 14, 1900  
+## # ... with 11 more rows
+\end{verbatim}
+
+Sada je potrebno urediti nazive varijabli (kolona)\ldots ovdje koristimo
+\texttt{janitor::clean\_names()} funkciju, koja je napravljena
+isključivo za tu namjenu. (Q: Na koji drugi način se to može učiniti?)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# library(janitor) ## učitano}
+\NormalTok{pre_iaaf <-}
+\StringTok{  }\NormalTok{pre_iaaf }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{clean_names}\NormalTok{()}
+\NormalTok{pre_iaaf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 21 x 5
+##     time athlete            nationality    location_of_races     date           
+##    <dbl> <chr>              <chr>          <chr>                 <chr>          
+##  1  10.8 Luther Cary        United States  Paris, France         July 4, 1891   
+##  2  10.8 Cecil Lee          United Kingdom Brussels, Belgium     September 25, ~
+##  3  10.8 Étienne De Ré      Belgium        Brussels, Belgium     August 4, 1893 
+##  4  10.8 L. Atcherley       United Kingdom Frankfurt/Main, Germ~ April 13, 1895 
+##  5  10.8 Harry Beaton       United Kingdom Rotterdam, Netherlan~ August 28, 1895
+##  6  10.8 Harald Anderson-A~ Sweden         Helsingborg, Sweden   August 9, 1896 
+##  7  10.8 Isaac Westergren   Sweden         Gävle, Sweden         September 11, ~
+##  8  10.8 10.8               Sweden         Gävle, Sweden         September 10, ~
+##  9  10.8 Frank Jarvis       United States  Paris, France         July 14, 1900  
+## 10  10.8 Walter Tewksbury   United States  Paris, France         July 14, 1900  
+## # ... with 11 more rows
+\end{verbatim}
+
+Primijetimo da postoji još nešto ``nereda'' u zapisima Isaac-a
+Westergren-a u Gävle, Sweden. Mogli bismo to popraviti na nekoliko
+načina. U ovom slučaju ćemo pokušati pretvoriti ``athlete'' varijablu
+numeričkui zamijeniti je sa prethodnom vrijednosti.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pre_iaaf <-}
+\StringTok{  }\NormalTok{pre_iaaf }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{athlete =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(athlete)), athlete, }\KeywordTok{lag}\NormalTok{(athlete)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Problem with `mutate()` input `athlete`.
+## i NAs introduced by coercion
+## i Input `athlete` is `ifelse(is.na(as.numeric(athlete)), athlete, lag(athlete))`.
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in ifelse(is.na(as.numeric(athlete)), athlete, lag(athlete)): NAs
+## introduced by coercion
+\end{verbatim}
+
+Na kraju je potrebno urediti ``date'' varijablu tako da R može
+prepoznati string vrijednosti kao datum.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# library(lubridate) ## već učitano}
+\NormalTok{pre_iaaf <-}
+\StringTok{  }\NormalTok{pre_iaaf }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{date =} \KeywordTok{mdy}\NormalTok{(date))}
+\NormalTok{pre_iaaf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 21 x 5
+##     time athlete               nationality    location_of_races       date      
+##    <dbl> <chr>                 <chr>          <chr>                   <date>    
+##  1  10.8 Luther Cary           United States  Paris, France           1891-07-04
+##  2  10.8 Cecil Lee             United Kingdom Brussels, Belgium       1892-09-25
+##  3  10.8 Étienne De Ré         Belgium        Brussels, Belgium       1893-08-04
+##  4  10.8 L. Atcherley          United Kingdom Frankfurt/Main, Germany 1895-04-13
+##  5  10.8 Harry Beaton          United Kingdom Rotterdam, Netherlands  1895-08-28
+##  6  10.8 Harald Anderson-Arbin Sweden         Helsingborg, Sweden     1896-08-09
+##  7  10.8 Isaac Westergren      Sweden         Gävle, Sweden           1898-09-11
+##  8  10.8 Isaac Westergren      Sweden         Gävle, Sweden           1899-09-10
+##  9  10.8 Frank Jarvis          United States  Paris, France           1900-07-14
+## 10  10.8 Walter Tewksbury      United States  Paris, France           1900-07-14
+## # ... with 11 more rows
+\end{verbatim}
+
+Sada imamo čisti data frame i mogli bismo napraviti vizualizaciju
+pre-IAAF podataka. To ćemo ipak malo odgoditi dok ne preuzmemo ostatak
+tablica sa stranice\ldots{}
+
+\end{document}
