@@ -118,7 +118,7 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/06_WEBSCRAP.html">Predavanje 06: Prikupljanje podataka sa interneta - Web Scraping I</a>  + <a href="">Web Scraping II</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/06_WEBSCRAP.html">Predavanje 06: Prikupljanje podataka sa interneta - Web Scraping I</a>  + <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/06_WEBSCRAP_I.html">Web Scraping II</a>
 
 
 <ul>
