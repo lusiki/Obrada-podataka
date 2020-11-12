@@ -8,8 +8,17 @@
 
 
 # Obrada-podataka
-Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi dr.sc. Luka Sikic. 
+Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij polazi od *Big Data* pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na *computational social science (CSS)* principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije.
 
+Cilj kolegija je upoznavanje sa:
+
+1) Kontekstom modernog upravljanja podatcima (*Big Data*)
+2) Alatima za obradu i manipulaciju podataka (*paketi u programskom jeziku R*)
+3) Modernom metodologijom za analizu podataka (*regresija, strojno učenje, obrada teksta- NLP*)
+4) Alatima za prezentaciju i dijeljenje rezulata (*Markdown, Git*)
+5) Programskim jezikom R
+
+Kolegij će osposobiti studente za razumijevanje modernih izvora i alata za obradu podataka, te omogućiti uključivanje u modernu istraživačku paradigmu i tehnološke tokove. Osim naglaska na akdemsku primjenu stečenog znanja, kroz kolegij će se studentim omogućiti uključivanje u poslovni IT sektor na strani analitike i projektnog menadžmenta.
 
 # Raspored
 
@@ -18,17 +27,14 @@ Diplomski kolegij 'Obrada podataka'u zimskom semestru akademske godine 2019/20 n
 
 # Knjige
 
-Koristiti ćemo mnoštvo različitih knjiga koje će biti dostupne na linkovima kod svakog predavanja.
-Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
+Koristiti ćemo mnoštvo različitih knjiga i resursa koje će biti dostupne na linkovima kod svakog predavanja.
+Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <a href="http://barbra-coco.dyndns.org/yuri/R/R%20for%20Data%20Science-%20Import,%20Tidy,%20Transform,%20Visualize,%20and%20Model%20Data.pdf">R for Data Science</a>
 <br><i>od Garrett Grolemund-a i  Hadley Wickham-a</i> 
 <br>Ovo je literatura za R. Dostupna je i <a href="https://r4ds.had.co.nz/">bookdown</a> verzija.
 
-<a href="https://bookdown.org/yihui/rmarkdown/rmarkdown.pdf">R Markdown: The Definitive Guide</a>
-<br><i>od Yihui Xie.</i> 
-<br>Ovo je referenca za komunikaciju i objavu analize u različitim formatima. Dostupna je i <a href="https://bookdown.org/yihui/rmarkdown/">bookdown</a> verzija.
 
 
 # Materijali sa predavanja
