@@ -128,10 +128,8 @@ Sljedeće knjige ulazi u nezaobilaznu literaturu za kolegij:
 <li> Praktični primjeri - Wikipedia</li>
 <li> Dodatni savjeti za WS na strani servera</li>
 <li> WS na strani klijenta</li>
-<li> </li>
-<li> </li>
-<li> </li>
-<li> </li>
+<li> API</li>
+<li> Praktični primjeri (I,II ,III)</li>
 <ul>
 
 </div>
