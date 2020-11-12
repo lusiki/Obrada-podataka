@@ -151,8 +151,6 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 <a href="/Predavanja/06_SPREMANJEdta.pdf">Predavanje 07: Spremanje i baze podataka</a>
 
-<a href="/Predavanja/07_MANIPULACIJAdta.pdf">Predavanje 07: Manipulacija i prilagodba podataka</a>
-
 <a href="/Predavanja/08_PODRŠKA.pdf">Predavanje 08: Podrška za provedbu empirijske analize</a>
 
 <a href="/Predavanja/09_ANALIZA.pdf">Predavanje 09: Statistička analiza</a>
