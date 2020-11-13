@@ -8,12 +8,12 @@
 
 
 # Obrada-podataka
-*OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij polazi od *Big Data* pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na *computational social science (CSS)* principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije. Kolegij nije zamišljen kao sveobuhvatna a referenca za rad sa *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa kontejnerima (*Docker*), programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
+*OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij polazi od *Big Data* pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na *computational social science (CSS)* principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije. Kolegij nije zamišljen kao sveobuhvatna referenca za rad sa *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa kontejnerima (*Docker*), programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
 
 Cilj kolegija je upoznavanje sa:
 
 1) Kontekstom modernog upravljanja podatcima (*Big Data*)
-2) Alatima za obradu i manipulaciju podataka (*paketi u programskom jeziku R*)
+2) Alatima za obradu i manipulaciju podataka (*paketi u programskom jeziku R*, *SQL*, *Spark* )
 3) Modernom metodologijom za analizu podataka (*regresija, strojno učenje, obrada teksta- NLP*)
 4) Alatima za prezentaciju i dijeljenje rezulata (*Markdown, Git*)
 5) Programskim jezikom R
