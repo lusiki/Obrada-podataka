@@ -20,7 +20,6 @@ Cilj kolegija je upoznavanje sa:
 
 Kolegij će osposobiti studente za razumijevanje modernih izvora i alata za obradu podataka, te omogućiti uključivanje u modernu istraživačku paradigmu i tehnološke (*frontier*) tokove. Osim naglaska na akdemsku primjenu stečenog znanja, kroz kolegij će se studentim olakšati uključivanje u poslovni IT sektor na strani analitike i projektnog menadžmenta.
 
-Kolegi je
 
 # Raspored
 
