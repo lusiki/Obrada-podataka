@@ -18,7 +18,7 @@ Cilj kolegija je upoznavanje sa:
 4) Alatima za prezentaciju i dijeljenje rezulata (*Markdown, Git*)
 5) Programskim jezikom R
 
-Kolegij će osposobiti studente za razumijevanje modernih izvora i alata za obradu podataka, te omogućiti uključivanje u modernu istraživačku paradigmu i tehnološke tokove. Osim naglaska na akdemsku primjenu stečenog znanja, kroz kolegij će se studentim omogućiti uključivanje u poslovni IT sektor na strani analitike i projektnog menadžmenta.
+Kolegij će osposobiti studente za razumijevanje modernih izvora i alata za obradu podataka, te omogućiti uključivanje u modernu istraživačku paradigmu i tehnološke (*frontier*) tokove. Osim naglaska na akdemsku primjenu stečenog znanja, kroz kolegij će se studentim olakšati uključivanje u poslovni IT sektor na strani analitike i projektnog menadžmenta.
 
 Kolegi je
 
