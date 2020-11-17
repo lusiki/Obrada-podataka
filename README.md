@@ -8,7 +8,10 @@
 sa kontejnerima (
 
 # Obrada podataka
-*OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij polazi od **Big Data** pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na **computational social science (CSS)** principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije. Kolegij nije zamišljen kao sveobuhvatna referenca za rad sa *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa platformama za suradnju i razmjenu koda (*Git*, *GitHub*), rad sa *Docker*-om, programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
+
+*OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije.
+
+Kolegij polazi od **Big Data** pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na **computational social science (CSS)** principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij nije zamišljen kao sveobuhvatna referenca za rad sa *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa platformama za suradnju i razmjenu koda (*Git*, *GitHub*), rad sa *Docker*-om, programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
 
 Cilj kolegija je upoznavanje sa:
 
@@ -18,7 +21,7 @@ Cilj kolegija je upoznavanje sa:
 4) Alatima za prezentaciju i dijeljenje rezulata (*Markdown, Git*)
 5) Programskim jezikom R
 
-Kolegij će osposobiti studente za razumijevanje modernih izvora i alata za obradu podataka, te omogućiti uključivanje u modernu istraživačku paradigmu i tehnološke (*frontier*) tokove. Osim naglaska na akdemsku primjenu stečenog znanja, kroz kolegij će se studentim olakšati uključivanje u poslovni IT sektor na strani analitike i projektnog menadžmenta.
+Kolegij će osposobiti studente za razumijevanje modernih izvora i alata za obradu podataka, te omogućiti uključivanje u modernu istraživačku paradigmu i tehnološke (*frontier*) tokove. Osim naglaska na akdemsku primjenu stečenog znanja, kroz kolegij će se studentima olakšati uključivanje u poslovni IT sektor na strani analitike i projektnog menadžmenta.
 
 
 # Raspored
