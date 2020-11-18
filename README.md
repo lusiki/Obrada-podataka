@@ -166,7 +166,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/07_BAZE.html">.html</a> | <a href="/Predavanja/07_BAZE.Rmd">.Rmd</a>
-<br><b>Čitanje: </b><a href=""></a>
+<br><b>Čitanje: </b><a href="https://wizardzines.com/zines/sql/">Knjiga *Become A Select Star* od Julia Evans</a>
 <br>
 <br>
 
