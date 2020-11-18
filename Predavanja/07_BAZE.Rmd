@@ -23,12 +23,12 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 
 ## Software podrška
 
-### Napravite *Google Cloud Platform* (besplatno) registraciju/račun 
+### Napravite *Google Cloud Platform* račun (besplatno)
 
-1. Prijavite se za 12-mjesečno ($300 vaučer) [besplatno](https://console.cloud.google.com/freetrial) korištenje *Google Cloud Platform* (GCP).
-Ova procedura zahtijeva *Gmail* račun. Tijekom procesa prijave će biti potrebno unijeti detalje sa kreditne kartice. To će biti kanal za naplatu korištenja servisa u slučaju da potrošite vrijednost dodijeljenu kroz vaučer. Naplata će se izvršiti samo ukoliko to eksplicitno zatražite nakon isteka 12-mjesečnog probnog razdoblja (ili ako registrirate korištenje super-računala u vrijednosti >$300). 
-2. Preuzmite i pratite instalacijske upute za [Google Cloud SDK](https://cloud.google.com/sdk/), odnosno `gcloud`. Ovo je način koji ćemo koristiti za spajanje na GCP sa našeg lokalnog računala (spajanje kroz terminal).
-3. Spremite ID GCP projekta kao *environment* varijablu. Prisjetite se procedure iz [prethodnog predavanja](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/06_WEBSCRAP_I.html). ID projekta će nam biti potreban za spajanje na Google BigQuery bazu podataka u drugom dijelu predavanja. 
+1. Prijavite se za 12-mjesečno  [besplatno](https://console.cloud.google.com/freetrial) korištenje *Google Cloud Platform* (GCP).
+Ova procedura zahtijeva *Gmail* račun. U procesu prijave na GCP je potrebno unijeti broj kreditne kartice. To će biti kanal za naplatu korištenja servisa u slučaju da potrošite vrijednost dodijeljenu kroz vaučer (USD 300) . Naplata će se izvršiti samo ukoliko to eksplicitno zatražite nakon isteka 12-mjesečnog probnog razdoblja (ili ako registrirate korištenje super-računala u vrijednosti > USD 300). 
+2. Preuzmite i pratite instalacijske upute za [Google Cloud SDK](https://cloud.google.com/sdk/), odnosno `gcloud`. Ovo je važno za spajanje na GCP sa lokalnog računala.
+3. Spremite identifikacijski broj (ID) GCP projekta kao *environment* varijablu. Prisjetite se procedure spremanja iz [prethodnog predavanja](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/06_WEBSCRAP_I.html). ID projekta će nam biti potreban za spajanje na Google BigQuery bazu podataka u drugom dijelu predavanja. 
 
 ### R paketi 
 
@@ -37,7 +37,7 @@ Ova procedura zahtijeva *Gmail* račun. Tijekom procesa prijave će biti potrebn
 
 Pomoću sljedeće naredbe možete instalirati i učitati sve potrebne pakete za ovo predavanje:
 
-```{r, cache=F, message=F}
+```{r, cache=F, message=F, warning=FALSE}
 ## učitaj/instaliraj pakete
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, hrbrthemes, nycflights13, glue)
@@ -45,62 +45,51 @@ pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, hrbrthemes, nycflight
 theme_set(hrbrthemes::theme_ipsum())
 ```
 
-
-
-
-
-
-
 ## Uvodno o bazama podataka (101)
 
-Dobar dio *Big Data* principa se zapravo može razumijeti kao "prikriveni" *small data* principi. Drugačije rečeno, zamislite da se radi samo o jednom, manjem dijelu, većeg skupa podataka...Npr. u slučaju analize političkih rezultata bismo razmatrali samo podatke za jedan grad. Sličan primjer možemo zamisliti i u slučaju npr. meteroloških podataka..."Usko grlo" je u oba slučaja točka interakcije sa cjelokupnim podatcima koji su "preveliki" i ne stanu u memoriju. Način za upravljanje takvim podatcima su **relacijske baze podataka**.
+Dobar dio *Big Data* principa se zapravo može razumijeti kao "uvećani" *small data* principi. Drugačije rečeno, zamislite da se radi samo o jednom, manjem dijelu, većeg skupa podataka...npr. u slučaju analize političkih rezultata bismo razmatrali samo izborne rezultate za jedan grad ili županiju. Sličan primjer možemo zamisliti i u slučaju npr. meteroloških podataka..."usko grlo" je u oba slučaja točka interakcije sa cjelokupnim podatcima koji su "preveliki" i ne stanu u memoriju. Način za upravljanje takvim podatcima su **relacijske baze podataka**.
 
-Baze podataka^[Pri tome se misli na *relacijske baze podatka*.] mogu "postojati" lokalno (*locally*) ili na serveru (*remotely*). Kada "postoje" lokalno (češći slučaj), podatci su uglavnom pohranjeni na tvrdom disku (rijetko u memoriji računala). Dohvat željenih podataka sa tvrdog diska se u postiže kroz "upit" (**query**) na bazu. Kroz **query** je definiran opseg i operacije koje želimo primijeniti na podatke, uglavnom u cilju povlačenja podataka u lokalni/radni prostor (memoriju) kako bismo izvršili neku vrstu analize na podatcima. 
+Baze podataka^[Pri tome se misli na *relacijske baze podatka*.] mogu "postojati" lokalno (*locally*) ili na serveru (*remotely*). Kada "postoje" lokalno (češći slučaj), podatci su uglavnom pohranjeni na tvrdom disku (rijetko u memoriji računala). Dohvat željenih podataka sa tvrdog diska se postiže kroz "upit" (**query**) na bazu. **Query** definira sve što želimo od podataka, a uglavnom se radi o opisu procedure i opsega podataka koje povlačimo u lokalni/radni prostor (memoriju) kako bismo kasnije izvršili neku vrstu analize na podatcima. 
 
-Podatci u bazi su organizirani kao **tablice** (npr. excel) koje se sastoje od redova i kolona, pri čemu je svaki red definiran jedinstvenim ključem. U tom su smislu baze podataka slične *data frame* objektima koje smo već susreli, a još sličnije *list*-ama *data frame*-ova u R-u. Da bismo priostupili željenim informacijama iz baze podataka, prvo moramo "indeksirati" (i.e. odrediti, specificirati) dio koji nas zanima, a potom uputiti upit (**query**) na specifičnu bazu.
+Podatci u bazi su organizirani kao **tablice** (npr. excel) koje se sastoje od redova i kolona, pri čemu je svaki red definiran jedinstvenim ključem. U tom su smislu baze podataka slične *data frame* objektima koje smo već susreli, a još sličnije *list-ama* *data frame*-ova u R-u. Da bismo priostupili željenim informacijama iz baze podataka, prvo moramo "indeksirati" (i.e. odrediti, specificirati) dio koji nas zanima, a potom uputiti upit (**query**) na specifičnu bazu.
 
 
-> **Hint:** Tablica u bazi je nešto kao data frame u R list-i. 
+> **Hint:** Tablica u relacijskoj bazi je nešto kao data frame u R list-i. Jedna relacijska baza može sadržavati više različitih baza podataka. Baze mogu biti različitih dimenzija i opsega.
 
 
 
 ## Baze podataka i tidyverse
 
-Skoro svaka relacijska baza podataka koristi [**SQL**](https://en.wikipedia.org/wiki/SQL) (**S**tructured **Q**uery **L**anguage ). SQL je moćan alat i danas je preduvjet za većinu poslova u data science-u. SQL je "arhaični" programski jezik i znatno je manje intuitivan od većine tidyverse alata koje smo do sada susretali. Kasnije ćemo vidjeti kako izgleda osnovna sintaksa SQL jezika no valja unaprijed naglasiti da već sada (iako možda ne poznajete SQL) možete koristiti taj jezik zbog toga što tidyverse kroz **dplyr**  omogućava direktnu komunikaciju sa bazama podataka iz vašeg lokalnog R envirnoment-a.
+Skoro svaka relacijska baza podataka koristi [**SQL**](https://en.wikipedia.org/wiki/SQL) (**S**tructured **Q**uery **L**anguage ) jezik. SQL je moćan alat i danas je preduvjet za većinu poslova u data science-u. Riječ je o *arhaičnom* programskom jeziku, znatno manje intuitivnom od većine tidyverse alata koje smo do sada susretali. Kasnije ćemo vidjeti kako izgleda osnovna sintaksa SQL jezika no valja unaprijed reći da već sada (iako možda ne poznajete SQL) možete koristiti taj jezik zbog toga što tidyverse kroz **dplyr**  omogućava direktnu komunikaciju sa bazama podataka iz vašeg lokalnog R envirnoment-a.
 
 Što to znači? 
 
-To jednostavno znači da je moguće raditi sa bazama podataka koji se nalaze u relacijskim bazama upravo kroz *iste* tidyverse naredbe koje smo susretali u prethodnim predavanjima. To je omogućeno kroz [**dbplyr**](https://dbplyr.tidyverse.org/) paket koji omogućava *backend* za `dplyr`. Možda ste primijetili da **dbplyr** paket pri instalaciji učitiva [**DBI**](https://db.rstudio.com/dbi) paket kao zavisnost (*engl. dependency*). **DBI** omogućava zajedničko sučelje kako bi **dplyr** mogao "komunicirati" sa različitim bazama pomoću iste sintakse. Dakle, nije potrebno izaći izvan okvira tidyverse-a da biste radili sa SQL-om!
+To jednostavno znači da je moguće raditi sa bazama podataka koji se nalaze u relacijskim bazama upravo kroz *iste* tidyverse naredbe koje smo susretali u prethodnim predavanjima. To je omogućeno kroz [**dbplyr**](https://dbplyr.tidyverse.org/) paket koji omogućava *backend* za `dplyr`. Možda ste primijetili da **dbplyr** paket pri instalaciji učitaiva [**DBI**](https://db.rstudio.com/dbi) paket kao zavisnost (*engl. dependency*). **DBI** omogućava zajedničko sučelje kroz koje **dplyr** može komunicirati sa različitim bazama pomoću iste sintakse. Dakle, nije potrebno izaći izvan okvira tidyverse-a da biste radili sa SQL-om!
 
-> **Dodatno:** Ukoliko se upustite dublje u SQL, vjerojatno ćete htjeti naučiti i SQL. **dplyr** i **dbplyr** imaju neke funkcionalnosti koje će olakšati učenje i razumijevanje SQL-a.
-Iako je **DBI** automatski povezan sa **dbplyr**, za ovo predavanje će biti potrebno instalirati specifični backend paket za baze na koje ćemo se spajati. Popis najpopularnijh backend-ova pogledajte [ovdje](https://db.rstudio.com/dplyr/#getting-started). U ovom predavanju ćemo koristiti sljedeća dva: 
+> **Dodatno:** Ukoliko se upustite dublje u DataScience, vjerojatno ćete naučiti i SQL. **dplyr** i **dbplyr** će tu biti od pomoći pošto imaju neke funkcionalnosti koje će olakšati učenje i razumijevanje SQL-a.
+Iako je **DBI** automatski povezan sa **dbplyr**, za ovo predavanje će biti potrebno instalirati backend paket za baze na koje ćemo se spajati. Popis najpopularnijh backend-ova pogledajte [ovdje](https://db.rstudio.com/dplyr/#getting-started). U ovom predavanju ćemo koristiti sljedeća dva: 
   
-1. **RSQLite** sadržava SQLite bazu.
-2. **bigrquery** omogućuje spajanje na Google BigQuery.
+1. **RSQLite** koji sadržava SQLite bazu.
+2. **bigrquery** koji omogućuje spajanje na Google BigQuery.
 
 
-**RSQLite** je varijanta SQL u "laganoj kategoriji" koja postoji samo na lokalnom računalu. Zbog toga ćemo ju koristiti u demmonstrativne svrhe na ovom predavanju. Praktičnost baze se očituje u jednostavnosti spajanja (nije potrebna registracija/lozinka). **bigrquery** zahtijeva prijavu na Google Cloud servise (+ spremanje login detalja u envrinoment variable).
-
-
+**RSQLite** je varijanta SQL u "laganoj kategoriji" koja postoji samo na lokalnom računalu. Zbog toga ćemo ju koristiti u demmonstrativne svrhe na ovom predavanju. Praktičnost ove baze se očituje u jednostavnosti spajanja pri čemu nije potrebna registracija/lozinka. Sa druge strane, **bigrquery** zahtijeva prijavu na Google Cloud servise (+ spremanje login detalja u envrinoment variable).
 
 ## Za početak: SQLite
 
-Za detaljniji pregled pogledajte [*Databases using dplyr*](https://db.rstudio.com/dplyr) tutorial. 
-Trenutni je cilj stvoriti improviziranu bazu na lokalnom računalu koristeći SQLite kako bismo razumjeli osnovne principe interakcije sa bazama podataka.
-
+Za detaljniji pregled pogledajte [*Databases using dplyr*](https://db.rstudio.com/dplyr) tutorial o spajanju na baze podataka kroz dplyr. 
+Trenutno želimo napraviti improviziranu bazu na lokalnom računalu koristeći SQLite kako bismo razumjeli osnovne principe interakcije sa bazama podataka.
 
 ### Spajanje na bazu
 
-
-Prvo je potrebno napraviti (praznu) vezu pomoću `DBI::dbConnect()` funkcije. Tu vezu ćemo spremiti u objekt `con`. U pozadini smo učitali **RSQLite** paket za SQLite backend te dajemo upute R-u da ova lokalna poveznica postoji u memoriji.
-
+Prvo je potrebno napraviti (praznu) vezu pomoću `DBI::dbConnect()` funkcije, a potom ćemo tu vezu spremiti u objekt `con`. U pozadini smo učitali **RSQLite** paket za SQLite backend te dajemo upute R-u da ova lokalna poveznica postoji u memoriji.
 
 ```{r con, cache = FALSE}
 # library(DBI) ## učitano
 con <- dbConnect(RSQLite::SQLite(), path = ":memory:")
 ```
 
-Argumenti `DBI::dbConnect()` funkcije mogu varirati od baze do baze. Prvi argument je uvijek  backend baze (i.e. `RSQLite::SQLite()` u ovom slučaju pošto koristimo (R)SQLite). 
+Argumenti `DBI::dbConnect()` funkcije mogu varirati od baze do baze. Prvi argument je uvijek  backend baze (i.e. `RSQLite::SQLite()`), a u ovom slučaju koristimo SQLite za R. 
 
 Iako i to može varirati, SQLite treba samo jedan argument: `path` do baze. Ovdje koristimo specijalni znak (string), ":memory:", koji daje SQLite do zanja da želimo privremenu (in-memory) bazu. Kasnije ćemo vidjeti složenije procese spajanja koji će ukjučivati detaljnije login informacije. 
 
@@ -196,7 +185,7 @@ tailnum_delay
 
 Sada smo uspješno povukli podatke iz baze u lokalni R envrionment kao data frame objekt. Na tom objektu je moguće koristiti sve poznate operacije kao i sa bilo kojim data frame objektom. To se npr. odnosi na vizualizaciju podataka kako bismo bolje razumjeli 1) odnos između dolaznih i odlaznih kašnjenja i 2) da li avioini nadokađuju vrijeme u slučaju zakašnjelih odlazaka.  
 
-```{r tailnum_delay_ggplot}
+```{r tailnum_delay_ggplot, warning=F, message=F}
 tailnum_delay %>%
   ggplot(aes(x=mean_dep_delay, y=mean_arr_delay, size=n)) +
   geom_point(alpha=0.3) +
@@ -320,13 +309,14 @@ Za korištenje **bigrquery** je potrebno ponuditi *GCP project billing ID*. To j
 billing_id <- Sys.getenv("GCE_DEFAULT_PROJECT_ID") ## zamijenite sa vašim ID 
 ```
 
+> **Hint:** Za interaktivnu komplilaciju (i.e. Knit) *bigquery* koda u R Markdownu je potrebno specificirati ključ. Za detalje [vidi](https://stackoverflow.com/questions/62008509/authentication-for-bigquery-using-bigrquery-from-an-r-markdown-document).
 
 ```{r}
 bigrquery::bq_auth(path = "../key.json")
 
 ```
 
-Nakon što smo podesili ID, možemo započeti sa upitima na bazu i preuzimanjem BigQuery podataka u R radni prostor. To ćemo napraviti kroz dva primjera: 1) podatci o natalitetu u SAD, i 2) podatcima o ribolovu u okviru Global Fishing Watch projekta.
+Nakon što smo podesili ID (*i kljič za interaktivno izvršavanje bigquerry*), možemo započeti sa upitima na bazu i preuzimanjem BigQuery podataka u R radni prostor. To ćemo napraviti kroz dva primjera: 1) podatci o natalitetu u SAD, i 2) podatcima o ribolovu u okviru Global Fishing Watch projekta.
 
 ### Primjer 1) SAD natalitet
 
