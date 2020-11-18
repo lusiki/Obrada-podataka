@@ -91,12 +91,9 @@ con <- dbConnect(RSQLite::SQLite(), path = ":memory:")
 
 Argumenti `DBI::dbConnect()` funkcije mogu varirati od baze do baze. Prvi argument je uvijek  backend baze (i.e. `RSQLite::SQLite()`), a u ovom slučaju koristimo SQLite za R. 
 
-Iako i to može varirati, SQLite treba samo jedan argument: `path` do baze. Ovdje koristimo specijalni znak (string), ":memory:", koji daje SQLite do zanja da želimo privremenu (in-memory) bazu. Kasnije ćemo vidjeti složenije procese spajanja koji će ukjučivati detaljnije login informacije. 
+Iako i to može varirati, SQLite baza treba samo jedan argument: `path` do baze. Ovdje koristimo specijalni znak (string), ":memory:", koji daje SQLite bazi do zanja da želimo privremenu (in-memory) bazu. Kasnije ćemo vidjeti složenije procese spajanja koji će ukjučivati više login informacija. 
 
-
-
-Stvorena `con` veza je trenutno prazna pa ćemo ju iskoristiti za kopiranje podataka iz *flights* podatkovnog skupa koji se nalazi u **nycflights13** paketu. To je moguće napraviti na više načina, a ovdje ćemo koristiti `dplyr::copy_to()` fukciju. U kodu specificiramo naziv tablice ("flights") koja će postojati unutar ove baze. Također proslijeđujemo listu indeksa kroz `copy_to()` funkciju.
-Indeksi osiguravaju efikasnost procesuiranja baze, a najčešće su unaprijed definirani od strane osobe koja održava bazu.
+Stvorena `con` veza je trenutno prazna pa ćemo ju iskoristiti za kopiranje podataka iz *flights* podatkovnog skupa koji se nalazi u **nycflights13** paketu. To je moguće napraviti na više načina, a ovdje ćemo koristiti `dplyr::copy_to()` fukciju. Potrebno je specificirati naziv tablice ("flights") koja će postojati unutar ove baze. Također proslijeđujemo i istu indeksa kroz `copy_to()` funkciju. Indeksi osiguravaju efikasnost u procesuiranju baze, a najčešće su unaprijed definirani od strane onoga tko održava bazu.
 
 ```{r copy_to, cache = FALSE}
 # if (!require("nycflights13")) install.packages("nycflights13") ## već učitano
@@ -123,14 +120,14 @@ flights_db <- tbl(con, "flights")
 flights_db
 ```
 
-Izgleda da sve funkcionira...iako output izgleda "čudno".
+Izgleda da sve funkcionira...iako output izgleda "čudno"! Što znače upitnici kod broja redova?
 
 ### Korištenje **query**-a
 
-Sjajna stvar oko **dplyr** je što on automatski prevodi tidyverse jezik (code) u SQL. Jedan dio **dplyr** naredbi je zapravo baziran na SQL ekvivalentima. Imajući to na umu, specificirati ćemo nekoliko **query**-a korištenjem tipične **dplyr** sintakse koju smo već vidjeli.
+Sjajna stvar oko **dplyr** je što on automatski prevodi tidyverse jezik (code) u SQL. Jedan dio **dplyr** naredbi je zapravo baziran na SQL ekvivalentima. Imajući to na umu, specificirati ćemo nekoliko **query**-a korištenjem tipične **dplyr** sintakse koju smo do sada naučili.
 
 
-```{r flights_db_try_queries}
+```{r flights_db_try_queries, warning=FALSE}
 ## Izaberi kolone
 flights_db %>% select(year:day, dep_delay, arr_delay)
 ## filtriraj prema kriteriju
@@ -141,16 +138,16 @@ flights_db %>%
   summarise(delay = mean(dep_time))
 ```
 
-Sve izgleda kao očekivano osim što output ponovno izgleda nešto drugačije nego što bismo očekivali.Možda se pitate što znači`# Source:   lazy query`?
+Sve izgleda očekivano osim što output ponovno izgleda nešto drugačije nego uobičajno.Možda se pitate što znači`# Source:lazy query`?
 
 ### Ljenost kao vrlilna!
 
-Princip **dplyr** paketa je maksimalna moguća ljenost. To u praksi znači da je R kod preveden u SQL i onda izvršen na bazi, ne u R-u. To je prednost jer:
+Princip **dplyr** paketa je maksimalna moguća ljenost. To u ovom primjeru znači da je R kod preveden u SQL i onda izvršen na bazi, a ne u R-u. To je prednost jer:
 
 - Podatci nisu učitani u R ako se to eksplicitno ne zatraži.
 - Sve se odgađa do zadnjeg trenutka i šalje se na bazu u jednom (zadnjem) koraku.
 
-Zamislite npr. sutuaciju u kojoj želimo saznati prosječana kašnjenja za svaki avion ((i.e. jedinstveni *tail* broj aviona ))!
+Zamislite npr. situaciju u kojoj želimo saznati prosječno kašnjenje za svaki avion (i.e. jedinstveni *tail* broj aviona)!
 
 ```{r tailnum_delay_db}
 tailnum_delay_db <- 
@@ -165,7 +162,7 @@ tailnum_delay_db <-
   filter(n > 100) # makni opservacije manje od 100 
 ```
 
-Ova sekvenca naredbi zapravo nikada ne "dodiruje" bazu!^[Iako ovo možda nije skroz očito...ove naredbe bi bile instantno izvršene čak i kada bi se primijenile na ogromnu količinu podataka (i.e. bazu).] Tek kada zatražimo podatke (objekt `tailnum_delay_db` u konzoli) **dplyr** generira SQL i zatraži rezultate iz baze. Čak i tada **dplyr** nastoji napraviti minimalno potrebno i vrća samo nekoliko redova.
+Ova sekvenca naredbi zapravo nikada ne "dodiruje" bazu!^[Iako ovo možda nije skroz očito...ove naredbe bi bile instantno izvršene čak i kada bi se primijenile na ogromnu količinu podataka (i.e. bazu).] Tek kada zatražimo podatke (objekt `tailnum_delay_db` u konzoli) **dplyr** generira SQL i zatraži rezultate iz baze. Čak i tada **dplyr** nastoji napraviti minimalno potrebno pa vraća samo nekoliko redova u konzolu.
 
 ```{r tailnum_delay_db_print}
 tailnum_delay_db
@@ -174,7 +171,7 @@ tailnum_delay_db
 
 ### Prikupljanje podataka u lokalni radni prostor R
 
-Najčešće je potrebno iterirati kroz podatke nekoliko puta prije nego uistinu shvatite koji dio podataka želite povući sa baze. Nakon što ste "pronašli" podskup podatka koji trebate, **`collect()`** funkcija će povući sve podatke u lokalni data frame.U ovom primjeru ćemo pripisati podatke objektu `tailnum_delay` zato što želimo *query* objekt `tailnum_delay_db` držati odvojeno kako bismo mogli lakše razumjeti principe (prijevode) SQL jezika. 
+Najčešće je potrebno iterirati kroz podatke nekoliko puta prije nego uistinu shvatimo točno koji dio podataka želimo povući sa baze. Nakon što smo identificirali podskup podatka koji nas zanima, **`collect()`** funkcija će biti korisna za povlaćenje podataka u lokalni data frame. U ovom primjeru ćemo pripisati podatke objektu `tailnum_delay`. To radimo jer želimo *query* objekt `tailnum_delay_db` držati odvojeno kako bismo kasnije mogli lakše razumjeti principe (prijevode) SQL jezika. 
 
 ```{r tailnum_delay}
 tailnum_delay <- 
@@ -183,7 +180,7 @@ tailnum_delay <-
 tailnum_delay
 ```
 
-Sada smo uspješno povukli podatke iz baze u lokalni R envrionment kao data frame objekt. Na tom objektu je moguće koristiti sve poznate operacije kao i sa bilo kojim data frame objektom. To se npr. odnosi na vizualizaciju podataka kako bismo bolje razumjeli 1) odnos između dolaznih i odlaznih kašnjenja i 2) da li avioini nadokađuju vrijeme u slučaju zakašnjelih odlazaka.  
+Sada smo uspješno povukli podatke iz baze u lokalni R envrionment kao data frame objekt. Na tom objektu je moguće koristiti sve poznate dplyr operacije. Pogledajmo npr. vizualizaciju podataka za odnos između dolaznih i odlaznih kašnjenja:  
 
 ```{r tailnum_delay_ggplot, warning=F, message=F}
 tailnum_delay %>%
@@ -193,38 +190,37 @@ tailnum_delay %>%
   coord_fixed()
 ```
 
-Ukoliko smo završili sa upitima na SQLite bazu, najčešće se želimo *disconnect*-ati putem `DBI::dbDisconnect(con)` funkcije. Pogledajmo kako izvršiti "sirove" (i.e. neprevedene) SQL upite (query) prije nego što to učinimo.
+Kada završimo sa upitima na SQLite bazu, najčešće se želimo *disconnect-ati* putem `DBI::dbDisconnect(con)` funkcije. Prije toga pogledajmo kako izvršiti *sirove* (i.e. neprevedene) SQL upite (query).
 
 ## Korištenje SQL direktno u R
 
 ### Prevedi pomoću dplyr::show_query()
 
-**dplyr** u pozadini prevodi R u SQL. Zbog toga je moguće koristiti **`show_query()`** funkciju za prikaz SQL koji je pozvao zatraženu tablicu.
+**dplyr** u pozadini prevodi R u SQL pa je moguće koristiti **`show_query()`** funkciju za prikaz SQL-a koji je pozvao zatraženu tablicu.
 
 ```{r show_query_tailnum_delay_db}
 tailnum_delay_db %>% show_query()
 ```
 
-Primijetite da je SQL poziv znatno manje intuitivan nego **dplyr** kod. Ovo je je djelomično određeno i samim prijevodom jer **dplyr** procedura prevođenja uključuje "osigurače" koji kontroliraju ispravno funkcioniranje. Cijena za to je gubitak konciznosti koda (i.e. ponavljanje `SELECT` naredbi). Čak i bez toga je jasno da SQL nije najelegantniji jezik...upravo zbog izraženog *leksičkog* slijeda operacija koji ne uvažava *logički* slijed operacija.^[To je u suprotnosti sa **dplyr** pipe principima koji funkcioniraju po načelu "uzmi ovaj objekt, napravi ovo, zatim ovo...itd.".] SQL jezik karakterizira zadan redosljed naredbi (*order of execution*) i na to se potrebno naviknuti.[Julia Evans](https://twitter.com/b0rk) je to izvrsno prikazala u sdvojoj knjizi, [*Become A Select Star*](https://wizardzines.com/zines/sql/) (preporučeno kao uvod u SQL!).
+Primijetite da je SQL poziv znatno manje intuitivan nego **dplyr** sintaksa. Ovo je je djelomično određeno i internim (dplyr) prijevodom jer **dplyr** procedura prevođenja uključuje "osigurače" koji kontroliraju ispravno funkcioniranje. Osigurači smanjuju konciznost koda(i.e. ponavljanje `SELECT` naredbi) no čak i bez toga je jasno da SQL nije najelegantniji jezik. Nezgrapnu sintaksu čini *leksički* slijed operacija koji ne uvažava i *logički* slijed operacija.^[To je u suprotnosti sa **dplyr** pipe principima koji funkcioniraju po načelu "uzmi ovaj objekt, napravi ovo, zatim ovo...itd.".] Naime, SQL jezik karakterizira zadani redosljed naredbi (*order of execution*) i na to se potrebno naviknuti. [Julia Evans](https://twitter.com/b0rk) je to izvrsno opisuje u svojoj knjizi, [*Become A Select Star*](https://wizardzines.com/zines/sql/) (izvrstan uvod u SQL!).
 
 ![](https://wizardzines.com/zines/sql/samples/from.png)
-Bez da ulazimo u detalje, valja primijetiti kako SQL upiti (query) nisu napisani redosljedom kojim biste razmišljali o njima. Reference za dublje razumjevanje pogledajte [ovdje](https://www.eversql.com/sql-order-of-operations-sql-query-order-of-execution/) i [ovdje](https://blog.jooq.org/2016/12/09/a-beginners-guide-to-the-true-order-of-sql-operations/). 
+Bez da ulazimo u detalje, valja primijetiti kako SQL upiti (query) nisu napisani redosljedom kojim biste normalno razmišljali o njima, a dobra objašnjenja za to pogledajte [ovdje](https://www.eversql.com/sql-order-of-operations-sql-query-order-of-execution/) i [ovdje](https://blog.jooq.org/2016/12/09/a-beginners-guide-to-the-true-order-of-sql-operations/). 
 
 U ovom trenutku je logično postaviti pitanje da li je uopće potrebno znati SQL, pogotovo uzevši u obzir da **dplyr** prijevodi dobro funkcioniraju? 
 
-To je legitimno pitanje no dogovor je da, u nekom trenutku ćete sigurno trebati neki "sirovi" SQL kod. Pogledajmo sada neke primjere na osnovi **DBI** paketa koji mogu olakšati proces učenja.
-
+To je legitimno pitanje no dogovor je potvrdan jer ćete u nekom trenutku sigurno trebati neki *sirovi* SQL kod. Pogledajmo stoga nekoliko primjera na osnovi **DBI** paketa koji mogu olakšati učenje.
 
 ```{r sql_direct_translate}
 ## Ekvivalenti SQL za dplyr naredbe
 flights_db %>% filter(dep_delay > 240) %>% head(5) %>% show_query()
 ```
 
-**Komentar:** U SQL kodu koji slijedi ćemo maknuti navodnike na nazivima objekata (`dep_delay` i `flights`) kao i zagrade oko `WHERE` filtera. To nije neophodno i služi samo kao "osigurač" koji **dplyr** koristi kako bi se postigla kompatibilnost sa SQL-om. 
+**Komentar:** U SQL kodu koji slijedi ćemo maknuti navodnike na nazivima objekata (`dep_delay` i `flights`) kao i zagrade oko `WHERE` filtera. To su prethodno spomenuti *osigurači* koje **dplyr** koristi kako bi se postigla kompatibilnost sa SQL-om. 
 
-### Opcija 1: Koristite R Markdown `sql` *chunk*-ove
+### Opcija 1: R Markdown `sql` *chunk*-ovi
 
-Ako pišete izvještaj ili članak u R Markdown-u, možete integrirati SQL direktno u .Rmd file-u. Potrebno je specificirati *chunk* kao `sql` i R Markdown ( kroz **knitr**) će automatski pozvati **DBI** paket za izvršenje upita. Detalnjije upute i opise možete pronaći u [R Markdown knjizi](https://bookdown.org/yihui/rmarkdown/language-engines.html#sql). Za izvršenje upita (query) od prije je dovoljno sljedeće:
+Kod pisanje izvještaja ili članka u R Markdown-u, moguće je integrirati SQL direktno u .Rmd file. Potrebno je specificirati *chunk* kao `sql` i R Markdown  će automatski ( kroz **knitr**) pozvati **DBI** paket za izvršenje naredbe. Detalnjije upute i opisi su u [R Markdown knjizi](https://bookdown.org/yihui/rmarkdown/language-engines.html#sql). Za izvršenje prethodnog upita (query) je dovoljan sljedeći kod:
 
 ````markdown
 `r ''````{sql, connection=con}
@@ -235,7 +231,7 @@ LIMIT 5
 `r ''````
 ````
 
-Ovdje je isti query/chunk koji smo koristili u prethodnom dijelu ovog predavanja:
+Pogledajte isti query-chunk koji smo koristili u prethodnom dijelu predavanja:
 
 ```{sql sql_direct_rmd, connection=con, cache=FALSE}
 SELECT *
@@ -245,18 +241,18 @@ LIMIT 5
 ```
 
 
-### Opcija 2: Koristite DBI:dbGetQuery()
+### Opcija 2: DBI:dbGetQuery()
 
-Izvrašavanje SQL naredbi nije ograničeno na R Markdown dokumente. To je također moguće u regularnim R skriptama kroz korištenje `DBI::dbGetQuery()` funkcije.
+Izvršavanje SQL naredbi nije ograničeno na R Markdown dokumente. SQL funkcionira i u regularnim R skriptama kroz korištenje `DBI::dbGetQuery()` funkcije.
 
 ```{r sql_direct}
 ## Izvrši SQL naredbnu direktno
 dbGetQuery(con, "SELECT * FROM flights WHERE dep_delay > 240.0 LIMIT 5")
 ```
 
-### Svajet: Koristite glue::glue_sql()
+### Savjet: Koristite glue::glue_sql()
 
-Iako prethodno opisani pristup dobro funkcionira (i.e. SQL query u navodnicima unutar `dbGetQuery()` funkcije), moguće je koristiti i `glue_sql()` funkciju iz [**glue**](https://glue.tidyverse.org/) paketa. To omogućava integrirani pristup koji dozvoljava 1) korištenje lokalnih varijabli u R query-ima i 2) podjelu dugih query-a u sub-query. Ovdje je primjer za 2):.
+Iako prethodno opisani pristup dobro funkcionira (i.e. SQL query u navodnicima unutar `dbGetQuery()` funkcije), moguće je koristiti i `glue_sql()` funkciju iz [**glue**](https://glue.tidyverse.org/) paketa. To omogućava integrirani pristup koji omogućava 1) korištenje lokalnih varijabli u R query-ima i 2) podjelu query-a na djelove (sub-query). Ovdje je primjer za drugi slučaj:
 
 ```{r sql_direct_glue}
 # library(glue) ## učitano
@@ -278,11 +274,11 @@ sql_query <-
 dbGetQuery(con, sql_query)
 ```
 
-Iako ovo izgleda kao nepotrebno više posla `glue::glue_sql()` pristup se isplati kada morate raditi sa većim, povezanim query-ima. Za dodatne upute i opis funkcionalnosti pogledajte [dokumentaciju](https://glue.tidyverse.org/reference/glue_sql.html).
+Iako ovo izgleda kao više posla `glue::glue_sql()` pristup se isplati kada morate raditi sa većim i povezanim query-ima. Za detaljnije upute i opis svih funkcionalnosti pogledajte [dokumentaciju](https://glue.tidyverse.org/reference/glue_sql.html).
 
 ### Kraj rada sa bazom- disconnect
 
-Na kraju se potrebno odspojiti sa baze pomoću `DBI::dbDisconnect()` funkcije.
+Na kraju se potrebno odspojiti sa baze pomoću `DBI::dbDisconnect()` funkcije. Konačno!
 
 ```{r dbDisconnect, cache=FALSE}
 dbDisconnect(con)
@@ -312,7 +308,7 @@ billing_id <- Sys.getenv("GCE_DEFAULT_PROJECT_ID") ## zamijenite sa vašim ID
 > **Hint:** Za interaktivnu komplilaciju (i.e. Knit) *bigquery* koda u R Markdownu je potrebno specificirati ključ. Za detalje [vidi](https://stackoverflow.com/questions/62008509/authentication-for-bigquery-using-bigrquery-from-an-r-markdown-document).
 
 ```{r}
-bigrquery::bq_auth(path = "../key.json")
+bigrquery::bq_auth(path = "D:/LUKA/Academic/HS/NASTAVA/20-21/key.json")
 
 ```
 
