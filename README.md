@@ -152,7 +152,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="">Predavanje 07: Rad sa bazama podataka</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/07_BAZE.html">Predavanje 07: Rad sa bazama podataka</a>
 
 <ul>
 <li> Što su baze podatka</li>
