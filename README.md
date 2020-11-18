@@ -10,7 +10,7 @@
 
 *OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije.
 
-Kolegij polazi od **Big Data** pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na **computational social science (CSS)** principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij nije zamišljen kao sveobuhvatna referenca za rad sa *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa platformama za suradnju i razmjenu koda (*Git*, *GitHub*), rad sa *Docker*-om, programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
+Kolegij polazi od **Big Data** pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na **computational social science (CSS)** principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij nije zamišljen kao sveobuhvatna referenca za rad s *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa platformama za suradnju i razmjenu koda (*Git*, *GitHub*), rad sa *Docker*-om, programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
 
 Cilj kolegija je upoznavanje sa:
 
@@ -151,8 +151,30 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 
 
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="">Predavanje 07: Rad sa bazama podataka</a>
 
-<a href="/Predavanja/06_SPREMANJEdta.pdf">Predavanje 07: Spremanje i baze podataka</a>
+<ul>
+<li> Softverski set-up</li>
+<li> Webscraping osnove</li>
+<li> WS na strani servera - rvest</li>
+<li> Praktični primjeri - Wikipedia</li>
+<li> Dodatni savjeti za WS na strani servera</li>
+<li> WS na strani klijenta</li>
+<li> API</li>
+<li> Praktični primjeri (I,II ,III)</li>
+<ul>
+
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/07_BAZE.html">.html</a> | <a href="/Predavanja/07_BAZEP.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href=""></a>
+<br>
+<br>
+
+
+
+
 
 <a href="/Predavanja/08_PODRŠKA.pdf">Predavanje 08: Podrška za provedbu empirijske analize</a>
 

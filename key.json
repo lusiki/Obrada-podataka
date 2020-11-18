@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "carbon-dominion-295919",
+  "private_key_id": "14f2d680ece09c1ec2f84e1bdb4cb9ec1159e33b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCcy/NskKtKqabE\nkXApDMwu/wZqH7nmnYv8gFEF5tYQ3kcKaA+RyXI9voHKrvnpFFN5jGwPlrjAt7xK\nxnZl1zQ6dsGUc0CQfTMDPzD3omXR4pNoh1S8LZnqaAF/07oblWFh8U/fc5Z/yEvF\nQO9ffVNSuxJYwP+n/VhaI5lQwbWI2qF/zl6/tB7npw9wf3UbHdlovIG7AdpKR3Gd\nqwjH0DUIfWucgv/dEVH4Pmj41eSt0j3c2CuoDvI5xw+9p3cesqMCHXkcZ/D3L4Ai\nehEgSEH5nMaOZV6MKj/qDWF2OluuZDWqIoK0zsOh9/rLjvqbdpyhOqXm5oYF9ESU\n+zT4+ulBAgMBAAECggEAB50OoZ2nt50jxCU0v0WID5siBlqqhfRt9PGNHZ5/E/wb\nEnoJkYBo2+8pcbxL1cG/KOaE47/jkjYJvk7DNoA74L/d9/Wds7ZkmPqDR+76hzW7\nhyaVGnsTX3Kz6e9PuOGoxB75zCWab/N7nGUiCm61Mk3zntwmPdO7K8tROT7ir/Ws\nTrPJ0yeOu9fW+VCZFsPSU4aIAIPeWPSF43pZzbnVd1Q6mFPk4yYzDVmtdx/ByxmF\nMjqujkwjmVFjWmkSrEpmH2x3J7TFzz/965tZqA6V881c/tqeyM8kW7SEHMBIJFcd\nlSh60m6oSbewliWuwiYHqUHFCnpAMFbyWsKpmbOMwQKBgQDLw3WLeZz+bZvjxXEC\n0rIDpHQAGZDAmql22/GlRYVtDA9euKy+lfJFxeNQ+SkhdC5tWhbVtPKp2R7Fp4Zt\nCRl05h77HQTtPDI/jHl6b9Oj8DnOd9u8r5v/AON2aDFiUgBF5H6k2YhFoFLJOTAS\nYXdhDAhZrtb0kHO3AfNnGETGcQKBgQDE/ioVdywIIS9TZWyoHMlOY1Y9h3fUImJS\nM6MKz5HcL2B7LV2by+QLU/GadU9AISOPNWVXuJxCyj59JVG5BpG5xzymkaTRfWx0\nm0o8b6L5RY4aw1Opbd4aY6xgXTkHeCnw6p7HrjolZ6xJ5lW+bZ7LA/TVPT8Jx3dJ\nPRzP1uzX0QKBgD/NdzvyG5eLaLm8dDOHF9iOIQh6+NlmVFP0cMjoaOwJT7LALs8K\nkq8IVLJhImDoSTVSdT37h9RpOPp5B12S8Naqy96jaoyCQdWmPc95vpJhwSgGXdbK\nQhVqCM9ltrjrpkw8TO9/ce0jU2jQsF3BCSlpJCA43/P6W1FdmgKZFcfxAoGBAJED\nWQ98Ltm9NA18OER5DGe8EJwywS9UMHS6tmca7hDcf3Wtq58otLLyFITTnodi3b5q\nXDP7Hmy8XMvbURGXmGbeF/O2e1ILtm8QcdGTjLFbVoS1DT1IN5vNi/NULMsm1hkX\nXdM4mm02qEmuWahZIe/o9a6T63fTcihj6HXHjYpBAoGAHnE1erbP8h9Pyx0cM5hf\nR0qN/sMHUWFcBw/KZaWtF5hG0XixY3U7ieFUALOWzLFUn+mTqOMzVBYa3HxXKXuJ\nOa+G/2AG0SVbLAJNtBU+jFJr8WX/ekPsoM2EhNjsymo4XL3U8MnpzL4cOtNg1Ot4\nhUCx4VwpFvmBGTdz0TJh+JM=\n-----END PRIVATE KEY-----\n",
+  "client_email": "gce-97@carbon-dominion-295919.iam.gserviceaccount.com",
+  "client_id": "100508340459705593474",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gce-97%40carbon-dominion-295919.iam.gserviceaccount.com"
+}

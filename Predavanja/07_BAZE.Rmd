@@ -1,0 +1,591 @@
+---
+title: "Obrada podataka"
+author:
+  name: Luka Sikic, PhD
+  affiliation: Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)
+subtitle: 'Predavanje 7: Rad sa bazama podataka'
+output:
+  html_document:
+    theme: flatly
+    highlight: haddock
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+    keep_md: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
+```
+
+## Software podrška
+
+### Napravite *Google Cloud Platform* (besplatno) registraciju/račun 
+
+1. Prijavite se za 12-mjesečno ($300 vaučer) [besplatno](https://console.cloud.google.com/freetrial) korištenje *Google Cloud Platform* (GCP).
+Ova procedura zahtijeva *Gmail* račun. Tijekom procesa prijave će biti potrebno unijeti detalje sa kreditne kartice. To će biti kanal za naplatu korištenja servisa u slučaju da potrošite vrijednost dodijeljenu kroz vaučer. Naplata će se izvršiti samo ukoliko to eksplicitno zatražite nakon isteka 12-mjesečnog probnog razdoblja (ili ako registrirate korištenje super-računala u vrijednosti >$300). 
+2. Preuzmite i pratite instalacijske upute za [Google Cloud SDK](https://cloud.google.com/sdk/), odnosno `gcloud`. Ovo je način koji ćemo koristiti za spajanje na GCP sa našeg lokalnog računala (spajanje kroz terminal).
+3. Spremite ID GCP projekta kao *environment* varijablu. Prisjetite se procedure iz [prethodnog predavanja](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/06_WEBSCRAP_I.html). ID projekta će nam biti potreban za spajanje na Google BigQuery bazu podataka u drugom dijelu predavanja. 
+
+### R paketi 
+
+- Novi: **dbplyr**, **DBI**, **RSQLite**,**bigrquery**, **glue**
+- Otprije korišteni: **tidyverse**, **hrbrthemes**, **nycflights13**
+
+Pomoću sljedeće naredbe možete instalirati i učitati sve potrebne pakete za ovo predavanje:
+
+```{r, cache=F, message=F}
+## učitaj/instaliraj pakete
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, hrbrthemes, nycflights13, glue)
+## Preferencija:ggplot2 tema
+theme_set(hrbrthemes::theme_ipsum())
+```
+
+
+
+
+
+
+
+## Uvodno o bazama podataka (101)
+
+Dobar dio *Big Data* principa se zapravo može razumijeti kao "prikriveni" *small data* principi. Drugačije rečeno, zamislite da se radi samo o jednom, manjem dijelu, većeg skupa podataka...Npr. u slučaju analize političkih rezultata bismo razmatrali samo podatke za jedan grad. Sličan primjer možemo zamisliti i u slučaju npr. meteroloških podataka..."Usko grlo" je u oba slučaja točka interakcije sa cjelokupnim podatcima koji su "preveliki" i ne stanu u memoriju. Način za upravljanje takvim podatcima su **relacijske baze podataka**.
+
+Baze podataka^[Pri tome se misli na *relacijske baze podatka*.] mogu "postojati" lokalno (*locally*) ili na serveru (*remotely*). Kada "postoje" lokalno (češći slučaj), podatci su uglavnom pohranjeni na tvrdom disku (rijetko u memoriji računala). Dohvat željenih podataka sa tvrdog diska se u postiže kroz "upit" (**query**) na bazu. Kroz **query** je definiran opseg i operacije koje želimo primijeniti na podatke, uglavnom u cilju povlačenja podataka u lokalni/radni prostor (memoriju) kako bismo izvršili neku vrstu analize na podatcima. 
+
+Podatci u bazi su organizirani kao **tablice** (npr. excel) koje se sastoje od redova i kolona, pri čemu je svaki red definiran jedinstvenim ključem. U tom su smislu baze podataka slične *data frame* objektima koje smo već susreli, a još sličnije *list*-ama *data frame*-ova u R-u. Da bismo priostupili željenim informacijama iz baze podataka, prvo moramo "indeksirati" (i.e. odrediti, specificirati) dio koji nas zanima, a potom uputiti upit (**query**) na specifičnu bazu.
+
+
+> **Hint:** Tablica u bazi je nešto kao data frame u R list-i. 
+
+
+
+## Baze podataka i tidyverse
+
+Skoro svaka relacijska baza podataka koristi [**SQL**](https://en.wikipedia.org/wiki/SQL) (**S**tructured **Q**uery **L**anguage ). SQL je moćan alat i danas je preduvjet za većinu poslova u data science-u. SQL je "arhaični" programski jezik i znatno je manje intuitivan od većine tidyverse alata koje smo do sada susretali. Kasnije ćemo vidjeti kako izgleda osnovna sintaksa SQL jezika no valja unaprijed naglasiti da već sada (iako možda ne poznajete SQL) možete koristiti taj jezik zbog toga što tidyverse kroz **dplyr**  omogućava direktnu komunikaciju sa bazama podataka iz vašeg lokalnog R envirnoment-a.
+
+Što to znači? 
+
+To jednostavno znači da je moguće raditi sa bazama podataka koji se nalaze u relacijskim bazama upravo kroz *iste* tidyverse naredbe koje smo susretali u prethodnim predavanjima. To je omogućeno kroz [**dbplyr**](https://dbplyr.tidyverse.org/) paket koji omogućava *backend* za `dplyr`. Možda ste primijetili da **dbplyr** paket pri instalaciji učitiva [**DBI**](https://db.rstudio.com/dbi) paket kao zavisnost (*engl. dependency*). **DBI** omogućava zajedničko sučelje kako bi **dplyr** mogao "komunicirati" sa različitim bazama pomoću iste sintakse. Dakle, nije potrebno izaći izvan okvira tidyverse-a da biste radili sa SQL-om!
+
+> **Dodatno:** Ukoliko se upustite dublje u SQL, vjerojatno ćete htjeti naučiti i SQL. **dplyr** i **dbplyr** imaju neke funkcionalnosti koje će olakšati učenje i razumijevanje SQL-a.
+Iako je **DBI** automatski povezan sa **dbplyr**, za ovo predavanje će biti potrebno instalirati specifični backend paket za baze na koje ćemo se spajati. Popis najpopularnijh backend-ova pogledajte [ovdje](https://db.rstudio.com/dplyr/#getting-started). U ovom predavanju ćemo koristiti sljedeća dva: 
+  
+1. **RSQLite** sadržava SQLite bazu.
+2. **bigrquery** omogućuje spajanje na Google BigQuery.
+
+
+**RSQLite** je varijanta SQL u "laganoj kategoriji" koja postoji samo na lokalnom računalu. Zbog toga ćemo ju koristiti u demmonstrativne svrhe na ovom predavanju. Praktičnost baze se očituje u jednostavnosti spajanja (nije potrebna registracija/lozinka). **bigrquery** zahtijeva prijavu na Google Cloud servise (+ spremanje login detalja u envrinoment variable).
+
+
+
+## Za početak: SQLite
+
+Za detaljniji pregled pogledajte [*Databases using dplyr*](https://db.rstudio.com/dplyr) tutorial. 
+Trenutni je cilj stvoriti improviziranu bazu na lokalnom računalu koristeći SQLite kako bismo razumjeli osnovne principe interakcije sa bazama podataka.
+
+
+### Spajanje na bazu
+
+
+Prvo je potrebno napraviti (praznu) vezu pomoću `DBI::dbConnect()` funkcije. Tu vezu ćemo spremiti u objekt `con`. U pozadini smo učitali **RSQLite** paket za SQLite backend te dajemo upute R-u da ova lokalna poveznica postoji u memoriji.
+
+
+```{r con, cache = FALSE}
+# library(DBI) ## učitano
+con <- dbConnect(RSQLite::SQLite(), path = ":memory:")
+```
+
+Argumenti `DBI::dbConnect()` funkcije mogu varirati od baze do baze. Prvi argument je uvijek  backend baze (i.e. `RSQLite::SQLite()` u ovom slučaju pošto koristimo (R)SQLite). 
+
+Iako i to može varirati, SQLite treba samo jedan argument: `path` do baze. Ovdje koristimo specijalni znak (string), ":memory:", koji daje SQLite do zanja da želimo privremenu (in-memory) bazu. Kasnije ćemo vidjeti složenije procese spajanja koji će ukjučivati detaljnije login informacije. 
+
+
+
+Stvorena `con` veza je trenutno prazna pa ćemo ju iskoristiti za kopiranje podataka iz *flights* podatkovnog skupa koji se nalazi u **nycflights13** paketu. To je moguće napraviti na više načina, a ovdje ćemo koristiti `dplyr::copy_to()` fukciju. U kodu specificiramo naziv tablice ("flights") koja će postojati unutar ove baze. Također proslijeđujemo listu indeksa kroz `copy_to()` funkciju.
+Indeksi osiguravaju efikasnost procesuiranja baze, a najčešće su unaprijed definirani od strane osobe koja održava bazu.
+
+```{r copy_to, cache = FALSE}
+# if (!require("nycflights13")) install.packages("nycflights13") ## već učitano
+copy_to(
+  dest = con, 
+  df = nycflights13::flights, 
+  name = "flights",
+  temporary = FALSE, 
+  indexes = list(
+    c("year", "month", "day"), 
+    "carrier", 
+    "tailnum",
+    "dest"
+    )
+  )
+```
+
+Sada kada su podatci kopirani, možemo ih "pozvati" u R kroz `dplyr::tbl()` funkciju:
+
+```{r flights_db}
+# library(dplyr) ## Already loaded
+# library(dbplyr) ## Already loaded
+flights_db <- tbl(con, "flights")
+flights_db
+```
+
+Izgleda da sve funkcionira...iako output izgleda "čudno".
+
+### Korištenje **query**-a
+
+Sjajna stvar oko **dplyr** je što on automatski prevodi tidyverse jezik (code) u SQL. Jedan dio **dplyr** naredbi je zapravo baziran na SQL ekvivalentima. Imajući to na umu, specificirati ćemo nekoliko **query**-a korištenjem tipične **dplyr** sintakse koju smo već vidjeli.
+
+
+```{r flights_db_try_queries}
+## Izaberi kolone
+flights_db %>% select(year:day, dep_delay, arr_delay)
+## filtriraj prema kriteriju
+flights_db %>% filter(dep_delay > 240) 
+## prosječno kašnjenje po destinaciji (group/summarise)
+flights_db %>%
+  group_by(dest) %>%
+  summarise(delay = mean(dep_time))
+```
+
+Sve izgleda kao očekivano osim što output ponovno izgleda nešto drugačije nego što bismo očekivali.Možda se pitate što znači`# Source:   lazy query`?
+
+### Ljenost kao vrlilna!
+
+Princip **dplyr** paketa je maksimalna moguća ljenost. To u praksi znači da je R kod preveden u SQL i onda izvršen na bazi, ne u R-u. To je prednost jer:
+
+- Podatci nisu učitani u R ako se to eksplicitno ne zatraži.
+- Sve se odgađa do zadnjeg trenutka i šalje se na bazu u jednom (zadnjem) koraku.
+
+Zamislite npr. sutuaciju u kojoj želimo saznati prosječana kašnjenja za svaki avion ((i.e. jedinstveni *tail* broj aviona ))!
+
+```{r tailnum_delay_db}
+tailnum_delay_db <- 
+  flights_db %>% 
+  group_by(tailnum) %>%
+  summarise(
+    mean_dep_delay = mean(dep_delay),
+    mean_arr_delay = mean(arr_delay),
+    n = n()
+    ) %>% 
+  arrange(desc(mean_arr_delay)) %>%
+  filter(n > 100) # makni opservacije manje od 100 
+```
+
+Ova sekvenca naredbi zapravo nikada ne "dodiruje" bazu!^[Iako ovo možda nije skroz očito...ove naredbe bi bile instantno izvršene čak i kada bi se primijenile na ogromnu količinu podataka (i.e. bazu).] Tek kada zatražimo podatke (objekt `tailnum_delay_db` u konzoli) **dplyr** generira SQL i zatraži rezultate iz baze. Čak i tada **dplyr** nastoji napraviti minimalno potrebno i vrća samo nekoliko redova.
+
+```{r tailnum_delay_db_print}
+tailnum_delay_db
+```
+
+
+### Prikupljanje podataka u lokalni radni prostor R
+
+Najčešće je potrebno iterirati kroz podatke nekoliko puta prije nego uistinu shvatite koji dio podataka želite povući sa baze. Nakon što ste "pronašli" podskup podatka koji trebate, **`collect()`** funkcija će povući sve podatke u lokalni data frame.U ovom primjeru ćemo pripisati podatke objektu `tailnum_delay` zato što želimo *query* objekt `tailnum_delay_db` držati odvojeno kako bismo mogli lakše razumjeti principe (prijevode) SQL jezika. 
+
+```{r tailnum_delay}
+tailnum_delay <- 
+  tailnum_delay_db %>% 
+  collect()
+tailnum_delay
+```
+
+Sada smo uspješno povukli podatke iz baze u lokalni R envrionment kao data frame objekt. Na tom objektu je moguće koristiti sve poznate operacije kao i sa bilo kojim data frame objektom. To se npr. odnosi na vizualizaciju podataka kako bismo bolje razumjeli 1) odnos između dolaznih i odlaznih kašnjenja i 2) da li avioini nadokađuju vrijeme u slučaju zakašnjelih odlazaka.  
+
+```{r tailnum_delay_ggplot}
+tailnum_delay %>%
+  ggplot(aes(x=mean_dep_delay, y=mean_arr_delay, size=n)) +
+  geom_point(alpha=0.3) +
+  geom_abline(intercept = 0, slope = 1, col="orange") +
+  coord_fixed()
+```
+
+Ukoliko smo završili sa upitima na SQLite bazu, najčešće se želimo *disconnect*-ati putem `DBI::dbDisconnect(con)` funkcije. Pogledajmo kako izvršiti "sirove" (i.e. neprevedene) SQL upite (query) prije nego što to učinimo.
+
+## Korištenje SQL direktno u R
+
+### Prevedi pomoću dplyr::show_query()
+
+**dplyr** u pozadini prevodi R u SQL. Zbog toga je moguće koristiti **`show_query()`** funkciju za prikaz SQL koji je pozvao zatraženu tablicu.
+
+```{r show_query_tailnum_delay_db}
+tailnum_delay_db %>% show_query()
+```
+
+Primijetite da je SQL poziv znatno manje intuitivan nego **dplyr** kod. Ovo je je djelomično određeno i samim prijevodom jer **dplyr** procedura prevođenja uključuje "osigurače" koji kontroliraju ispravno funkcioniranje. Cijena za to je gubitak konciznosti koda (i.e. ponavljanje `SELECT` naredbi). Čak i bez toga je jasno da SQL nije najelegantniji jezik...upravo zbog izraženog *leksičkog* slijeda operacija koji ne uvažava *logički* slijed operacija.^[To je u suprotnosti sa **dplyr** pipe principima koji funkcioniraju po načelu "uzmi ovaj objekt, napravi ovo, zatim ovo...itd.".] SQL jezik karakterizira zadan redosljed naredbi (*order of execution*) i na to se potrebno naviknuti.[Julia Evans](https://twitter.com/b0rk) je to izvrsno prikazala u sdvojoj knjizi, [*Become A Select Star*](https://wizardzines.com/zines/sql/) (preporučeno kao uvod u SQL!).
+
+![](https://wizardzines.com/zines/sql/samples/from.png)
+Bez da ulazimo u detalje, valja primijetiti kako SQL upiti (query) nisu napisani redosljedom kojim biste razmišljali o njima. Reference za dublje razumjevanje pogledajte [ovdje](https://www.eversql.com/sql-order-of-operations-sql-query-order-of-execution/) i [ovdje](https://blog.jooq.org/2016/12/09/a-beginners-guide-to-the-true-order-of-sql-operations/). 
+
+U ovom trenutku je logično postaviti pitanje da li je uopće potrebno znati SQL, pogotovo uzevši u obzir da **dplyr** prijevodi dobro funkcioniraju? 
+
+To je legitimno pitanje no dogovor je da, u nekom trenutku ćete sigurno trebati neki "sirovi" SQL kod. Pogledajmo sada neke primjere na osnovi **DBI** paketa koji mogu olakšati proces učenja.
+
+
+```{r sql_direct_translate}
+## Ekvivalenti SQL za dplyr naredbe
+flights_db %>% filter(dep_delay > 240) %>% head(5) %>% show_query()
+```
+
+**Komentar:** U SQL kodu koji slijedi ćemo maknuti navodnike na nazivima objekata (`dep_delay` i `flights`) kao i zagrade oko `WHERE` filtera. To nije neophodno i služi samo kao "osigurač" koji **dplyr** koristi kako bi se postigla kompatibilnost sa SQL-om. 
+
+### Opcija 1: Koristite R Markdown `sql` *chunk*-ove
+
+Ako pišete izvještaj ili članak u R Markdown-u, možete integrirati SQL direktno u .Rmd file-u. Potrebno je specificirati *chunk* kao `sql` i R Markdown ( kroz **knitr**) će automatski pozvati **DBI** paket za izvršenje upita. Detalnjije upute i opise možete pronaći u [R Markdown knjizi](https://bookdown.org/yihui/rmarkdown/language-engines.html#sql). Za izvršenje upita (query) od prije je dovoljno sljedeće:
+
+````markdown
+`r ''````{sql, connection=con}
+SELECT *
+FROM flights
+WHERE dep_delay > 240
+LIMIT 5
+`r ''````
+````
+
+Ovdje je isti query/chunk koji smo koristili u prethodnom dijelu ovog predavanja:
+
+```{sql sql_direct_rmd, connection=con, cache=FALSE}
+SELECT *
+FROM flights
+WHERE dep_delay > 240
+LIMIT 5
+```
+
+
+### Opcija 2: Koristite DBI:dbGetQuery()
+
+Izvrašavanje SQL naredbi nije ograničeno na R Markdown dokumente. To je također moguće u regularnim R skriptama kroz korištenje `DBI::dbGetQuery()` funkcije.
+
+```{r sql_direct}
+## Izvrši SQL naredbnu direktno
+dbGetQuery(con, "SELECT * FROM flights WHERE dep_delay > 240.0 LIMIT 5")
+```
+
+### Svajet: Koristite glue::glue_sql()
+
+Iako prethodno opisani pristup dobro funkcionira (i.e. SQL query u navodnicima unutar `dbGetQuery()` funkcije), moguće je koristiti i `glue_sql()` funkciju iz [**glue**](https://glue.tidyverse.org/) paketa. To omogućava integrirani pristup koji dozvoljava 1) korištenje lokalnih varijabli u R query-ima i 2) podjelu dugih query-a u sub-query. Ovdje je primjer za 2):.
+
+```{r sql_direct_glue}
+# library(glue) ## učitano
+## stvori lokalne R varijable
+tbl <- "flights"
+d_var <- "dep_delay"
+d_thresh <- 240
+## "glued" SQL query kao string
+sql_query <-
+  glue_sql("
+  SELECT *
+  FROM {`tbl`}
+  WHERE ({`d_var`} > {d_thresh})
+  LIMIT 5
+  ", 
+  .con = con
+  )
+## izvrži query
+dbGetQuery(con, sql_query)
+```
+
+Iako ovo izgleda kao nepotrebno više posla `glue::glue_sql()` pristup se isplati kada morate raditi sa većim, povezanim query-ima. Za dodatne upute i opis funkcionalnosti pogledajte [dokumentaciju](https://glue.tidyverse.org/reference/glue_sql.html).
+
+### Kraj rada sa bazom- disconnect
+
+Na kraju se potrebno odspojiti sa baze pomoću `DBI::dbDisconnect()` funkcije.
+
+```{r dbDisconnect, cache=FALSE}
+dbDisconnect(con)
+```
+
+
+
+## Prinosi na opseg: Google BigQuery
+
+Nakon što smo naučili osnovne principe interakcije sa bazama podatka, sada ćemo proći kroz nešto realniji primjer. To se odnosi na korištenje [**Google BigQuery**](https://cloud.google.com/bigquery/) servisa. BigQuery je "*serverless, highly scalable, enterprise data warehouse designed to make all your data analysts productive at an unmatched price-performance*". Neke od sjajnih karakteristika ove platforme su: 
+
+- **Pristupačnost** BigQuery je dio Google Cloud Platform (GCP) koja omogućava rad sa podatcima u oblaku (cloud). Za pristup servisu pratite upute sa početka predavanja. Potrebna je registracija i prijava!
+- **Ekonomičnost** Servis je izrazito ekonomičan. (Pogledajte: [Cjenik](https://cloud.google.com/bigquery/pricing).) Čak i izvan probnog 12 mjesečnog testnog razdoblja, servis omogućuje 1 TB besplatnog prometa svaki mjesec.^[ "T" označava *terabajte*.] Svaki dodatni TB košta $5 nakon isteka probnog razdoblja. Pohrana podataka je također jeftina, čak i ako mate pristup standardnim (javnim) bazama. 
+- **Dostupnost podataka.** BigQuery sadrži [više baza podataka](https://cloud.google.com/bigquery/public-data/#sample_tables) s kojima možete eksperimentirati. Osim toga, na bazi su dostupni i neki javni [podatci](https://www.reddit.com/r/bigquery/wiki/datasets). Primjerice, svjetski meterološki podatci...Wikipedia...Facebook komentari...prodaja nekretnina u Latinskoj Americi itd...Možda možete i osmisliti istraživački program na osnovi neke od tih baza!?.
+
+Najčešći oblik interakcije sa bazom je kroz [web UI](https://console.cloud.google.com/bigquery). 
+Taj način pruža nekoliko praktičnih funkcionalnosti poput SQL formatiranja i pred-pregleda tablica. Probajte sami proučiti BigQuery web UI^[[Ovdje](https://towardsdatascience.com/bigquery-without-a-credit-card-discover-learn-and-share-199e08d4a064) možete pogledati primjer sa Wikipedia podatcima.] U ovom trenutku ćemo pogledati kako koristiti BigQuery bazu kroz R uz pomoć [**bigrquery**](https://bigrquery.r-dbi.org/) paketa.
+
+
+Za korištenje **bigrquery** je potrebno ponuditi *GCP project billing ID*. To je moguće napraviti direktno u R skripti. U ovom slučaju smo pohranili te podatke u R environment varijablu `.Renviron` u home direktoriju.^[To je moguće napraviti pomoću `usethis::edit_r_environ()` naredbe u R konzoli. Tamo možete kopirati ID i pospremiti u objekt `GCE_DEFAULT_PROJECT_ID` koji ćemo koristiti u primjeru. Naravno, možete izabrati i drugi naziv. U tom slučju prilagodite kod koji ćemo koristiti u rpedavanju!] To nam omogućava korištenje `Sys.getenv()` naredbe i garantira sigurnost podataka,  u *OpenSource* predavanjima (resursima) poput ovih. 
+
+```{r billing_id}
+# library(bigrquery) ## učitano
+billing_id <- Sys.getenv("GCE_DEFAULT_PROJECT_ID") ## zamijenite sa vašim ID 
+```
+
+NAkon što smo podesili ID, možemo započeti sa upitima na bazu i preuzimanjem BigQuery podataka u R radni prostor. To ćemo napraviti kroz dva primjera: 1) podatci o natalitetu u SAD, i 2) podatcima o ribolovu u okviru Global Fishing Watch projekta.
+
+### Primjer 1) SAD natalitet
+
+`bigrquery` podržava razne načine povlačenja podataka iz R, uključujući i direktnu interakciju kroz (low-level) API. Ovdje ćemo se fokusirati na **dplyr** pristup.^[Pročitajte dokumentaciju paketa i provjerite sami.] Kao u prethodnom SQLite primjeru, započeti ćemo sa postavljanjem veze kroz `DBI::dbConnect()` funkciju. Jedina je razlika što sada moramo specificirati BigQuery backend (kroz `bigrquery::bigquery()`) i unijeti podatke za prijavu (i.e. *project billing ID*). Spojimo se na  "publicdata.samples" bazu:
+
+```{r bq_con, cache=F}
+# library(DBI) ## učitano
+# library(dplyr) ## učitano
+bq_con <- 
+  dbConnect(
+    bigrquery::bigquery(),
+    project = "publicdata",
+    dataset = "samples",
+    billing = billing_id
+    )
+```
+
+Ova veza je važeća za sve tablice unutar specificirane baze. Potrebno je samo navesti željenu bazu `dplyr::tbl()` i izvršti query na način koji smo već vidjeli. Dostupne baze pogledajte pomoću naredbe `DBI::dbListTables()`.
+
+> **Hint:** Sljedeći red kodad izvršite interaktivno ukolilko se prvi put spajate na BigQuery bazu. iz R. Potrebno je specificirati cache model za login podatke (preporučeno je "Yes") i autorizirati pristup u browser-u.
+
+```{r bq_con_listtables}
+dbListTables(bq_con)
+```
+
+U ovom primjeru koristimo [podatke o natalitetu](https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=samples&t=natality&page=table&_ga=2.108840194.-1488160368.1535579560) koji sadaržavaju informacije o rođenima za sve države SAD-a u periodu 1969--2008. 
+
+```{r, bq_natality}
+natality <- tbl(bq_con, "natality")
+```
+
+Sirovi podatci o natalitetu sa BigQuery su veliki oko 22 GB što je dovoljno za preopterećenje (RAM) velikog broja osobnih računala. Zbog toga ćemo sažeti (agregirati) podatke na godišnje prosjeke.
+
+```{r bw}
+bw <-
+  natality %>%
+  filter(!is.na(state)) %>% ## makni outlier-e
+  group_by(year) %>%
+  summarise(weight_pounds = mean(weight_pounds, na.rm=T)) %>% 
+  collect()
+```
+
+Vizualizacija:
+
+```{r bw_plot, message=F, warning=F}
+bw %>%
+  ggplot(aes(year, weight_pounds)) + 
+  geom_line()
+```
+
+
+O razlozima pada nataliteta nećemo peviše nagađati.^[ [Pogledajte](https://twitter.com/grant_mcdermott/status/1156260684126048256) za diskusiju.] Pogledajmo podatke o natalitetu prema prosječnoj težini djeteta pri rođenju za svaku US državu i po spolu.  
+
+```{r bw_st}
+## prosječna težina pri rođenju po državi i spolu
+bw_st <-
+  natality %>%
+  filter(!is.na(state)) %>%
+  group_by(year, state, is_male) %>%
+  summarise(weight_pounds = mean(weight_pounds, na.rm=T)) %>% 
+  mutate(gender = ifelse(is_male, "Male", "Female")) %>% 
+  collect()
+```
+
+Prikažimo podatke vizualno.
+
+```{r bw_st_plot, warning=F, message=F}
+## proizvoljni izbor država
+states <- c("CA","DC","OR","TX","VT")
+## sortiraj podatke
+bw_st <- bw_st %>% arrange(gender, year)
+## napravi grafikon
+bw_st %>%
+  ggplot(aes(year, weight_pounds, group=state)) + 
+  geom_line(col="grey75", lwd = 0.25) + 
+  geom_line(
+    data = bw_st %>% filter(state %in% states), 
+    aes(col=fct_reorder2(state, year, weight_pounds)),
+    lwd=0.75
+    ) +
+  facet_wrap(~gender) + 
+  scale_color_brewer(palette = "Set1", name=element_blank()) +
+  labs(
+    title = "Prosječna težina pri rođenju po državi/kroz vrijeme",
+    subtitle = "Selekcija istaknutih država",
+    x = NULL, y = "lbs",
+    caption = "Izvor:Google BigQuery"
+    ) + 
+  theme_ipsum(grid=F)
+```
+
+Iako nećemo ni sada ngađati što stoji iza ovih trendova, slika postaje jasnija sa disagregiranim podatcima (i.e. prikazom). Probajte koristiti bazu sami ukoliko vas zanima što podatci "govore". 
+
+Kao i u prethodnom primjeru, nakon korištenja baze valja napraviti disconnect.
+
+```{r bq_dbDisconnect, cache=F}
+dbDisconnect(bq_con)
+```
+
+### Primjer 2) *Global Fishing Watch*
+
+Ovo je zadnji primjer u današnejm predavanju i uključuje podatke sa [**Global Fishing Watch**](https://globalfishingwatch.org/) inicijative. Ovdje možete pogledati [interaktivnu mapu](https://globalfishingwatch.org/map/) ako imate vremena. Sada ćemo pogledati GFW podatke na BigQuery bazi i izvući neke agregirane podatke o globalnom ribolovu.
+
+```{r gfw_con, cache=F}
+gfw_con <- 
+  dbConnect(
+    bigrquery::bigquery(),
+    project = "global-fishing-watch",
+    dataset = "global_footprint_of_fisheries",
+    billing = billing_id
+    )
+```
+
+Pogledajmo popis dostupnih tablica pomoću `DBI::dbListTables()` funkcije.
+
+```{r gfw_con_listtables}
+dbListTables(gfw_con)
+```
+
+Sada ćemo odbrati "fishing_effort" tablicu i pospremiti ju u objekt pod nazivom `effort`.
+
+```{r effort}
+effort <- tbl(gfw_con, "fishing_effort")
+effort
+```
+
+Sada možemo provjeriti koliko najveće ribolovne nacije eksploatiraju ribni fond prema kriteriju sati provedenih u ribolovu.Kao što je vidljivo, Kina je dominatni globalni igrač:
+
+```{r top_fish}
+effort %>%
+  group_by(flag) %>%
+  summarise(total_fishing_hours = sum(fishing_hours, na.rm=T)) %>%
+  arrange(desc(total_fishing_hours)) %>%
+  collect()
+```
+
+#### Komentar o podjeli datuma 
+
+Većina tablica i baza u BigQuery su [podijeljene po datumima](https://cloud.google.com/bigquery/docs/best-practices-costs#partition_data_by_date), i.e. rangirane prema vremenskim pečatima kada su podatci procesuirani. GFW podatci su vremenski označeni jer to osigurava ekonomičnost. Ovo je važno istaknuti jer određuje način koji koristimo za manipulaciju GFW podataka po datumima.^[Možda ste primjetili da je "date" kolona u `effort` tablici zapravo *character string*. Zbog toga je potrebno ovu kolonu prvo pretvoriti u datumsku, a nakon toga je moguće provesti filtriranje. Čak i u tom slučaju ćemo izgubiti dio efikasnosti u usporedbi sa originalnim vremenskim pečatima.] Način a provedbu u SQL je korištenje `_PARTITIONTIME` pseudo kolone za filtrianje po datumima. ( [Pogledajte](https://globalfishingwatch.org/data-blog/our-data-in-bigquery/) za neke primjere.) Ne postoji eksplicitna **dplyr** varijanta ove `_PARTITIONTIME` pseudo kolone. Način da se ovaj problem zaobiđe je definiranje SQL variable direktno u **dplyr** pozivu kroz korištenje *backticks* navodnika. Ovo je primjer za podatke u 2016 godini.
+
+```{r top_fish_2016}
+effort %>%
+  ## filtriranje na osnovi "partition time" varijable
+  filter(
+    `_PARTITIONTIME` >= "2016-01-01 00:00:00",
+    `_PARTITIONTIME` <= "2016-12-31 00:00:00"
+    ) %>%
+  ## kraj "partition time" filtriranja
+  group_by(flag) %>%
+  summarise(total_fishing_hours = sum(fishing_hours, na.rm=T)) %>%
+  arrange(desc(total_fishing_hours)) %>%
+  collect()
+```
+
+Kina je opet na prvom mjestu uz neke manje promjene na ljestvici 10 najvećih. 
+
+
+#### Zadnji query: Globalni ribolov u 2016. godini
+
+Ovo je posljedni primjer u današnjem predavanju. U kodu koristimo 1 × 1 binove i agregiramo ribolov na tu razinu...
+
+```{r globe}
+## definiraj bin rezoluciju u stupnjevima
+resolution <- 1
+globe <-
+  effort %>%
+  filter(
+    `_PARTITIONTIME` >= "2016-01-01 00:00:00",
+    `_PARTITIONTIME` <= "2016-12-31 00:00:00"
+    ) %>%
+  filter(fishing_hours > 0) %>%
+  mutate(
+    lat_bin = lat_bin/100,
+    lon_bin = lon_bin/100
+    ) %>%
+  mutate(
+    lat_bin_center = floor(lat_bin/resolution)*resolution + 0.5*resolution,
+    lon_bin_center = floor(lon_bin/resolution)*resolution + 0.5*resolution
+    ) %>%
+  group_by(lat_bin_center, lon_bin_center) %>%
+  summarise(fishing_hours = sum(fishing_hours, na.rm=T)) %>%
+  collect()
+```
+
+Napravimo sada vizualizaciju.
+
+```{r globe_plot, message=F, warning=F}
+globe %>% 
+  filter(fishing_hours > 1) %>% 
+  ggplot() +
+  geom_tile(aes(x=lon_bin_center, y=lat_bin_center, fill=fishing_hours))+
+  scale_fill_viridis_c(
+    name = "Sati ribolova (log skala)",
+    trans = "log",
+    breaks = scales::log_breaks(n = 5, base = 10),
+    labels = scales::comma
+    ) +
+  labs(
+    title = "Globalni ribolov u 2016. godini",
+    subtitle = paste0("Binned na razini", resolution, "° stupnja."),
+    y = NULL, x = NULL,
+    caption = "Izvor:Global Fishing Watch"
+    ) +
+  theme_ipsum(grid=F) +
+  theme(axis.text=element_blank())
+```
+
+
+Na kraju je potrebno prekinuti vezu sa bazom.
+
+```{r gfw_dbDisconnect, cache=F}
+dbDisconnect(gfw_con)
+```
+
+
+## Kamo dalje: Učenje SQL jezika
+
+Ovo predavanje nije išlo u dubinu samog SQL programskog jezika. Cilj je bio omogućiti praktično snalaženje sa bazama podataka i razumijevanje općih principa. To je moguće i bez SQL-a uz poznavanje osnova **dplyr** sintakse zbog razloga koje smo objasnili na početku predavanja. Ipak, poznavanje SQL-a je korisno, pogotovo ako želite raditi u *data science*-u. Ta vještina će vam očekivano donijeti i veći prinos u vidu mogućnosti zaposlenja i visine plaće.Zbog toga razmotrite korištenje `show_query()` funkcije kako biste intuiciju iz R i tidyverse-a prenijeli na SQL. Korisan resurs za učenje je **dplyr** vignette-a "sql-translation" :
+
+```{r, eval=FALSE}
+vignette("sql-translation")
+```
+
+Najbolji način za učenje SQL-a je *pisanje vlastitih queriy-a*. [**BigQuery web UI**](https://console.cloud.google.com/bigquery) je posebno koristan za tu svrhu. Ne samo da je jeftin za korištenje (besplatno do 1 TB), nego ima i mnoštvo korisnih funkcionalnosti. Dobar način je i kopiranje tuđeg SQL koda npr. [ovdje](https://towardsdatascience.com/bigquery-without-a-credit-card-discover-learn-and-share-199e08d4a064) ili [ovdje](https://globalfishingwatch.org/data-blog/our-data-in-bigquery/) te modifikacije za povlačenje kroz BigQuery web UI sučelje.
+
+
+## Ostali resursi
+
+Iako je kroz predavanje istknuto mnoštvo korisnih resursa, ovdje je lista dodatnih.
+
+- [Juan Mayorga](https://twitter.com/juansmayorga) ima izvrstan tutorial "[Getting Global Fishing Watch Data from Google Big Query using R](http://jsmayorga.com/post/getting-global-fishing-watch-from-google-bigquery-using-r)". Tu su navedeni još neki razlozi zašto biste trebali nučiti SQL(i.e. osim korištenja **dplyr** prijevoda).
+- Službena  i koncizna referenca za učenje SQL-a je [Julia Evans'](https://twitter.com/b0rk) [*Become A Select Star*](https://wizardzines.com/zines/sql/). 
+- Službena BigQuery [dokumentacija](https://cloud.google.com/bigquery/docs/) donodi iscrpan pregled funkcija i sintakse za SQL (uz specijalne operacije za JSON objekte).
+- Postoji i mnoštvo online tutoriala (npr. [W3Schools](https://www.w3schools.com/sql/default.asp)) i kolegija (npr. [Codecademy](https://www.codecademy.com/learn/learn-sql)) koje možete provjeriti.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
