@@ -155,7 +155,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/07_BAZE.html">Predavanje 07: Rad sa bazama podataka</a>
 
 <ul>
-<li> Što su baze podatka</li>
+<li> Baze podatka</li>
 <li> Baze podataka i *tidyverse*</li>
 <li> Baze podataka i SQL</li>
 <li> Praktični primjer - SQLite</li>
