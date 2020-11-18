@@ -17,9 +17,7 @@ output:
     toc_depth: '4'
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
-```
+
 
 ## Software podrška
 
@@ -37,9 +35,17 @@ Ova procedura zahtijeva *Gmail* račun. Tijekom procesa prijave će biti potrebn
 
 Pomoću sljedeće naredbe možete instalirati i učitati sve potrebne pakete za ovo predavanje:
 
-```{r, cache=F, message=F}
+
+```r
 ## učitaj/instaliraj pakete
 if (!require("pacman")) install.packages("pacman")
+```
+
+```
+## Warning: package 'pacman' was built under R version 4.0.3
+```
+
+```r
 pacman::p_load(tidyverse, DBI, dbplyr, RSQLite, bigrquery, hrbrthemes, nycflights13, glue)
 ## Preferencija:ggplot2 tema
 theme_set(hrbrthemes::theme_ipsum())
@@ -95,7 +101,8 @@ Trenutni je cilj stvoriti improviziranu bazu na lokalnom računalu koristeći SQ
 Prvo je potrebno napraviti (praznu) vezu pomoću `DBI::dbConnect()` funkcije. Tu vezu ćemo spremiti u objekt `con`. U pozadini smo učitali **RSQLite** paket za SQLite backend te dajemo upute R-u da ova lokalna poveznica postoji u memoriji.
 
 
-```{r con, cache = FALSE}
+
+```r
 # library(DBI) ## učitano
 con <- dbConnect(RSQLite::SQLite(), path = ":memory:")
 ```
@@ -109,7 +116,8 @@ Iako i to može varirati, SQLite treba samo jedan argument: `path` do baze. Ovdj
 Stvorena `con` veza je trenutno prazna pa ćemo ju iskoristiti za kopiranje podataka iz *flights* podatkovnog skupa koji se nalazi u **nycflights13** paketu. To je moguće napraviti na više načina, a ovdje ćemo koristiti `dplyr::copy_to()` fukciju. U kodu specificiramo naziv tablice ("flights") koja će postojati unutar ove baze. Također proslijeđujemo listu indeksa kroz `copy_to()` funkciju.
 Indeksi osiguravaju efikasnost procesuiranja baze, a najčešće su unaprijed definirani od strane osobe koja održava bazu.
 
-```{r copy_to, cache = FALSE}
+
+```r
 # if (!require("nycflights13")) install.packages("nycflights13") ## već učitano
 copy_to(
   dest = con, 
@@ -127,11 +135,32 @@ copy_to(
 
 Sada kada su podatci kopirani, možemo ih "pozvati" u R kroz `dplyr::tbl()` funkciju:
 
-```{r flights_db}
+
+```r
 # library(dplyr) ## Already loaded
 # library(dbplyr) ## Already loaded
 flights_db <- tbl(con, "flights")
 flights_db
+```
+
+```
+## # Source:   table<flights> [?? x 19]
+## # Database: sqlite 3.33.0 []
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # ... with more rows, and 11 more variables: arr_delay <dbl>, carrier <chr>,
+## #   flight <int>, tailnum <chr>, origin <chr>, dest <chr>, air_time <dbl>,
+## #   distance <dbl>, hour <dbl>, minute <dbl>, time_hour <dbl>
 ```
 
 Izgleda da sve funkcionira...iako output izgleda "čudno".
@@ -141,15 +170,84 @@ Izgleda da sve funkcionira...iako output izgleda "čudno".
 Sjajna stvar oko **dplyr** je što on automatski prevodi tidyverse jezik (code) u SQL. Jedan dio **dplyr** naredbi je zapravo baziran na SQL ekvivalentima. Imajući to na umu, specificirati ćemo nekoliko **query**-a korištenjem tipične **dplyr** sintakse koju smo već vidjeli.
 
 
-```{r flights_db_try_queries}
+
+```r
 ## Izaberi kolone
 flights_db %>% select(year:day, dep_delay, arr_delay)
+```
+
+```
+## # Source:   lazy query [?? x 5]
+## # Database: sqlite 3.33.0 []
+##     year month   day dep_delay arr_delay
+##    <int> <int> <int>     <dbl>     <dbl>
+##  1  2013     1     1         2        11
+##  2  2013     1     1         4        20
+##  3  2013     1     1         2        33
+##  4  2013     1     1        -1       -18
+##  5  2013     1     1        -6       -25
+##  6  2013     1     1        -4        12
+##  7  2013     1     1        -5        19
+##  8  2013     1     1        -3       -14
+##  9  2013     1     1        -3        -8
+## 10  2013     1     1        -2         8
+## # ... with more rows
+```
+
+```r
 ## filtriraj prema kriteriju
 flights_db %>% filter(dep_delay > 240) 
+```
+
+```
+## # Source:   lazy query [?? x 19]
+## # Database: sqlite 3.33.0 []
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    <int> <int> <int>    <int>          <int>     <dbl>    <int>          <int>
+##  1  2013     1     1      848           1835       853     1001           1950
+##  2  2013     1     1     1815           1325       290     2120           1542
+##  3  2013     1     1     1842           1422       260     1958           1535
+##  4  2013     1     1     2115           1700       255     2330           1920
+##  5  2013     1     1     2205           1720       285       46           2040
+##  6  2013     1     1     2343           1724       379      314           1938
+##  7  2013     1     2     1332            904       268     1616           1128
+##  8  2013     1     2     1412            838       334     1710           1147
+##  9  2013     1     2     1607           1030       337     2003           1355
+## 10  2013     1     2     2131           1512       379     2340           1741
+## # ... with more rows, and 11 more variables: arr_delay <dbl>, carrier <chr>,
+## #   flight <int>, tailnum <chr>, origin <chr>, dest <chr>, air_time <dbl>,
+## #   distance <dbl>, hour <dbl>, minute <dbl>, time_hour <dbl>
+```
+
+```r
 ## prosječno kašnjenje po destinaciji (group/summarise)
 flights_db %>%
   group_by(dest) %>%
   summarise(delay = mean(dep_time))
+```
+
+```
+## Warning: Missing values are always removed in SQL.
+## Use `mean(x, na.rm = TRUE)` to silence this warning
+## This warning is displayed only once per session.
+```
+
+```
+## # Source:   lazy query [?? x 2]
+## # Database: sqlite 3.33.0 []
+##    dest  delay
+##    <chr> <dbl>
+##  1 ABQ   2006.
+##  2 ACK   1033.
+##  3 ALB   1627.
+##  4 ANC   1635.
+##  5 ATL   1293.
+##  6 AUS   1521.
+##  7 AVL   1175.
+##  8 BDL   1490.
+##  9 BGR   1690.
+## 10 BHM   1944.
+## # ... with more rows
 ```
 
 Sve izgleda kao očekivano osim što output ponovno izgleda nešto drugačije nego što bismo očekivali.Možda se pitate što znači`# Source:   lazy query`?
@@ -163,7 +261,8 @@ Princip **dplyr** paketa je maksimalna moguća ljenost. To u praksi znači da je
 
 Zamislite npr. sutuaciju u kojoj želimo saznati prosječana kašnjenja za svaki avion ((i.e. jedinstveni *tail* broj aviona ))!
 
-```{r tailnum_delay_db}
+
+```r
 tailnum_delay_db <- 
   flights_db %>% 
   group_by(tailnum) %>%
@@ -178,8 +277,28 @@ tailnum_delay_db <-
 
 Ova sekvenca naredbi zapravo nikada ne "dodiruje" bazu!^[Iako ovo možda nije skroz očito...ove naredbe bi bile instantno izvršene čak i kada bi se primijenile na ogromnu količinu podataka (i.e. bazu).] Tek kada zatražimo podatke (objekt `tailnum_delay_db` u konzoli) **dplyr** generira SQL i zatraži rezultate iz baze. Čak i tada **dplyr** nastoji napraviti minimalno potrebno i vrća samo nekoliko redova.
 
-```{r tailnum_delay_db_print}
+
+```r
 tailnum_delay_db
+```
+
+```
+## # Source:     lazy query [?? x 4]
+## # Database:   sqlite 3.33.0 []
+## # Ordered by: desc(mean_arr_delay)
+##    tailnum mean_dep_delay mean_arr_delay     n
+##    <chr>            <dbl>          <dbl> <int>
+##  1 N11119            32.6           30.3   148
+##  2 N16919            32.4           29.9   251
+##  3 N14998            29.4           27.9   230
+##  4 N15910            29.3           27.6   280
+##  5 N13123            29.6           26.0   121
+##  6 N11192            27.5           25.9   154
+##  7 N14950            26.2           25.3   219
+##  8 N21130            27.0           25.0   126
+##  9 N24128            24.8           24.9   129
+## 10 N22971            26.5           24.7   230
+## # ... with more rows
 ```
 
 
@@ -187,22 +306,98 @@ tailnum_delay_db
 
 Najčešće je potrebno iterirati kroz podatke nekoliko puta prije nego uistinu shvatite koji dio podataka želite povući sa baze. Nakon što ste "pronašli" podskup podatka koji trebate, **`collect()`** funkcija će povući sve podatke u lokalni data frame.U ovom primjeru ćemo pripisati podatke objektu `tailnum_delay` zato što želimo *query* objekt `tailnum_delay_db` držati odvojeno kako bismo mogli lakše razumjeti principe (prijevode) SQL jezika. 
 
-```{r tailnum_delay}
+
+```r
 tailnum_delay <- 
   tailnum_delay_db %>% 
   collect()
 tailnum_delay
 ```
 
+```
+## # A tibble: 1,201 x 4
+##    tailnum mean_dep_delay mean_arr_delay     n
+##    <chr>            <dbl>          <dbl> <int>
+##  1 N11119            32.6           30.3   148
+##  2 N16919            32.4           29.9   251
+##  3 N14998            29.4           27.9   230
+##  4 N15910            29.3           27.6   280
+##  5 N13123            29.6           26.0   121
+##  6 N11192            27.5           25.9   154
+##  7 N14950            26.2           25.3   219
+##  8 N21130            27.0           25.0   126
+##  9 N24128            24.8           24.9   129
+## 10 N22971            26.5           24.7   230
+## # ... with 1,191 more rows
+```
+
 Sada smo uspješno povukli podatke iz baze u lokalni R envrionment kao data frame objekt. Na tom objektu je moguće koristiti sve poznate operacije kao i sa bilo kojim data frame objektom. To se npr. odnosi na vizualizaciju podataka kako bismo bolje razumjeli 1) odnos između dolaznih i odlaznih kašnjenja i 2) da li avioini nadokađuju vrijeme u slučaju zakašnjelih odlazaka.  
 
-```{r tailnum_delay_ggplot}
+
+```r
 tailnum_delay %>%
   ggplot(aes(x=mean_dep_delay, y=mean_arr_delay, size=n)) +
   geom_point(alpha=0.3) +
   geom_abline(intercept = 0, slope = 1, col="orange") +
   coord_fixed()
 ```
+
+```
+## Warning: Removed 1 rows containing missing values (geom_point).
+```
+
+```
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+```
+
+```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+```
+
+```
+## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
+## found in Windows font database
+```
+
+```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+```
+
+```
+## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database
+```
+
+```
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+
+## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+## family not found in Windows font database
+```
+
+![](07_BAZE_files/figure-html/tailnum_delay_ggplot-1.png)<!-- -->
 
 Ukoliko smo završili sa upitima na SQLite bazu, najčešće se želimo *disconnect*-ati putem `DBI::dbDisconnect(con)` funkcije. Pogledajmo kako izvršiti "sirove" (i.e. neprevedene) SQL upite (query) prije nego što to učinimo.
 
@@ -212,8 +407,20 @@ Ukoliko smo završili sa upitima na SQLite bazu, najčešće se želimo *disconn
 
 **dplyr** u pozadini prevodi R u SQL. Zbog toga je moguće koristiti **`show_query()`** funkciju za prikaz SQL koji je pozvao zatraženu tablicu.
 
-```{r show_query_tailnum_delay_db}
+
+```r
 tailnum_delay_db %>% show_query()
+```
+
+```
+## <SQL>
+## SELECT *
+## FROM (SELECT *
+## FROM (SELECT `tailnum`, AVG(`dep_delay`) AS `mean_dep_delay`, AVG(`arr_delay`) AS `mean_arr_delay`, COUNT() AS `n`
+## FROM `flights`
+## GROUP BY `tailnum`)
+## ORDER BY `mean_arr_delay` DESC)
+## WHERE (`n` > 100.0)
 ```
 
 Primijetite da je SQL poziv znatno manje intuitivan nego **dplyr** kod. Ovo je je djelomično određeno i samim prijevodom jer **dplyr** procedura prevođenja uključuje "osigurače" koji kontroliraju ispravno funkcioniranje. Cijena za to je gubitak konciznosti koda (i.e. ponavljanje `SELECT` naredbi). Čak i bez toga je jasno da SQL nije najelegantniji jezik...upravo zbog izraženog *leksičkog* slijeda operacija koji ne uvažava *logički* slijed operacija.^[To je u suprotnosti sa **dplyr** pipe principima koji funkcioniraju po načelu "uzmi ovaj objekt, napravi ovo, zatim ovo...itd.".] SQL jezik karakterizira zadan redosljed naredbi (*order of execution*) i na to se potrebno naviknuti.[Julia Evans](https://twitter.com/b0rk) je to izvrsno prikazala u sdvojoj knjizi, [*Become A Select Star*](https://wizardzines.com/zines/sql/) (preporučeno kao uvod u SQL!).
@@ -226,9 +433,18 @@ U ovom trenutku je logično postaviti pitanje da li je uopće potrebno znati SQL
 To je legitimno pitanje no dogovor je da, u nekom trenutku ćete sigurno trebati neki "sirovi" SQL kod. Pogledajmo sada neke primjere na osnovi **DBI** paketa koji mogu olakšati proces učenja.
 
 
-```{r sql_direct_translate}
+
+```r
 ## Ekvivalenti SQL za dplyr naredbe
 flights_db %>% filter(dep_delay > 240) %>% head(5) %>% show_query()
+```
+
+```
+## <SQL>
+## SELECT *
+## FROM `flights`
+## WHERE (`dep_delay` > 240.0)
+## LIMIT 5
 ```
 
 **Komentar:** U SQL kodu koji slijedi ćemo maknuti navodnike na nazivima objekata (`dep_delay` i `flights`) kao i zagrade oko `WHERE` filtera. To nije neophodno i služi samo kao "osigurač" koji **dplyr** koristi kako bi se postigla kompatibilnost sa SQL-om. 
@@ -238,38 +454,78 @@ flights_db %>% filter(dep_delay > 240) %>% head(5) %>% show_query()
 Ako pišete izvještaj ili članak u R Markdown-u, možete integrirati SQL direktno u .Rmd file-u. Potrebno je specificirati *chunk* kao `sql` i R Markdown ( kroz **knitr**) će automatski pozvati **DBI** paket za izvršenje upita. Detalnjije upute i opise možete pronaći u [R Markdown knjizi](https://bookdown.org/yihui/rmarkdown/language-engines.html#sql). Za izvršenje upita (query) od prije je dovoljno sljedeće:
 
 ````markdown
-`r ''````{sql, connection=con}
-SELECT *
-FROM flights
-WHERE dep_delay > 240
-LIMIT 5
-`r ''````
-````
-
-Ovdje je isti query/chunk koji smo koristili u prethodnom dijelu ovog predavanja:
-
-```{sql sql_direct_rmd, connection=con, cache=FALSE}
+```{sql, connection=con}
 SELECT *
 FROM flights
 WHERE dep_delay > 240
 LIMIT 5
 ```
+````
+
+Ovdje je isti query/chunk koji smo koristili u prethodnom dijelu ovog predavanja:
+
+
+```sql
+SELECT *
+FROM flights
+WHERE dep_delay > 240
+LIMIT 5
+```
+
+
+<div class="knitsql-table">
+
+
+Table: 5 records
+
+| year| month| day| dep_time| sched_dep_time| dep_delay| arr_time| sched_arr_time| arr_delay|carrier | flight|tailnum |origin |dest | air_time| distance| hour| minute|  time_hour|
+|----:|-----:|---:|--------:|--------------:|---------:|--------:|--------------:|---------:|:-------|------:|:-------|:------|:----|--------:|--------:|----:|------:|----------:|
+| 2013|     1|   1|      848|           1835|       853|     1001|           1950|       851|MQ      |   3944|N942MQ  |JFK    |BWI  |       41|      184|   18|     35| 1357081200|
+| 2013|     1|   1|     1815|           1325|       290|     2120|           1542|       338|EV      |   4417|N17185  |EWR    |OMA  |      213|     1134|   13|     25| 1357063200|
+| 2013|     1|   1|     1842|           1422|       260|     1958|           1535|       263|EV      |   4633|N18120  |EWR    |BTV  |       46|      266|   14|     22| 1357066800|
+| 2013|     1|   1|     2115|           1700|       255|     2330|           1920|       250|9E      |   3347|N924XJ  |JFK    |CVG  |      115|      589|   17|      0| 1357077600|
+| 2013|     1|   1|     2205|           1720|       285|       46|           2040|       246|AA      |   1999|N5DNAA  |EWR    |MIA  |      146|     1085|   17|     20| 1357077600|
+
+</div>
 
 
 ### Opcija 2: Koristite DBI:dbGetQuery()
 
 Izvrašavanje SQL naredbi nije ograničeno na R Markdown dokumente. To je također moguće u regularnim R skriptama kroz korištenje `DBI::dbGetQuery()` funkcije.
 
-```{r sql_direct}
+
+```r
 ## Izvrši SQL naredbnu direktno
 dbGetQuery(con, "SELECT * FROM flights WHERE dep_delay > 240.0 LIMIT 5")
+```
+
+```
+##   year month day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+## 1 2013     1   1      848           1835       853     1001           1950
+## 2 2013     1   1     1815           1325       290     2120           1542
+## 3 2013     1   1     1842           1422       260     1958           1535
+## 4 2013     1   1     2115           1700       255     2330           1920
+## 5 2013     1   1     2205           1720       285       46           2040
+##   arr_delay carrier flight tailnum origin dest air_time distance hour minute
+## 1       851      MQ   3944  N942MQ    JFK  BWI       41      184   18     35
+## 2       338      EV   4417  N17185    EWR  OMA      213     1134   13     25
+## 3       263      EV   4633  N18120    EWR  BTV       46      266   14     22
+## 4       250      9E   3347  N924XJ    JFK  CVG      115      589   17      0
+## 5       246      AA   1999  N5DNAA    EWR  MIA      146     1085   17     20
+##    time_hour
+## 1 1357081200
+## 2 1357063200
+## 3 1357066800
+## 4 1357077600
+## 5 1357077600
 ```
 
 ### Svajet: Koristite glue::glue_sql()
 
 Iako prethodno opisani pristup dobro funkcionira (i.e. SQL query u navodnicima unutar `dbGetQuery()` funkcije), moguće je koristiti i `glue_sql()` funkciju iz [**glue**](https://glue.tidyverse.org/) paketa. To omogućava integrirani pristup koji dozvoljava 1) korištenje lokalnih varijabli u R query-ima i 2) podjelu dugih query-a u sub-query. Ovdje je primjer za 2):.
 
-```{r sql_direct_glue}
+
+```r
 # library(glue) ## učitano
 ## stvori lokalne R varijable
 tbl <- "flights"
@@ -289,13 +545,35 @@ sql_query <-
 dbGetQuery(con, sql_query)
 ```
 
+```
+##   year month day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+## 1 2013     1   1      848           1835       853     1001           1950
+## 2 2013     1   1     1815           1325       290     2120           1542
+## 3 2013     1   1     1842           1422       260     1958           1535
+## 4 2013     1   1     2115           1700       255     2330           1920
+## 5 2013     1   1     2205           1720       285       46           2040
+##   arr_delay carrier flight tailnum origin dest air_time distance hour minute
+## 1       851      MQ   3944  N942MQ    JFK  BWI       41      184   18     35
+## 2       338      EV   4417  N17185    EWR  OMA      213     1134   13     25
+## 3       263      EV   4633  N18120    EWR  BTV       46      266   14     22
+## 4       250      9E   3347  N924XJ    JFK  CVG      115      589   17      0
+## 5       246      AA   1999  N5DNAA    EWR  MIA      146     1085   17     20
+##    time_hour
+## 1 1357081200
+## 2 1357063200
+## 3 1357066800
+## 4 1357077600
+## 5 1357077600
+```
+
 Iako ovo izgleda kao nepotrebno više posla `glue::glue_sql()` pristup se isplati kada morate raditi sa većim, povezanim query-ima. Za dodatne upute i opis funkcionalnosti pogledajte [dokumentaciju](https://glue.tidyverse.org/reference/glue_sql.html).
 
 ### Kraj rada sa bazom- disconnect
 
 Na kraju se potrebno odspojiti sa baze pomoću `DBI::dbDisconnect()` funkcije.
 
-```{r dbDisconnect, cache=FALSE}
+
+```r
 dbDisconnect(con)
 ```
 
@@ -315,15 +593,16 @@ Taj način pruža nekoliko praktičnih funkcionalnosti poput SQL formatiranja i 
 
 Za korištenje **bigrquery** je potrebno ponuditi *GCP project billing ID*. To je moguće napraviti direktno u R skripti. U ovom slučaju smo pohranili te podatke u R environment varijablu `.Renviron` u home direktoriju.^[To je moguće napraviti pomoću `usethis::edit_r_environ()` naredbe u R konzoli. Tamo možete kopirati ID i pospremiti u objekt `GCE_DEFAULT_PROJECT_ID` koji ćemo koristiti u primjeru. Naravno, možete izabrati i drugi naziv. U tom slučju prilagodite kod koji ćemo koristiti u rpedavanju!] To nam omogućava korištenje `Sys.getenv()` naredbe i garantira sigurnost podataka,  u *OpenSource* predavanjima (resursima) poput ovih. 
 
-```{r billing_id}
+
+```r
 # library(bigrquery) ## učitano
 billing_id <- Sys.getenv("GCE_DEFAULT_PROJECT_ID") ## zamijenite sa vašim ID 
 ```
 
 
-```{r}
-bigrquery::bq_auth(path = "../key.json")
 
+```r
+bigrquery::bq_auth(path = "../key.json")
 ```
 
 Nakon što smo podesili ID, možemo započeti sa upitima na bazu i preuzimanjem BigQuery podataka u R radni prostor. To ćemo napraviti kroz dva primjera: 1) podatci o natalitetu u SAD, i 2) podatcima o ribolovu u okviru Global Fishing Watch projekta.
@@ -332,7 +611,8 @@ Nakon što smo podesili ID, možemo započeti sa upitima na bazu i preuzimanjem 
 
 `bigrquery` podržava razne načine povlačenja podataka iz R, uključujući i direktnu interakciju kroz (low-level) API. Ovdje ćemo se fokusirati na **dplyr** pristup.^[Pročitajte dokumentaciju paketa i provjerite sami.] Kao u prethodnom SQLite primjeru, započeti ćemo sa postavljanjem veze kroz `DBI::dbConnect()` funkciju. Jedina je razlika što sada moramo specificirati BigQuery backend (kroz `bigrquery::bigquery()`) i unijeti podatke za prijavu (i.e. *project billing ID*). Spojimo se na  "publicdata.samples" bazu:
 
-```{r bq_con, cache=F}
+
+```r
 # library(DBI) ## učitano
 # library(dplyr) ## učitano
 bq_con <- 
@@ -348,19 +628,27 @@ Ova veza je važeća za sve tablice unutar specificirane baze. Potrebno je samo 
 
 > **Hint:** Sljedeći red kodad izvršite interaktivno ukolilko se prvi put spajate na BigQuery bazu. iz R. Potrebno je specificirati cache model za login podatke (preporučeno je "Yes") i autorizirati pristup u browser-u.
 
-```{r bq_con_listtables}
+
+```r
 dbListTables(bq_con)
+```
+
+```
+## [1] "github_nested"   "github_timeline" "gsod"            "natality"       
+## [5] "shakespeare"     "trigrams"        "wikipedia"
 ```
 
 U ovom primjeru koristimo [podatke o natalitetu](https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=samples&t=natality&page=table&_ga=2.108840194.-1488160368.1535579560) koji sadaržavaju informacije o rođenima za sve države SAD-a u periodu 1969--2008. 
 
-```{r, bq_natality}
+
+```r
 natality <- tbl(bq_con, "natality")
 ```
 
 Sirovi podatci o natalitetu sa BigQuery su veliki oko 22 GB što je dovoljno za preopterećenje (RAM) velikog broja osobnih računala. Zbog toga ćemo sažeti (agregirati) podatke na godišnje prosjeke.
 
-```{r bw}
+
+```r
 bw <-
   natality %>%
   filter(!is.na(state)) %>% ## makni outlier-e
@@ -371,16 +659,20 @@ bw <-
 
 Vizualizacija:
 
-```{r bw_plot, message=F, warning=F}
+
+```r
 bw %>%
   ggplot(aes(year, weight_pounds)) + 
   geom_line()
 ```
 
+![](07_BAZE_files/figure-html/bw_plot-1.png)<!-- -->
+
 
 O razlozima pada nataliteta nećemo peviše nagađati.^[ [Pogledajte](https://twitter.com/grant_mcdermott/status/1156260684126048256) za diskusiju.] Pogledajmo podatke o natalitetu prema prosječnoj težini djeteta pri rođenju za svaku US državu i po spolu.  
 
-```{r bw_st}
+
+```r
 ## prosječna težina pri rođenju po državi i spolu
 bw_st <-
   natality %>%
@@ -393,7 +685,8 @@ bw_st <-
 
 Prikažimo podatke vizualno.
 
-```{r bw_st_plot, warning=F, message=F}
+
+```r
 ## proizvoljni izbor država
 states <- c("CA","DC","OR","TX","VT")
 ## sortiraj podatke
@@ -418,11 +711,14 @@ bw_st %>%
   theme_ipsum(grid=F)
 ```
 
+![](07_BAZE_files/figure-html/bw_st_plot-1.png)<!-- -->
+
 Iako nećemo ni sada ngađati što stoji iza ovih trendova, slika postaje jasnija sa disagregiranim podatcima (i.e. prikazom). Probajte koristiti bazu sami ukoliko vas zanima što podatci "govore". 
 
 Kao i u prethodnom primjeru, nakon korištenja baze valja napraviti disconnect.
 
-```{r bq_dbDisconnect, cache=F}
+
+```r
 dbDisconnect(bq_con)
 ```
 
@@ -430,7 +726,8 @@ dbDisconnect(bq_con)
 
 Ovo je zadnji primjer u današnejm predavanju i uključuje podatke sa [**Global Fishing Watch**](https://globalfishingwatch.org/) inicijative. Ovdje možete pogledati [interaktivnu mapu](https://globalfishingwatch.org/map/) ako imate vremena. Sada ćemo pogledati GFW podatke na BigQuery bazi i izvući neke agregirane podatke o globalnom ribolovu.
 
-```{r gfw_con, cache=F}
+
+```r
 gfw_con <- 
   dbConnect(
     bigrquery::bigquery(),
@@ -442,20 +739,46 @@ gfw_con <-
 
 Pogledajmo popis dostupnih tablica pomoću `DBI::dbListTables()` funkcije.
 
-```{r gfw_con_listtables}
+
+```r
 dbListTables(gfw_con)
+```
+
+```
+## [1] "fishing_effort"          "fishing_effort_byvessel"
+## [3] "fishing_vessels"         "vessels"
 ```
 
 Sada ćemo odbrati "fishing_effort" tablicu i pospremiti ju u objekt pod nazivom `effort`.
 
-```{r effort}
+
+```r
 effort <- tbl(gfw_con, "fishing_effort")
 effort
 ```
 
+```
+## # Source:   table<fishing_effort> [?? x 8]
+## # Database: BigQueryConnection
+##    date   lat_bin lon_bin flag  geartype vessel_hours fishing_hours mmsi_present
+##    <chr>    <int>   <int> <chr> <chr>           <dbl>         <dbl>        <int>
+##  1 2012-~    -879    1324 AGO   purse_s~        5.76          0                1
+##  2 2012-~   -5120   -6859 ARG   trawlers        1.57          1.57             1
+##  3 2012-~   -5120   -6854 ARG   purse_s~        3.05          3.05             1
+##  4 2012-~   -5119   -6858 ARG   purse_s~        2.40          2.40             1
+##  5 2012-~   -5119   -6854 ARG   trawlers        1.52          1.52             1
+##  6 2012-~   -5119   -6855 ARG   purse_s~        0.786         0.786            1
+##  7 2012-~   -5119   -6853 ARG   trawlers        4.60          4.60             1
+##  8 2012-~   -5118   -6852 ARG   trawlers        1.56          1.56             1
+##  9 2012-~   -5118   -6850 ARG   trawlers        1.61          1.61             1
+## 10 2012-~   -5117   -6849 ARG   trawlers        0.797         0.797            1
+## # ... with more rows
+```
+
 Sada možemo provjeriti koliko najveće ribolovne nacije eksploatiraju ribni fond prema kriteriju sati provedenih u ribolovu.Kao što je vidljivo, Kina je dominatni globalni igrač:
 
-```{r top_fish}
+
+```r
 effort %>%
   group_by(flag) %>%
   summarise(total_fishing_hours = sum(fishing_hours, na.rm=T)) %>%
@@ -463,11 +786,29 @@ effort %>%
   collect()
 ```
 
+```
+## # A tibble: 126 x 2
+##    flag  total_fishing_hours
+##    <chr>               <dbl>
+##  1 CHN             57711389.
+##  2 ESP              8806223.
+##  3 ITA              6790417.
+##  4 FRA              6122613.
+##  5 RUS              5660001.
+##  6 KOR              5585248.
+##  7 TWN              5337054.
+##  8 GBR              4383738.
+##  9 JPN              4347252.
+## 10 NOR              4128516.
+## # ... with 116 more rows
+```
+
 #### Komentar o podjeli datuma 
 
 Većina tablica i baza u BigQuery su [podijeljene po datumima](https://cloud.google.com/bigquery/docs/best-practices-costs#partition_data_by_date), i.e. rangirane prema vremenskim pečatima kada su podatci procesuirani. GFW podatci su vremenski označeni jer to osigurava ekonomičnost. Ovo je važno istaknuti jer određuje način koji koristimo za manipulaciju GFW podataka po datumima.^[Možda ste primjetili da je "date" kolona u `effort` tablici zapravo *character string*. Zbog toga je potrebno ovu kolonu prvo pretvoriti u datumsku, a nakon toga je moguće provesti filtriranje. Čak i u tom slučaju ćemo izgubiti dio efikasnosti u usporedbi sa originalnim vremenskim pečatima.] Način a provedbu u SQL je korištenje `_PARTITIONTIME` pseudo kolone za filtrianje po datumima. ( [Pogledajte](https://globalfishingwatch.org/data-blog/our-data-in-bigquery/) za neke primjere.) Ne postoji eksplicitna **dplyr** varijanta ove `_PARTITIONTIME` pseudo kolone. Način da se ovaj problem zaobiđe je definiranje SQL variable direktno u **dplyr** pozivu kroz korištenje *backticks* navodnika. Ovo je primjer za podatke u 2016 godini.
 
-```{r top_fish_2016}
+
+```r
 effort %>%
   ## filtriranje na osnovi "partition time" varijable
   filter(
@@ -481,6 +822,23 @@ effort %>%
   collect()
 ```
 
+```
+## # A tibble: 121 x 2
+##    flag  total_fishing_hours
+##    <chr>               <dbl>
+##  1 CHN             16882037.
+##  2 TWN              2227341.
+##  3 ESP              2133990.
+##  4 ITA              2103310.
+##  5 FRA              1525454.
+##  6 JPN              1404751.
+##  7 RUS              1313683.
+##  8 GBR              1248220.
+##  9 USA              1235116.
+## 10 KOR              1108384.
+## # ... with 111 more rows
+```
+
 Kina je opet na prvom mjestu uz neke manje promjene na ljestvici 10 najvećih. 
 
 
@@ -488,7 +846,8 @@ Kina je opet na prvom mjestu uz neke manje promjene na ljestvici 10 najvećih.
 
 Ovo je posljedni primjer u današnjem predavanju. U kodu koristimo 1 × 1 binove i agregiramo ribolov na tu razinu...
 
-```{r globe}
+
+```r
 ## definiraj bin rezoluciju u stupnjevima
 resolution <- 1
 globe <-
@@ -513,7 +872,8 @@ globe <-
 
 Napravimo sada vizualizaciju.
 
-```{r globe_plot, message=F, warning=F}
+
+```r
 globe %>% 
   filter(fishing_hours > 1) %>% 
   ggplot() +
@@ -534,10 +894,13 @@ globe %>%
   theme(axis.text=element_blank())
 ```
 
+![](07_BAZE_files/figure-html/globe_plot-1.png)<!-- -->
+
 
 Na kraju je potrebno prekinuti vezu sa bazom.
 
-```{r gfw_dbDisconnect, cache=F}
+
+```r
 dbDisconnect(gfw_con)
 ```
 
@@ -546,7 +909,8 @@ dbDisconnect(gfw_con)
 
 Ovo predavanje nije išlo u dubinu samog SQL programskog jezika. Cilj je bio omogućiti praktično snalaženje sa bazama podataka i razumijevanje općih principa. To je moguće i bez SQL-a uz poznavanje osnova **dplyr** sintakse zbog razloga koje smo objasnili na početku predavanja. Ipak, poznavanje SQL-a je korisno, pogotovo ako želite raditi u *data science*-u. Ta vještina će vam očekivano donijeti i veći prinos u vidu mogućnosti zaposlenja i visine plaće.Zbog toga razmotrite korištenje `show_query()` funkcije kako biste intuiciju iz R i tidyverse-a prenijeli na SQL. Korisan resurs za učenje je **dplyr** vignette-a "sql-translation" :
 
-```{r, eval=FALSE}
+
+```r
 vignette("sql-translation")
 ```
 

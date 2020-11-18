@@ -155,19 +155,17 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <a href="">Predavanje 07: Rad sa bazama podataka</a>
 
 <ul>
-<li> Softverski set-up</li>
-<li> Webscraping osnove</li>
-<li> WS na strani servera - rvest</li>
-<li> Praktični primjeri - Wikipedia</li>
-<li> Dodatni savjeti za WS na strani servera</li>
-<li> WS na strani klijenta</li>
-<li> API</li>
-<li> Praktični primjeri (I,II ,III)</li>
+<li> Što su baze podatka</li>
+<li> Baze podataka i *tidyverse*</li>
+<li> Baze podataka i SQL</li>
+<li> Praktični primjer - SQLite</li>
+<li> Praktični primjer - Google BigQuery</li>
+<li> Resursi za učenje</li>
 <ul>
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/07_BAZE.html">.html</a> | <a href="/Predavanja/07_BAZEP.Rmd">.Rmd</a>
+<b>Format predavanja:</b> <a href="/Predavanja/07_BAZE.html">.html</a> | <a href="/Predavanja/07_BAZE.Rmd">.Rmd</a>
 <br><b>Čitanje: </b><a href=""></a>
 <br>
 <br>
