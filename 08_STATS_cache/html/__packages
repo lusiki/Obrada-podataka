@@ -29,3 +29,5 @@ kableExtra
 vtable
 broom
 modelsummary
+Rcpp
+rstanarm

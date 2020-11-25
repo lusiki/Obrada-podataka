@@ -727,17 +727,362 @@ Normalno bismo očekivali veće standardne pogreške sa klasteringom no ovdje je
 
 Upravo smo vidjeli koje opcije ima **fixest** pri specifikaciji različitih rezidualnih struktura. Ukratko provedite model sa `se` ili `cluster` argumentima u  `summary.fixest()` (ili `broom::tidy()`) ako niste zaovoljni sa *default* varijantama. Tu postoje još dvije stvari na koje valja skrenutu pozornost!
 
-Prvo, ako dolazite iz drugog statističkog jezika (Stata!?), prilagodba rezidualne strukture nakon što je proveden model može izgledati neobično no taj način ima znatne prednosti. Primjerice, to nam omogućava analizu različitih specifikacija po *on-the-fly* principu bez da je potrebno ponovno provesti model.**fixest** je uistinu brz no vremenski gubitci kod većih modela mogu biti znatni.
+Prvo, ako dolazite iz drugog stati stičkog jezika (Stata!?), prilagodba rezidualne strukture nakon što je proveden model može izgledati neobično no taj način ima znatne prednosti. Primjerice, to nam omogućava analizu različitih specifikacija po *on-the-fly* principu bez da je potrebno ponovno provesti model.**fixest** je uistinu brz no vremenski gubitci kod većih modela mogu biti znatni.
 
 Drugo, usporedba standardnih pogrešaka u različitim programima je komplicirana stvar. Osim mnoštva nerješenih teoretskih aspekata (posebno kod višestrukih klastera) tu je i problem specifičnosti svakog pojedinog statističkog paketa([Pogledaj za diskusiju!](https://github.com/sgaure/lfe/issues/1#issuecomment-530643808)) Usporedba u slučaju **fixest** je je detaljno opisana u [vignette](https://cran.r-project.org/web/packages/fixest/vignettes/standard_errors.html) o replikaciji rezidualne strukture kod drugih paketa.^[Za detalje vrijedi pročitati!](https://cran.r-project.org/web/packages/sandwich/vignettes/sandwich-CL.pdf)]
 
 ### Slučajni (random) i mješoviti (mixed) efekti
 
-Fiksni efekti su znatno češće sreću
- 
-Fixed effects models are more common than random or mixed effects models in economics (in my experience, anyway). I'd also advocate for [Bayesian hierachical models](http://www.stat.columbia.edu/~gelman/arm/) if we're going down the whole random effects path. However, it's still good to know that R has you covered for random effects models through the **plm** ([link](https://cran.r-project.org/web/packages/plm/)) and **nlme** ([link](https://cran.r-project.org/web/packages/nlme/index.html)) packages.^[As I mentioned above, **plm** also handles fixed effects (and pooling) models. However, I prefer **fixest** and **lfe** for the reasons already discussed.] I won't go into detail , but click on those links if you would like to see some examples.
+Fiksni efekti se znatno češće sreću u praktičnim ekonometrijskim analizama nego što je to slučaj sa *random* ili *mixed* efektima. Ovdje isto valja spomenuti [bayesijanske hijerarhisje modele](http://www.stat.columbia.edu/~gelman/arm/) koji se znatno rijeđe pojavljuju u udžbenicima, a vrlo su zanimljivi. U svakom slučaju, R ima podršku za analizu slučajnih efekata kroz **plm** ([paket](https://cran.r-project.org/web/packages/plm/)) i **nlme** ([paket](https://cran.r-project.org/web/packages/nlme/index.html)). ^[**plm** paket također podržava FE (i pooling) modele. Ipak, čini mi se da su **fixest** i **lfe** praktičniji.] 
+
+
+## Instrumentalne varijable
+
+Kao i kod drugih modela, R pruža više mogoćnosti za provedbu IV regresijske analize. Ovdje ćemo rzamotriti `AER::ivreg()`, `estimatr::iv_robust()`, i `lfe::felm()` funkcije. Sve ove funkcije imaju sličnu sintaksu, dje je prvi stupanj specificiran nakon **`|`** , a pa poslije primarnog modela. Postoje tu i neke suptilne razlike pa odlučite sami koji pristup vam više odgovara. Za demonstraciju ćemo koristiti ćemo panel podatke o  pušenju po SAD federalnim zemljama iz **AER** [paketa](https://cran.r-project.org/web/packages/AER/vignettes/AER.pdf). Prvo ćemo učitati podatke, potom dodati neke potrebne varijable i onda kratko pogledati kako ti podatci izgledaju. Primjer je ograničen na 1995. godinu jer je cilj razumjeti IV sintaksu,a ne nužno kako ova metodologija funkcionira u kontekstu panel podataka.
+
+
+```r
+## učitaj podatke
+data("CigarettesSW", package = "AER")
+## stvori novi df sa modificiranim varijablama
+cigs =
+  CigarettesSW %>%
+  mutate(
+    rprice = price/cpi,
+    rincome = income/population/cpi,
+    rtax = tax/cpi,
+    tdiff = (taxs - tax)/cpi
+    ) %>%
+  as_tibble()
+## napravi podskup podataka za 1995
+cigs95 = cigs %>% filter(year==1995)
+cigs95
+```
+
+```
+## # A tibble: 48 x 13
+##    state year    cpi population packs income   tax price  taxs rprice rincome
+##    <fct> <fct> <dbl>      <dbl> <dbl>  <dbl> <dbl> <dbl> <dbl>  <dbl>   <dbl>
+##  1 AL    1995   1.52    4262731 101.  8.39e7  40.5  158.  41.9   104.    12.9
+##  2 AR    1995   1.52    2480121 111.  4.60e7  55.5  176.  63.9   115.    12.2
+##  3 AZ    1995   1.52    4306908  72.0 8.89e7  65.3  199.  74.8   130.    13.5
+##  4 CA    1995   1.52   31493524  56.9 7.71e8  61    211.  74.8   138.    16.1
+##  5 CO    1995   1.52    3738061  82.6 9.29e7  44    167.  44     110.    16.3
+##  6 CT    1995   1.52    3265293  79.5 1.04e8  74    218.  86.4   143.    21.0
+##  7 DE    1995   1.52     718265 124.  1.82e7  48    166.  48     109.    16.7
+##  8 FL    1995   1.52   14185403  93.1 3.34e8  57.9  188.  68.5   123.    15.4
+##  9 GA    1995   1.52    7188538  97.5 1.60e8  36    157.  37.4   103.    14.6
+## 10 IA    1995   1.52    2840860  92.4 6.02e7  60    191.  69.1   125.    13.9
+## # ... with 38 more rows, and 2 more variables: rtax <dbl>, tdiff <dbl>
+```
+
+Pretpostavimo da nas zanima regresijski odnos broja (paketa) cigareta kozumiranih po glavi stanovnika i njihove cijene te osobnog dohotka. Empirijski problem se odnosi na to da je broj konzumiranih paketa endogen, odnosno simultano određen na srani ponude i potražnje. Zbog toga valja koristiti instrumentalnu varijablu koja se u ovom slučaju odnosi na porezne varijable. Ovo je regresijski model koji nas zanima:
+
+$$price_i = \pi_0 + \pi_1 tdiff_i + + \pi_2 rtax_i + v_i  \hspace{1cm} \text{(Prva razina)}$$
+$$packs_i = \beta_0 + \beta_2\widehat{price_i} + \beta_1 rincome_i + u_i \hspace{1cm} \text{(Druga razina)}$$
+
+### Opcija 1: `AER::ivreg()`
+
+Započnimo sa `AER::ivreg()`  funkcijom jer i podatci dolaze iz tog paketa. Prva regresijska razina je specificirana nakon **`|`** i uključuje *sve* egzogene varijable.
+
+
+```r
+# library(AER) ## učitano
+## IV regresija 
+iv_reg = 
+  ivreg(
+    log(packs) ~ log(rprice) + log(rincome) | ## glavna regresija; "rprice" je endogena
+      log(rincome) + tdiff + rtax, ## lista svih *egzogenih* varijabli uključujući i  "rincome"
+    data = cigs95
+    )
+summary(iv_reg, diagnostics = TRUE)
+```
+
+```
+## 
+## Call:
+## ivreg(formula = log(packs) ~ log(rprice) + log(rincome) | log(rincome) + 
+##     tdiff + rtax, data = cigs95)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -0.6006931 -0.0862222 -0.0009999  0.1164699  0.3734227 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    9.8950     1.0586   9.348 4.12e-12 ***
+## log(rprice)   -1.2774     0.2632  -4.853 1.50e-05 ***
+## log(rincome)   0.2804     0.2386   1.175    0.246    
+## 
+## Diagnostic tests:
+##                  df1 df2 statistic p-value    
+## Weak instruments   2  44   244.734  <2e-16 ***
+## Wu-Hausman         1  44     3.068  0.0868 .  
+## Sargan             1  NA     0.333  0.5641    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1879 on 45 degrees of freedom
+## Multiple R-Squared: 0.4294,	Adjusted R-squared: 0.4041 
+## Wald test: 13.28 on 2 and 45 DF,  p-value: 2.931e-05
+```
+
+
+Za ekonomiste naviknute na Stata-u će ovo biti u najboljem slučaju neintuitivno.^[Uz pretpostavku da ste veće napravili logaritamske varijable i subset-irali podatke, naredba u Stata-i bi izgledala otprilike ovako: `ivreg log_packs = log_rincome (log_rprice = tdiff rtax)`.] U ovom slučaju nismo specificirali endogene varijable (i.e. "rplice") direktno nego smo rekli R-u koje su *egzogene* varijable. R je nakon toga *zaključio* gdje endogene varijable trebaju biti instrumentalizirane i proveo prvu regresijsku razinu u pozadini. Ovaj modelski set-up dobiva još smisla ako promislite o teoretskim osnovama IV pristupa!  
+
+`AER::ivreg()` također omogućava alternativni način specifikacije prve regresijske razine. Sada ćemo označiti endogenu "rprice" varijablu sa`. -price` i uključiti samo instrumentalne varijable nakon `|`. Output je jednak kao i u prethodnom slučaju:
+
+
+```r
+## eksplicitna specifikacija instrumenata
+ivreg(
+  log(packs) ~ log(rprice) + log(rincome) | 
+    . -log(rprice) + tdiff + rtax, ## alternativni način specifikacije prve regresijske razine
+  data = cigs95
+  )
+```
+
+
+### Opcija 2: `estimatr::iv_robust()`
+
+Drugi način se ondosi na **estimatr** koji smo prethodno spomenuli. *Default* postavka u ovom pristupu je HC2 rezidualna struktura, a naravno da su dopuštene i druge opcije (i klasteri također). Sintaksa je skoro ista kao u prethodnom primjeru, a sve što treba promijeniti je funkcijski poziv iz `AER::ivreg()` u `estimatr::iv_robust()`.
+
+
+```r
+# library(estimatr) ## učitano
+## IV regresija sa robusnim SE
+iv_reg_robust = 
+  iv_robust( ## sve je isto osim funkcijskog poziva
+    log(packs) ~ log(rprice) + log(rincome) | 
+      log(rincome) + tdiff + rtax,
+    data = cigs95
+    )
+summary(iv_reg_robust, diagnostics = TRUE)
+```
+
+```
+## 
+## Call:
+## iv_robust(formula = log(packs) ~ log(rprice) + log(rincome) | 
+##     log(rincome) + tdiff + rtax, data = cigs95)
+## 
+## Standard error type:  HC2 
+## 
+## Coefficients:
+##              Estimate Std. Error t value  Pr(>|t|) CI Lower CI Upper DF
+## (Intercept)    9.8950     0.9777  10.120 3.569e-13   7.9257  11.8642 45
+## log(rprice)   -1.2774     0.2547  -5.015 8.739e-06  -1.7904  -0.7644 45
+## log(rincome)   0.2804     0.2547   1.101 2.768e-01  -0.2326   0.7934 45
+## 
+## Multiple R-squared:  0.4294 ,	Adjusted R-squared:  0.4041 
+## F-statistic:  15.5 on 2 and 45 DF,  p-value: 7.55e-06
+```
+
+### Opcija 3: `felm::lfe()`
+
+
+`felm()` funkcija iz **lfe** paketa je vjerojatno najelegantnija opcija u usporedbi sa pretthodne dvije jer ima najintuitivniju sintaksu.^[ **fixest** paket koji smo razmatrali maločas ne podržava IV regresiju. Sa druge strane, `lfe::felm()`funkcija ima skore svu funkcinalnost tog paketa, jednio što je malo sporija.] Njena sintaksa je jako slična statinom načinu specifikacije prve regresijske razine, gdje se navode samo endogene varijable i instrumenti. 
+
+
+```r
+# library(lfe) ## učitano
+iv_felm = 
+  felm(
+    log(packs) ~ log(rincome) |
+      0 | ## bez fiksnih efekata 
+      (log(rprice) ~ tdiff + rtax), ## prva razina; obrati pažnju na zagrade
+    data = cigs95
+  )
+summary(iv_felm)
+```
+
+```
+## 
+## Call:
+##    felm(formula = log(packs) ~ log(rincome) | 0 | (log(rprice) ~      tdiff + rtax), data = cigs95) 
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.60069 -0.08622 -0.00100  0.11647  0.37342 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)          9.8950     1.0586   9.348 4.12e-12 ***
+## log(rincome)         0.2804     0.2386   1.175    0.246    
+## `log(rprice)(fit)`  -1.2774     0.2632  -4.853 1.50e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1879 on 45 degrees of freedom
+## Multiple R-squared(full model): 0.4294   Adjusted R-squared: 0.4041 
+## Multiple R-squared(proj model): 0.4294   Adjusted R-squared: 0.4041 
+## F-statistic(full model):13.28 on 2 and 45 DF, p-value: 2.931e-05 
+## F-statistic(proj model): 13.28 on 2 and 45 DF, p-value: 2.931e-05 
+## F-statistic(endog. vars):23.56 on 1 and 45 DF, p-value: 1.496e-05
+```
+
+U gornjem primjeru smo unieli "0" na mjesto fiksnih efekata jer koristimo samo *subset* podataka. Sljedeći primjer se odnosi na IV regresiju sa `felm()`funkcijom pri čemu su uključeni svi podatci (i.e. puni panel) te "year" and "state" fiksni efekti za kontrolu panel strukture.
+
+
+```r
+iv_felm_all = 
+  felm(
+    log(packs) ~ log(rincome) |
+      year + state | ## uključi fiksne efekte
+      (log(rprice) ~ tdiff + rtax), 
+    data = cigs ## puni panel
+  )
+summary(iv_felm_all)
+```
+
+```
+## 
+## Call:
+##    felm(formula = log(packs) ~ log(rincome) | year + state | (log(rprice) ~      tdiff + rtax), data = cigs) 
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.08393 -0.03851  0.00000  0.03851  0.08393 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(>|t|)    
+## log(rincome)         0.4620     0.3081   1.500    0.141    
+## `log(rprice)(fit)`  -1.2024     0.1712  -7.024  9.4e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.06453 on 45 degrees of freedom
+## Multiple R-squared(full model): 0.9668   Adjusted R-squared: 0.9299 
+## Multiple R-squared(proj model): 0.5466   Adjusted R-squared: 0.04281 
+## F-statistic(full model):26.21 on 50 and 45 DF, p-value: < 2.2e-16 
+## F-statistic(proj model): 27.71 on 2 and 45 DF, p-value: 1.436e-08 
+## F-statistic(endog. vars):49.33 on 1 and 45 DF, p-value: 9.399e-09
+```
+
+
+## Drugi modeli
+
+### Generalizirani linearni modeli (logit, etc.)
+
+Za provedbu generaliziranih linearnih modela (GLM) R ima *ugrađenu* (base) `glm()` funkciju u kojoj je potrebno specificirati [neku od ](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/family.html) opcija koje opisuju rezidualnu strukturu i željeni model. Ovo je primjer za logit model:
+
+
+```r
+glm_logit = glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
+tidy(glm_logit, conf.int = TRUE)
+```
+
+```
+## # A tibble: 4 x 7
+##   term        estimate std.error statistic p.value  conf.low conf.high
+##   <chr>          <dbl>     <dbl>     <dbl>   <dbl>     <dbl>     <dbl>
+## 1 (Intercept)  19.7       8.12       2.43   0.0152   8.56      44.3   
+## 2 cyl           0.488     1.07       0.455  0.649   -1.53       3.12  
+## 3 hp            0.0326    0.0189     1.73   0.0840   0.00332    0.0884
+## 4 wt           -9.15      4.15      -2.20   0.0276 -21.4       -3.48
+```
 
 
 
+Prije nego što pogledamo kako *izvaditi* [marginalne efekte](#marginal-effects) fiz nelinearnih modela...obratite pozornost na **mfx** [paket](https://cran.r-project.org/web/packages/mfx/vignettes/mfxarticle.pdf) pomoću kojeg je moguće dobiti marginalne efekte iz niza GLM modela. Npr.:
 
+
+
+```r
+# library(mfx) ## učitano
+## Oprez: mfx učitava MASS paket pa se javlja "namespace conflict"
+## sa dplyr-ovom select() funkcijom. Eksplicitno definirajte što želite koristiti:
+## e.g. `select = dplyr::select`
+## uzmi marginalne efekte
+glm_logitmfx = logitmfx(glm_logit, atmean = TRUE, data = mtcars)
+## moguć je i unos u funkciju direktno
+# glm_logitmfx = logitmfx(am ~ cyl + hp + wt, atmean = TRUE, data = mtcars)
+tidy(glm_logitmfx, conf.int = TRUE)
+```
+
+```
+## # A tibble: 3 x 8
+##   term  atmean estimate std.error statistic p.value conf.low conf.high
+##   <chr> <lgl>     <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl>
+## 1 cyl   TRUE    0.0538    0.113       0.475   0.635 -0.178     0.286  
+## 2 hp    TRUE    0.00359   0.00290     1.24    0.216 -0.00236   0.00954
+## 3 wt    TRUE   -1.01      0.668      -1.51    0.131 -2.38      0.359
+```
+
+
+### Bayes-ova regresija
+
+Bayes-ijanski pristup statistici je vrlo opširna tema,a ovo je jako kratki prikaz mogućnosti za provedu te vrste analize u R. Sučelja za provedbu bayes-ijanskih modela su implementirana kroz MCMC i Bayesian *software engines*: [Stan](https://mc-stan.org/users/interfaces/rstan), [JAGS](http://mcmc-jags.sourceforge.net/), TensorFlow (via [Greta](https://greta-stats.org/)), itd. Ovo je samo jedan jednostavni primjer bayes-ijanske analize sa **rstanarm** [paketom](http://mc-stan.org/rstanarm/). Primijetite da ovaj paket nismo instalirali na početku jer instalacija često zna izazvati svakakve probleme.^[Primjerice na ovom računalu je bilo potrebno instalirati `stan` i `rstanarm` pri čemu je R stalno *ispadao* kroz instalacijski proces koji je trebalo ponavljati više puta.]
+
+
+```r
+# install.packages("rstanarm") ## izvršite ovo za početak
+library(rstanarm)
+bayes_reg = 
+  stan_glm(
+    mass ~ gender * height,
+    data = humans, 
+    family = gaussian(), prior = cauchy(), prior_intercept = cauchy()
+    )
+```
+
+
+```r
+summary(bayes_reg)
+```
+
+```
+## 
+## Model Info:
+##  function:     stan_glm
+##  family:       gaussian [identity]
+##  formula:      mass ~ gender * height
+##  algorithm:    sampling
+##  sample:       4000 (posterior sample size)
+##  priors:       see help('prior_summary')
+##  observations: 22
+##  predictors:   4
+## 
+## Estimates:
+##                          mean   sd     10%    50%    90% 
+## (Intercept)             -68.9   76.2 -164.2  -68.7   27.0
+## gendermasculine          -0.6   11.7   -7.2   -0.1    6.7
+## height                    0.8    0.5    0.2    0.8    1.4
+## gendermasculine:height    0.1    0.1   -0.1    0.1    0.2
+## sigma                    15.9    2.8   12.8   15.6   19.5
+## 
+## Fit Diagnostics:
+##            mean   sd   10%   50%   90%
+## mean_PPD 82.7    4.8 76.7  82.7  88.9 
+## 
+## The mean_ppd is the sample average posterior predictive distribution of the outcome variable (for details see help('summary.stanreg')).
+## 
+## MCMC diagnostics
+##                        mcse Rhat n_eff
+## (Intercept)            1.7  1.0  2068 
+## gendermasculine        0.5  1.0   560 
+## height                 0.0  1.0  1951 
+## gendermasculine:height 0.0  1.0   863 
+## sigma                  0.1  1.0  2235 
+## mean_PPD               0.1  1.0  3003 
+## log-posterior          0.0  1.0  1287 
+## 
+## For each parameter, mcse is Monte Carlo standard error, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence Rhat=1).
+```
+
+### Još neki modeli
+
+Postoji previše modela i empirijskih procedura da bismo ih sve pokrili u jednom predavanju. Veliki dio tih modela dolazi po *default-u* u osnovnoj R instalaciji. Ovdje su istaknuti neki novi paketi za specifične modele:
+
+- Difference-in-differences (sa varijabilnim T (vremenska dimenzija) itd): **did** ([link](https://github.com/bcallaway11/did)) i **DRDID** ([link](https://pedrohcgs.github.io/DRDID/))
+- Sintetička kontrola: **gsynth** ([link](https://yiqingxu.org/software/gsynth/gsynth_examples.html)) i **scul** ([link](https://hollina.github.io/scul/))
+- *Count* modeli (hurdle modeli, itd.): **pscl** ([link](https://cran.r-project.org/web/packages/pscl/vignettes/countreg.pdf))
+- Lasso: **biglasso** ([link](https://github.com/YaohuiZeng/biglasso))
+- Causal forests: **grf** ([link](https://grf-labs.github.io/grf/))
+- itd
+
+
+Na poslijetku vrijedi pogledati i neke korisne resurse (knjige i tutoriale) i linkove za ekonometriju na kraju ovog predavanja. 
+
+## Marginalni efekti
 
