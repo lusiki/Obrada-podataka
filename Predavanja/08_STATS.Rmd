@@ -29,12 +29,12 @@ Današnje predavanje se odnosi na regresijsku analizu, najpopularniji analitičk
 
 ### R paketi 
 
-*Base R* sadržava većinu potrebnih funkcija za osnovnu regresisjsku analizu no u današnjem predavanju ćemo dodatno koristiti još nekoliko paketa. Korištenje dodatnih paketa će olakšati provedbu analize i omogućiti provođenje sofisticiranijih modela.
+*Base R* sadržava većinu potrebnih funkcija za osnovnu regresijsku analizu no u današnjem predavanju ćemo koristiti niz dodatnih paketa. Korištenje dodatnih paketa olakšava analizu i omogućuje provođenje sofisticiranijih modela.
 
 - Novi: **broom**, **estimatr**, **fixest**, **sandwich**, **lmtest**, **AER**, **lfe**, **mfx**, **margins**, **modelsummary**, **vtable**
 - Korišteni: **tidyverse**, **hrbrthemes**, **listviewer**
 
-Praktičan način za instalaciju i učitavanje svih paketa je izvršavanje donjeg koda. Za pakete **broom** i **modelsummary** ćemo koristiti razvojne pakete jer sadržavaju nekoliko funkcionalnosti koje nisu dostupne u ekvivalentnim CRAN verzijama.
+Praktičan način za instalaciju i učitavanje svih paketa je izvršavanje donjeg koda. Za pakete **broom** i **modelsummary** ćemo koristiti razvojne pakete jer sadržavaju nekoliko funkcionalnosti koje nisu dostupne u trenutnim CRAN verzijama.
 
 ```{r libs_print, cache=FALSE, eval=FALSE, message=FALSE, warning=FALSE}
 ## učitaj i instaliraj pakete
@@ -65,33 +65,33 @@ starwars
 
 ### `lm()` funkcija
 
-Glavna naredba za provedbu regresijskog modela u R je `lm()` funkcija. "**lm**" je kratica za "**l**inear **m**odels", a funkcijska sintaksa je vrlo intuitivna.
+Glavna naredba za provedbu regresijskog modela u R je `lm()` funkcija. "**lm**" je kratica za "**l**inear **m**odels", a funkcijska sintaksa je vrlo intuitivna:
 
 ```r
 lm(y ~ x1 + x2 + x3 + ..., data = df)
 ```
 
-`lm()` ima izvor podataka kao funkcijski argument (u ovom slučaju hipotetski datat frame pod nazivom `df`). Razlog za to je mogućnost supostojanja različitih objekata u radnom prostoru R pa je potrebno eksplicitno naznačiti koji objekt nas zanima. To je potrebno čak i ako je `df` jedini data frame u radnom prostoru R u trenutku izođenja regresije. Alternativna opcija je indeksiranje varijabli:
+`lm()` ima izvor podataka kao funkcijski argument (u ovom slučaju hipotetski data frame pod nazivom `df`). Razlog za to je mogućnost supostojanja različitih objekata u radnom prostoru R pa je potrebno eksplicitno naznačiti koji objekt želimo koristiti za regresiju. To je potrebno čak i ako je `df` jedini data frame u radnom prostoru R u trenutku izođenja regresije. Alternativna opcija je indeksiranje varijabli:
 
 ```r
 lm(df$y ~ df$x1 + df$x2 + df$x3 + ...)
 ```
 
-Provedimo sada jednostavnu regresiju težine (mass) na visinu (height) koristeći starwars podatkovni skup.
+Provedimo sada jednostavnu regresiju težine (mass) na visinu (height) koristeći `starwars` podatke:
 
 ```{r ols1}
 ols1 = lm(mass ~ height, data = starwars)
 # ols1 = lm(starwars$mass ~ starwars$height) ## alternativno
 ols1
 ```
-Ovaj regresijski ispis je vrlo jednostavan i sažet, a razlog je što se većina korisnih informacija *skriva* u internoj (list) strukturi "ols1" objekta. U RStudio-u je moguće pregledati tu strukturu pomoću naredbe `View(ols1)` ili klikom na "ols1" objekt u gornjem desnom panelu. To će otvorriti interaktivni panel u kojem možete detaljnije proučiti ovaj objekt. Taj pristup ne funkcionira u (knitt-anom) R Markdown dokumentu, pa ćemo koristiti `listviewer::jsonedit()` funkciju za interaktivni pregled.
+Ovaj regresijski ispis je vrlo jednostavan i sažet zbog toga što se većina korisnih informacija *skriva* u internoj (list) strukturi "ols1" objekta. U RStudio-u je moguće pregledati tu strukturu pomoću naredbe `View(ols1)` ili klikom na "ols1" objekt u gornjem desnom panelu. To će otvorriti interaktivni panel u kojem možete detaljnije proučiti ovaj objekt. Taj pristup ne funkcionira u (knit!) R Markdown dokumentu, pa ćemo koristiti `listviewer::jsonedit()` funkciju za interaktivni pregled:
 
 ```{r ols1_str, message=F, out.width="100%", out.height="10%"}
 # View(ols1) ## u uobičajnoj skripti koristi
 listviewer::jsonedit(ols1, mode="view") ## za R Markdown
 ```
 
-Kao što je vidljivo `ols1` objekt sadržava mnoštvo slotova... koji sadržavaju regresijske koeficijente,vektorr rezidualnih i *fitted* (i.e. predicted) vrijednosti, rangove matrice dizajna, imput podataka...itd. Za deskriptivni pregled najvažniji vrijednosti se uobičajno koristi generička `summary()` funkcija. 
+Kao što je vidljivo `ols1` objekt sadržava mnoštvo slotova... koji sadržavaju regresijske koeficijente, vektor rezidualnih i *fitted* (i.e. predicted) vrijednosti, rangove matrice dizajna, imput podatke...itd. Za deskriptivni pregled najvažnijih vrijednosti se uobičajno koristi generička `summary()` funkcija: 
 
 ```{r ols1_summ}
 summary(ols1) # (slično kao u Stata-i)
@@ -107,25 +107,25 @@ summary(ols1)$coefficients
 
 ### Korištenje "tidy" regresijskih koeficijenata iz `broom` paketa
 
-Iako je najjednostavniji način "vađenja" koeficijenata `summary()` funkcija, u praksi je **broom** ([paket](https://broom.tidyverse.org/)) bolji način. **broom** ima niz korisnih funkcioinalnosti koji regresijske (i druge statističke) objekte pretvaraju u "tidy" data frame-ove. To je jako korisno jer se regresijski output često koristi kao input u nešto drugo, npr. za vizualizaciju marginalnih efekata. Sada ćemo pogledati kako pomoću funkcije `broom::tidy(..., conf.int = TRUE)` možemo prebaciti `ols1` regresijski objekt u *tidy data frame* koeficijenata i bitnih statistika.
+Iako je najjednostavniji način *vađenja* koeficijenata `summary()` funkcija, u praksi je **broom** ([paket](https://broom.tidyverse.org/)) bolji način. **broom** ima niz korisnih funkcioinalnosti koji regresijske (i druge statističke) objekte pretvaraju u "tidy" data frame-ove. To je praktično jer se regresijski output često koristi kao input u nekoj drugoj proceduri, npr. za vizualizaciju marginalnih efekata. Sada ćemo pogledati kako pomoću funkcije `broom::tidy(..., conf.int = TRUE)` možemo prebaciti `ols1` regresijski objekt u *tidy data frame* koeficijenata i drugih statistika:
 
 ```{r ols1_tidy}
 # library(broom) ## učitano
 tidy(ols1, conf.int = TRUE)
 ```
 
-Ove "očišćene" (tidy) koeficijente bismo sada mogli koristiti za **ggplot2** vizualizaciju, primjerice koristeći `geom_pointrange()` za prikaz *error bar*-ova.
+Ove "očišćene" (tidy) koeficijente bismo sada mogli iskoristiti za **ggplot2** vizualizaciju, primjerice koristeći `geom_pointrange()` za prikaz *error bar*-ova.
 
-**broom** ima još nekoliko korisnih funkcionalnosti. Npr. `broom::glance()` daje prikaz modelskih meta podataka (R<sup>2</sup>, AIC, etc.) u data frame-u .
+**broom** ima još nekoliko korisnih funkcionalnosti. Npr. `broom::glance()` daje prikaz modelskih meta podataka (R<sup>2</sup>, AIC, etc.) u data frame-u:
 
 ```{r ols1_glance}
 glance(ols1)
 ```
 
-Tehnike izvoza podataka u druge formate (npr. LaTeX tablice) ćemo spomenuti na kraju ovog predavanja.
+Tehnike izvoza podataka u druge formate (npr. LaTeX tablice) ćemo spomenuti pred kraj predavanja.
 
 
-### Regresija na dijelu podastaka
+### Regresija na dijelu podataka
 
 Prethodno procijenjeni regresijski model i nije baš nešto... R<sup>2</sup> je `r I(round(glance(ols1)$r.squared, 3))`. Nizak R<sup>2</sup> baca sumnju na ekstremne vrijednosti u podatcima...
 
@@ -151,12 +151,12 @@ starwars %>%
   xlab("Visina")
 ```
 
-Čini se da bi imalo smisla maknuti ekstremnu vrijednost iz regresijskog modela!? To je moguće napraviti na dva načina: 1) napravi novi data frame i provedi regresiju 2) subset-aj podatke (direktno) unutar `lm()` funkcije.
+Čini se da bi imalo smisla maknuti ekstremnu vrijednost iz regresijskog modela!? To je moguće napraviti na dva načina: 1) napravi novi data frame i provedi regresiju i 2) *subset-aj* podatke (direktno) unutar `lm()` funkcije.
 
 
 #### 1) Napravi novi data frame
 
-R dozvoljava mnoštvo objekata u radnom prostoru pa je moguće napraviti novi data frame objekt koji isključuje ekstremnu vrijednost *Jabba*. Za to je moguće koroistiti **dplyr** ([predavanje](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/05_MANIPULACIJA_tidy.html#1)) ili  **data.table** ([predavanje](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/05_MANIPULACIJA_dt.html#1)). U ovom slučaju ćemo koristiti **dplyr** jer je to trenutno kompatiblno sa starwars podatcima.
+R dozvoljava mnoštvo objekata u radnom prostoru pa je moguće napraviti novi data frame objekt koji isključuje ekstremnu vrijednost *Jabba*. Za to je moguće koroistiti **dplyr** ([predavanje](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/05_MANIPULACIJA_tidy.html#1)) ili  **data.table** ([predavanje](https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/05_MANIPULACIJA_dt.html#1)). U ovom slučaju ćemo koristiti **dplyr** jer je to trenutno kompatiblno sa `starwars` podatcima:
 
 ```{r ols2}
 starwars2 =
@@ -169,22 +169,22 @@ summary(ols2)
 
 #### 2) Subset unutar `lm()` funkcije
 
-Provedi regresiju i subset-aj direktno u funkcijskom pozivu.
+Provedi regresiju i *subset-aj* direktno u funkcijskom pozivu.
 
 ```{r ols2a}
 ols2a = lm(mass ~ height, data = starwars %>% filter(!(grepl("Jabba", name))))
 summary(ols2a)
 ```
 
-Kvaliteta modela je znatno unaprijeđena kada je maknut outlier pa je sada R<sup>2</sup> porastao na `r I(round(glance(ols2)$r.squared, 3))`. To ne znači da valja olako izbacivati podatke...ponekad je moguće ekstremne vrijednosti *uzeti u obzir* kroz statistički model...primjerice kroz nestandardnu rezidualnu strukturu!
+Kvaliteta modela je sada znatno unaprijeđena jer su podaci očišćeni od outliera pa je  R<sup>2</sup> porastao na `r I(round(glance(ols2)$r.squared, 3))`. To ne znači da možemo olako izbacivati podatke...ponekad je moguće ekstremne vrijednosti *uzeti u obzir* kroz statistički model...primjerice kroz nestandardnu rezidualnu strukturu!
 
 ## Nestandardna rezidualna struktura
 
-Statističke neregularnosti (heteroskedastičnost, klasteri  itd) su regularna stvar u statistici. Dobra stvar je da postoji mnoštvo načina za uvažavanje nestandardne rezudualne strukture u R. Tu je izvsrni **sandwich**  ([paket](https://cran.r-project.org/web/packages/sandwich/index.html)). Nešto "moderniji" pristup je **estimatr** ([paket](https://declaredesign.org/r/estimatr/articles/getting-started.html)) koji poboljšava brzinu i praktičnost. slijedi nekoliko oglednih primjera... 
+Statističke neregularnosti (heteroskedastičnost, klasteri  itd) su regularna stvar u statistici. Dobra stvar je da postoji mnoštvo načina za uvažavanje nestandardne rezudualne strukture u R, npr. **sandwich**  ([paket](https://cran.r-project.org/web/packages/sandwich/index.html)). Nešto "moderniji" pristup je **estimatr** ([paket](https://declaredesign.org/r/estimatr/articles/getting-started.html)) koji daje na brzi i praktičnosti. Slijedi nekoliko oglednih primjera... 
 
 ### Robusne standardne pogreške
 
-Heteroskedstične (HC), "robusne" standardne pogreške možemo uvažiti korištenjem `estimatr::lm_robust()` funkcije. Prikažimo to na primjeru `ols1` regresijskog objekta koji smo koristili u prethodnim primjerima. **estimatr** će prikaz dati u "tidy" formatu, no valja imati na umu da je objekt moguće ugnijezditi i u  `tidy()` funkciju.
+Heteroskedstične (HC) "robusne" standardne pogreške modela možemo uvažiti korištenjem `estimatr::lm_robust()` funkcije. Prikažimo to na primjeru `ols1` regresijskog objekta koji smo već koristili. **estimatr** će prikaz dati u "tidy" formatu, no valja imati na umu da je objekt moguće "ugnijezditi" i u  `tidy()` funkciju!
 
 ```{r ols1_robust}
 # library(estimatr) ## učitano
@@ -193,17 +193,17 @@ ols1_robust = lm_robust(mass ~ height, data = starwars)
 ols1_robust
 ```
 
-Paket koristi* Eicker-Huber-White* robusnu rezidualnu strukturu kao default, što se često navodi kao *"HC2" standard errors*. Default je moguće promijeniti sa `se_type = ` argumentom^[Pogledaj za detalje!](https://declaredesign.org/r/estimatr/articles/mathematical-notes.html#lm_robust-notes)]. To je korisno ako doalzite iz Stata-e pa želite replicirati rezultate. Replikacija rezultata nije uvijek elegantna stvar, a za raspravu na temu replikacije između Stata-e, R i Python-a pogledajte [ovdje](https://declaredesign.org/r/estimatr/articles/stata-wls-hat.html). 
+Ovaj paket koristi *Eicker-Huber-White* robusnu rezidualnu strukturu kao default, odnosno *"HC2" standard errors*. Default varijantu je moguće promijeniti sa `se_type = ` argumentom. ^[[Pogledaj za detalje!](https://declaredesign.org/r/estimatr/articles/mathematical-notes.html#lm_robust-notes)]. To je korisno ako dolazite iz Stata-e i želite replicirati rezultate. Replikacija rezultata nije uvijek elegantna stvar, a za raspravu na temu replikacije između Stata-e, R i Python-a pogledajte [ovdje](https://declaredesign.org/r/estimatr/articles/stata-wls-hat.html). 
 
 ```{r ols1_robust_stata}
 lm_robust(mass ~ height, data = starwars, se_type = "stata")
 ```
 
-**estimatr** podržava i robusnu regresiju u modelu instrumentalnih varijabli (IV) no to ćemo detaljnije objasniti u narednom dijelu predavanja.
+**estimatr** podržava i robusnu regresiju u modelu instrumentalnih varijabli (IV), no to ćemo detaljnije objasniti kasnije...
 
 #### Usputni komentar o HAC (Newey-West) rezidualnoj strukturi
 
-**estimatr** nema podršku za HAC (i.e. heteroskedasticity *and* autocorrelation consistent) rezidualnu strukturu *a la* [Newey-West](https://en.wikipedia.org/wiki/Newey%E2%80%93West_estimator).[Inicijativa](https://github.com/DeclareDesign/estimatr/issues/272) za dodavanje te funkcionalnosti postoji na GitHub-u no za sada je HAC moguć kroz **sandwich** paket. Npr. korištenje `sandwich::NeweyWest()`funkcije na `ols1` objektu:
+**estimatr** nema podršku za HAC (i.e. heteroskedasticity *and* autocorrelation consistent) rezidualnu strukturu *a la* [Newey-West](https://en.wikipedia.org/wiki/Newey%E2%80%93West_estimator). [Inicijativa](https://github.com/DeclareDesign/estimatr/issues/272) za dodavanje ove funkcionalnosti postoji na GitHub-u, no za sada je HAC omogućen kroz **sandwich** paket. Npr. korištenje `sandwich::NeweyWest()`funkcije na `ols1` objektu:
 
 ```{r ols1_hac_ses}
 # library(sandwich) ## učitano
@@ -211,7 +211,7 @@ lm_robust(mass ~ height, data = starwars, se_type = "stata")
 sqrt(diag(NeweyWest(ols1))) ## prikaži HAC SEs
 ```
 
-Ako želite koristiti HAC SE u modelue, preporuča se primjena `ols1` objekta u `lmtest::coeftest()`funkciju. Ova funkcija koristi **sandwich** paket i omogućava praktičan način testiranja hipoteza u modelu sa raznim specifikacijama. Ovdje je samo jedan, osnovni primjer:
+Akopak želite koristiti HAC SE rezidualnu strukturu u modelu, preporuča se primjena `ols1` objekta u `lmtest::coeftest()`funkciji. Ova funkcija koristi **sandwich** paket i omogućava praktičan način testiranja hipoteza u modelu sa raznim specifikacijama. Osnovni primjer:
 
 ```{r ols1_hac}
 # library(lmtest) ## već učitano
@@ -219,7 +219,7 @@ ols1_hac = lmtest::coeftest(ols1, vcov = NeweyWest)
 ols1_hac
 ```
 
-Obratite pozornost i na lakoću kojom se `coeftest()` uklapa u **broom** paket: 
+Obratite pozornost i na lakoću kojom se `coeftest()` uklapa u sintaksu **broom** paketa: 
 
 ```{r ols1_hac_tidy}
 tidy(ols1_hac, conf.int = TRUE)
@@ -238,7 +238,7 @@ lm_robust(mass ~ height, data = starwars, clusters = homeworld)
 
 ## *Dummie* varijable i interakcije varijabli
 
-Za demonstraciju principa u ovom poglavlju je potrebno *subset-ati* starwars podatke tako da uključuju samo ljudsku vrstu. Zbog toga ćemo napraviti novi podatkovni skup,a dodatno ćemo još i napraviti novu (faktorsku) varijablu "spol" ("gender") jer je važno pokazati kako R tretira faktorske varijable:
+Za demonstraciju principa u ovom poglavlju je potrebno *subset-ati* `starwars` podatke tako da uključuju samo ljudsku vrstu. Zbog toga ćemo napraviti novi podatkovni skup, a dodatno i novu (faktorsku) varijablu "spol" ("gender") jer je važno pokazati kako R tretira faktorske varijable:
 
 ```{r humans}
 humans = 
@@ -252,7 +252,7 @@ humans
 ### *Dummie* varijable kao faktori
 
 
-*Dummie* varijable su ključna komponenta velikog broja regresijskih modela, a podrška za rukovanje tim varijablama je dosta loša u nekim (i.e. većini) statističkim programima (npr. potrebna tabulacija nove matrice binarnih varijabli, a potom pripisivanje orginalnim podtacima...). R ima dobar pristup za stvaranje i evaluacijju *dummie* varijabli: jednostavno specificirajte varijablu kao  [faktor](https://r4ds.had.co.nz/factors.html).^[Faktori su varijable sa jedinstvenim kvalitativnim razinama, npr. "muški", "ženski", "trans", itd.]
+*Dummie* varijable su ključna komponenta velikog broja regresijskih modela, a podrška za rukovanje tim varijablama je dosta loša u nekim (i.e. većini) statističkim programima (npr. potrebna je tabulacija nove matrice binarnih varijabli nakon čega slijedi pripisivanje orginalnim podtacima...). R ima dobar pristup za stvaranje i evaluacijju *dummie* varijabli: jednostavno specificirajte varijablu kao  [faktor](https://r4ds.had.co.nz/factors.html).^[Faktori su varijable sa jedinstvenim kvalitativnim razinama, npr. "muški", "ženski", "trans", itd.]
 
 Ovdje je primjer regresije sa "gendered_factored" varijablom koju smo maločas stvorili:
 
@@ -260,7 +260,7 @@ Ovdje je primjer regresije sa "gendered_factored" varijablom koju smo maločas s
 summary(lm(mass ~ height + gender_factored, data = humans))
 ```
 
-Cijela stvar sa prebacivanjem string (i.e. character) varijable u faktorsku nije bila nužna u regresijskom pozivu jer će R to učinii automatski...no valja znati što se događa. Pogledajte isti primjer: 
+Cijela stvar sa prebacivanjem string (i.e. character) varijable u faktorsku nije bila nužna u regresijskom pozivu jer će R to učiniti automatski...no dobro je znati što se događa u pozadini. Pogledajte: 
 
 ```{r ols_dv2}
 ## ne faktorska verzija "gender" varijable; R zna!!!
@@ -276,7 +276,7 @@ Kao i kod *dummie* varijabli, R ima praktičnu sintaksu za specifikaciju interak
 - `x1/x2` "ugnježđivanje" druge varijable u prvu (ekvivalentno `x1 + x1:x2`)
 - `x1*x2`uključuje sve glavne i interakcijske varijable (eekvivalentno `x1 + x2 + x1:x2`) 
 
-AOpćenito je prporučljivo uključiti sve glavne (*parent*) odnose uz njihove interakcije pa je `*` default opcija. 
+Općenito je prporučljivo uključiti sve glavne (*parent*) odnose uz njihove interakcije pa je `*` default opcija. 
 
 Primjerice, može nas zanimati da li je odnos između težine i visine posredovan spolom osobe!? Tada bismo proveli regresiju u ovakvom obliku:
 
@@ -292,15 +292,15 @@ summary(ols_ie)
 
 ## Analiza panel podataka
 
-### Fiksni ekefti sa **fixest** paketom
+### Fiksni efekti sa **fixest** paketom
 
-Najjednostavniji način za uključivanje fiksnih efekata u regresijski model je korištenje *dummie* varijabli, no to je vrlo neučinkovito...Uostalom koji je smisao svih [teoretskih](https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem) aspekata *within-group* transformacija ako ih ne možemo praktično primijeniti u statsitičkom programu?! U R-u postoji više opcija za analizu fiksnih efekata: **lfe** ([paket](https://cran.r-project.org/web/packages/lfe/index.html)) koji je dosta sličan Stata-inom **reghdfe** ([pristupu](http://scorreia.com/software/reghdfe/)) i **fixest**  ([paket](https://github.com/lrberge/fixest)) koji ćemo koristiti u ovom predavanju.
+Najjednostavniji način za uključivanje fiksnih efekata u regresijski model je korištenje *dummie* varijabli, no to je vrlo neučinkovito...Uostalom koji je smisao svih [teoretskih](https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem) aspekata *within-group* transformacija ako ih ne možemo praktično primijeniti u statističkom programu?! U R-u postoji više opcija za analizu fiksnih efekata: **lfe** ([paket](https://cran.r-project.org/web/packages/lfe/index.html)) koji je dosta sličan Stata-inom **reghdfe** ([pristupu](http://scorreia.com/software/reghdfe/)) i **fixest**  ([paket](https://github.com/lrberge/fixest)) koji ćemo koristiti u ovom predavanju.
 
-**fixest** je relativno novi paket koji ima podršku za analizu nelinearnih modela, visko-dimenzionalnih fiksnih efekata, višestrukih klastera itd. Procedure u paketu su jako brze ([vidi!](https://github.com/lrberge/fixest#benchmarking)) o odnosu na  **lfe** i **reghdfe** pakete. Ovdje ćemo razmotriti samo najosnovnije principe rada sa **fixest** paketom, a za detalje [pogledajte](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html).
+**fixest** je relativno novi paket koji ima podršku za analizu nelinearnih modela, visko-dimenzionalnih fiksnih efekata, višestrukih klastera itd., a procedure u paketu su jako brze! ([Pogledaj ](https://github.com/lrberge/fixest#benchmarking) za više o odnosu na  **lfe** i **reghdfe** pakete.) Ovdje ćemo razmotriti samo najosnovnije principe rada sa **fixest** paketom, a za detalje [pogledajte](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html).
 
 #### Jednostavni FE model
 
-Glavna funkcija u ovom paketu je `fixest::feols()`, a koristi se za procjenu fiksnih efekata u linearnim modelima. Sintaksa zahtjeva da se prvo specificira "normalni" regresijski model, a lista fiksnih efekata  nakon `|`. Pogledajmo jedan primjer regeresije težine (mass) na visinu (height) pri čemu ćemo kontrolira za fiksne efekte na razini vrste (starwars podatci!).^[Pošto smo specificirali "species" u slotu za fiksne efekte, `feols()` funkcija će automatski pretvoriti potrebne varijable u faktorske.]
+Glavna funkcija u ovom paketu je `fixest::feols()` i koristi se za procjenu fiksnih efekata u linearnim modelima. Sintaksa zahtjeva da se prvo specificira "normalni" regresijski model, a nakon `|` lista fiksnih efekata. Pogledajmo jedan primjer regresije težine (mass) na visinu (height) pri čemu ćemo kontrolirati za fiksne efekte na razini vrste^[Pošto smo specificirali "species" u slotu za fiksne efekte, `feols()` funkcija će automatski pretvoriti potrebne varijable u faktorske.] ( koristimo `starwars` podatke!): 
 
 ```{r ols_fe, message=FALSE}
 # library(fixest) ## učitano
@@ -314,7 +314,7 @@ Modelski objekt je automatski klasterirao standardne pogreške po varijabli fiks
 summary(ols_fe, se = 'standard')
 ```
 
-Podatkovni skup sa koeficijentima ćemo pospremiti u zasebni objekt jer će nam trebati kasnije. Pri tome ćemo koristiti *vanilla* reziduale. Usput primjetite na koji način`broom::tidy()` metoda za `fixest` objekte prihvaća `se` argument. Ova procedura je ujedno i jako praktična za provjeru više različitih modela:
+Podatkovni skup sa koeficijentima ćemo pospremiti u zasebni objekt jer će nam trebati kasnije, a pri  tome koristimo *vanilla* reziduale. Usput primjetite na koji način`broom::tidy()` metoda za `fixest` objekte prihvaća `se` argument. Ova procedura je ujedno i jako praktična za provjeru više različitih modela:
 
 ```{r coefs_fe}
 # coefs_fe = tidy(summary(ols_fe, se = 'standard'), conf.int = TRUE) ## isto kao dolje
@@ -323,15 +323,15 @@ coefs_fe = tidy(ols_fe, se = 'standard', conf.int = TRUE)
 
 #### Visko-dimenzionalni FE i višetruki klasteri
 
-Kako što smo naveli prije **fixest** omogućava proizvoljan broj varijabli za fiksne efekte i višestruke klastere (do 4). Pogledajmo kako to izgleda u prkasi uz dodavanje "homeworld" varijable fiksnim efektima:
+Kako što smo već naveli, **fixest** omogućava proizvoljan broj varijabli za fiksne efekte i višestruke klastere (do 4). Pogledajmo kako to izgleda u praksi (uz dodavanje "homeworld" varijable fiksnim efektima):
 
 ```{r ols_hdfe, message = FALSE}
-## We now have two fixed effects: species and homeworld
+## Wdvostruki fiksni efekti: species i homeworld
 ols_hdfe = feols(mass ~ height |  species + homeworld, data = starwars)
 ols_hdfe
 ```
 
-Rezidualna struktura prethodnog modela je automatski klasterirana po vrsti (species), odnosno prvoj varijabli iza `|`. Ukoliko želimo klaster po "species" i "homeworld" varijablama^[Ovo je samo demonstrativni primjer.] možemo koristit funkcijske argumente `se` ili `cluster` u `summary.fixest()` funkciji. Pripisati ćemo model `ols_hdfe` objektu:
+Rezidualna struktura prethodnog modela je automatski klasterirana po vrsti (species), odnosno prvoj varijabli iza `|`. Ukoliko želimo klaster po "species" i "homeworld" varijablama^[Ovo je samo demonstrativni primjer.] možemo koristiti funkcijske argumente `se` ili `cluster` u `summary.fixest()` funkciji. Pripisati ćemo model `ols_hdfe` objektu:
 
 ```{r ols_hdfe_twoway}
 ## klaster po species i homeworld
@@ -342,7 +342,7 @@ ols_hdfe
 
 #### Usporedba modelskih koeficijenata
 
-**fixest** ima ugrađenu `coefplot()` funkciju za prikaz rezulatat  procjene. Ovo je korisno za pregled efekata kroz vrijeme iako ([Pogledaj!](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html#23_adding_interactions:_yearly_treatment_effect).) se procjena koeficijenata ta različite modele se najčešće radi sa **ggplot2** paketom. Sljedeći primjer se zasniva na funkcionalnosti koju omogućava spremanje objekta kao data frame-a pomoću`broom::tidy()` funkcije. Upravo to olakšava vizualizaciju u ovom slučaju:
+**fixest** ima ugrađenu `coefplot()` funkciju za prikaz rezulatata procjene. Ovo je korisno za pregled efekata kroz vrijeme iako ([pogledaj!](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html#23_adding_interactions:_yearly_treatment_effect)) se procjena koeficijenata za različite modele se najčešće radi sa **ggplot2** paketom. Sljedeći primjer se zasniva na funkcionalnosti koju omogućjea spremanje objekta kao data frame-a pomoću`broom::tidy()` funkcije. Upravo to olakšava vizualizaciju u ovom slučaju:
 
 ```{r fe_mods_compared, warning=FALSE}
 # library(ggplot2) ## učitano
@@ -364,7 +364,7 @@ bind_rows(
   theme(axis.title.x = element_blank())
 ```
 
-Normalno bismo očekivali veće standardne pogreške sa klasteringom no ovdje je taj efekt poništen kroz povećanu preciznost koju donose fiksni efekti. Ipak ne treba zboraviti da je cjelokupni primjer zasnovan na imaginarnim podatcima pa nema smisla previše razmišljati o substantivnim implikacijama ovih rezultata. Bitna je sintaksa!
+Normalno bismo očekivali veće standardne pogreške sa klasterskom rezidualnom strukturom, no ovdje je taj efekt poništen kroz povećanu preciznost koju daju fiksni efekti. Ipak ne treba zboraviti da je cjelokupni primjer zasnovan na imaginarnim podatcima pa nema smisla previše razmišljati o substantivnim implikacijama ovih rezultata. Bitna je sintaksa!
 
 #### Komentar o standardnim pogreškama
 
@@ -372,9 +372,9 @@ Normalno bismo očekivali veće standardne pogreške sa klasteringom no ovdje je
 
 Upravo smo vidjeli koje opcije ima **fixest** pri specifikaciji različitih rezidualnih struktura. Ukratko provedite model sa `se` ili `cluster` argumentima u  `summary.fixest()` (ili `broom::tidy()`) ako niste zaovoljni sa *default* varijantama. Tu postoje još dvije stvari na koje valja skrenutu pozornost!
 
-Prvo, ako dolazite iz drugog stati stičkog jezika (Stata!?), prilagodba rezidualne strukture nakon što je proveden model može izgledati neobično no taj način ima znatne prednosti. Primjerice, to nam omogućava analizu različitih specifikacija po *on-the-fly* principu bez da je potrebno ponovno provesti model.**fixest** je uistinu brz no vremenski gubitci kod većih modela mogu biti znatni.
+Prvo, ako dolazite iz drugog statističkog jezika (Stata!?), prilagodba rezidualne strukture nakon što je proveden model može izgledati neobično...no taj način ima znatne prednosti. Primjerice, on nam omogućava analizu različitih specifikacija po *on-the-fly* principu bez da ponovno provodimo model. **fixest** je uistinu brz no vremenski gubitci zbog ponovnog provođenja modela kod većih modela mogu biti znatni.
 
-Drugo, usporedba standardnih pogrešaka u različitim programima je komplicirana stvar. Osim mnoštva nerješenih teoretskih aspekata (posebno kod višestrukih klastera) tu je i problem specifičnosti svakog pojedinog statističkog paketa([Pogledaj za diskusiju!](https://github.com/sgaure/lfe/issues/1#issuecomment-530643808)) Usporedba u slučaju **fixest** je je detaljno opisana u [vignette](https://cran.r-project.org/web/packages/fixest/vignettes/standard_errors.html) o replikaciji rezidualne strukture kod drugih paketa.^[Za detalje vrijedi pročitati!](https://cran.r-project.org/web/packages/sandwich/vignettes/sandwich-CL.pdf)]
+Drugo, usporedba standardnih pogrešaka u različitim programima je komplicirana stvar. Osim mnoštva nerješenih teoretskih aspekata (posebno kod višestrukih klastera) tu je i problem specifičnosti svakog pojedinog statističkog paketa ([Pogledaj za diskusiju!](https://github.com/sgaure/lfe/issues/1#issuecomment-530643808)) Usporedba u slučaju **fixest** paketa je je detaljno opisana u [vignette](https://cran.r-project.org/web/packages/fixest/vignettes/standard_errors.html) o replikaciji rezidualne strukture kod drugih paketa. ^[ Za detalje vrijedi [pročitati](https://cran.r-project.org/web/packages/sandwich/vignettes/sandwich-CL.pdf)!]
 
 ### Slučajni (random) i mješoviti (mixed) efekti
 
@@ -383,7 +383,7 @@ Fiksni efekti se znatno češće sreću u praktičnim ekonometrijskim analizama 
 
 ## Instrumentalne varijable
 
-Kao i kod drugih modela, R pruža više mogoćnosti za provedbu IV regresijske analize. Ovdje ćemo rzamotriti `AER::ivreg()`, `estimatr::iv_robust()`, i `lfe::felm()` funkcije. Sve ove funkcije imaju sličnu sintaksu, dje je prvi stupanj specificiran nakon **`|`** , a pa poslije primarnog modela. Postoje tu i neke suptilne razlike pa odlučite sami koji pristup vam više odgovara. Za demonstraciju ćemo koristiti ćemo panel podatke o  pušenju po SAD federalnim zemljama iz **AER** [paketa](https://cran.r-project.org/web/packages/AER/vignettes/AER.pdf). Prvo ćemo učitati podatke, potom dodati neke potrebne varijable i onda kratko pogledati kako ti podatci izgledaju. Primjer je ograničen na 1995. godinu jer je cilj razumjeti IV sintaksu,a ne nužno kako ova metodologija funkcionira u kontekstu panel podataka.
+Kao i kod drugih modela, R pruža više mogućnosti za provedbu IV regresijske analize. Ovdje ćemo razmotriti `AER::ivreg()`, `estimatr::iv_robust()`, i `lfe::felm()` funkcije. Sve ove funkcije imaju sličnu sintaksu, pri čemu je prvi regresijski stupanj specificiran nakon **`|`** , a poslije primarnog regresijskog modela. Postoje tu i neke druge suptilne razlike pa odlučite sami koji pristup vam više odgovara. Za demonstraciju ćemo koristiti  panel podatke o pušenju po SAD federalnim zemljama iz **AER** [paketa](https://cran.r-project.org/web/packages/AER/vignettes/AER.pdf). Prvo ćemo učitati podatke, potom napraviti neke potrebne varijable i onda kratko pogledati kako ti podatci izgledaju. Primjer je ograničen na 1995. godinu jer je cilj razumjeti IV sintaksu, a ne nužno kako ova metodologija funkcionira u kontekstu panel podataka.
 
 ```{r, cigs}
 ## učitaj podatke
