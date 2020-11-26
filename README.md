@@ -172,12 +172,12 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="https://github.com/BrbanMiro/Obrada-podataka/blob/main/Predavanja/08_STATS.html">Predavanje 08: Statistička analiza</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/08_STATS.html">Predavanje 08: Statistička analiza</a>
 
 <ul>
 <li> Regresijski model</li>
 <li> Rezidualna struktura</li>
-<li> *Dummie* varijable</li>
+<li> Dummie varijable</li>
 <li> Analiza panel podataka</li>
 <li> Instrumentalne varijable</li>
 <li> Marginalni efekti</li>
