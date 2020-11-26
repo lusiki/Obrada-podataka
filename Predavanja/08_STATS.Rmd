@@ -344,7 +344,7 @@ ols_hdfe
 
 **fixest** ima ugrađenu `coefplot()` funkciju za prikaz rezulatat  procjene. Ovo je korisno za pregled efekata kroz vrijeme iako ([Pogledaj!](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html#23_adding_interactions:_yearly_treatment_effect).) se procjena koeficijenata ta različite modele se najčešće radi sa **ggplot2** paketom. Sljedeći primjer se zasniva na funkcionalnosti koju omogućava spremanje objekta kao data frame-a pomoću`broom::tidy()` funkcije. Upravo to olakšava vizualizaciju u ovom slučaju:
 
-```{r fe_mods_compared}
+```{r fe_mods_compared, warning=FALSE}
 # library(ggplot2) ## učitano
 ## "tidy" output od ols_hdfe objekta
 coefs_hdfe = tidy(ols_hdfe, conf.int = TRUE)
@@ -457,7 +457,6 @@ summary(iv_reg_robust, diagnostics = TRUE)
 
 ### Opcija 3: `felm::lfe()`
 
-
 `felm()` funkcija iz **lfe** paketa je vjerojatno najelegantnija opcija u usporedbi sa pretthodne dvije jer ima najintuitivniju sintaksu.^[ **fixest** paket koji smo razmatrali maločas ne podržava IV regresiju. Sa druge strane, `lfe::felm()`funkcija ima skore svu funkcinalnost tog paketa, jednio što je malo sporija.] Njena sintaksa je jako slična statinom načinu specifikacije prve regresijske razine, gdje se navode samo endogene varijable i instrumenti. 
 
 ```{r iv_felm}
@@ -497,10 +496,7 @@ glm_logit = glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
 tidy(glm_logit, conf.int = TRUE)
 ```
 
-
-
 Prije nego što pogledamo kako *izvaditi* [marginalne efekte](#marginal-effects) fiz nelinearnih modela...obratite pozornost na **mfx** [paket](https://cran.r-project.org/web/packages/mfx/vignettes/mfxarticle.pdf) pomoću kojeg je moguće dobiti marginalne efekte iz niza GLM modela. Npr.:
-
 
 ```{r mfx_logit}
 # library(mfx) ## učitano
@@ -513,7 +509,6 @@ glm_logitmfx = logitmfx(glm_logit, atmean = TRUE, data = mtcars)
 # glm_logitmfx = logitmfx(am ~ cyl + hp + wt, atmean = TRUE, data = mtcars)
 tidy(glm_logitmfx, conf.int = TRUE)
 ```
-
 
 ### Bayes-ova regresija
 
@@ -559,7 +554,8 @@ Izračun marginalnih efekata u regresiji je jednostavan u slučaju kada nema nel
 
 U prethodnom regresijskom primjeru smo razmatrali odnos težine vs. visine i spola ljudi...Da bismo vidjeli prosječne marginalne efekte (*average marginal effect (AME)*) ovih zavisnih varijabli, moguće je koristiti `margins::margins()` funkciju:
 
-```{r margins0, dependson=ols_ie}
+```{r margins0, echo=2:3}
+ols_ie = lm(mass ~ gender * height, data = humans)
 # library(margins) ## učitano
 ols_ie_marg = margins(ols_ie)
 ```
@@ -567,25 +563,28 @@ ols_ie_marg = margins(ols_ie)
 Kao i kod *običnog* regresijskog modela, prikaz procjene je moguće pregledati na sljedeći način:
 
 
-```{r margins1, dependson=ols_ie}
+```{r margins1,echo=2:3, eval =F}
+ols_ie = lm(mass ~ gender * height, data = humans)
 # summary(ols_ie_marg) ## Same effect
 tidy(ols_ie_marg, conf.int = TRUE)
 ```
 
 Za usporedbu marginalnih efekata na specifičnim vrijednostima (npr. odnos AME visine i težine po spolu) možemo napraviti sljedeće:
 
-```{r margins2, dependson=ols_ie}
+```{r margins2, echo=2:6}
+ols_ie = lm(mass ~ gender * height, data = humans)
 ols_ie %>% 
   margins(
     variables = "height", ## glavna varijabla od interesa
     at = list(gender = c("masculine", "feminine")) ## na kojim specifičnim vrijednostima
-    ) %>% 
-  tidy(conf.int = TRUE) ## očisti
+    ) #%>% 
+#  tidy(conf.int = TRUE) ## očisti
 ```
 
 Za vizualizaciju je moguće koristiti `margins::cplot()` funkciju koja omogućava prikaz uvjetnih marginalnih efekata:
 
-```{r margins3, dependson=ols_ie}
+```{r margins3, echo=2}
+ols_ie = lm(mass ~ gender * height, data = humans)
 cplot(ols_ie, x = "gender", dx = "height", what = "effect")
 ```
 
@@ -593,32 +592,166 @@ Ovo je samo demonstrativni prikaz bez puno substantivnog sadržaja!
 
 `cplot()` funkciju je moguće koristiti za prikaz predviđenih (i.e. predicted) vrijednosti zavisne varijable (ovdje: "mass") uvjetno po nekoj od nezavisnih varijabli:
 
-```{r margins4, dependson=ols_ie}
+```{r margins4, echo=2:5}
+ols_ie = lm(mass ~ gender * height, data = humans)
 par(mfrow=c(1, 2)) ## definiraj grid za prikaz grafika
 cplot(ols_ie, x = "gender", what = "prediction")
 cplot(ols_ie, x = "height", what = "prediction")
 par(mfrow=c(1, 1)) ## resetiraj grid
 ```
 
-`cplot()` koristi base R sustav za izradu grafikona pa zbog toga je potrebno definirati grid za grafikone pomoću par() funkcije. If you'd prefer **ggplot2** equivalents, take a look at the **marginsplot** package ([link](https://github.com/vincentarelbundock/marginsplot)).
+`cplot()` koristi base R sustav za izradu grafikona pa zbog toga je potrebno definirati grid za grafikone pomoću par() funkcije. **ggplot2** podrška za **marginsplot** paket je opisana [ovdje](https://github.com/vincentarelbundock/marginsplot).
 
-Finally, I also want to draw your attention to the **emmeans** package ([link](https://cran.r-project.org/web/packages/emmeans/index.html)), which provides very similar functionality to **margins**. I'm not as familiar with it myself, but I know that it has many fans.
+Valja još spomenti i **emmeans** [paket](https://cran.r-project.org/web/packages/emmeans/index.html),koji je dosta sličan **margins** paketu. 
 
-### Special case: `/` shortcut for interaction terms {#nestedmarg}
+### Specijalni slučaj: `/` kratica za interakcije među varijablama 
 
-I'll keep this one brief, but I wanted to mention one of my favourite R shortcuts: Obtaining the full marginal effects for interaction terms by using the `/` expansion operator. I've [tweeted](https://twitter.com/grant_mcdermott/status/1202084676439085056?s=20) about this and even wrote an [whole blog post](https://grantmcdermott.com/2019/12/16/interaction-effects/) about it too (which you should totally read). But the very short version is that you can switch out the normal `f1 * x2` interaction terms syntax for `f1 / x2` and it automatically returns the full marginal effects. (The formal way to describe it is that the model variables have been "nested".)
+Korištenjem `/` operatora je moguće specificirati puni skup marginalnih efekata za interakcijske varijable. Princip je da standardnu interakcijsku specifikaciju `f1 * x2` možemo zamijeniti sa `f1 / x2` i automatski ćemo dobiti puni skup marginalnih efekata. Formalnije rečeno, varijable u modelu su ugniježdene (*engl. nested*).
 
-Here's a super simple example, using the same interaction effects model from before.
+Ovo je jedan brzi primjer opisanog principa:.
 
 ```{r nested}
-# ols_ie = lm(mass ~ gender * height, data = humans) ## Original model
+# ols_ie = lm(mass ~ gender * height, data = humans) ## originalni model
 ols_ie_marg2 = lm(mass ~ gender / height, data = humans)
 tidy(ols_ie_marg2, conf.int = TRUE)
 ```
 
-Note that the marginal effects on the two gender × height interactions (i.e. `r round(ols_ie_marg2$coefficients[['genderfeminine:height']], 3)` and `r round(ols_ie_marg2$coefficients[['gendermasculine:height']], 3)`) are the same as we got with the `margins::margins()` function [above](#the-margins-package). 
+Mrginalni efekti gender × height interakcija (i.e. `r round(ols_ie_marg2$coefficients[['genderfeminine:height']], 3)` i `r round(ols_ie_marg2$coefficients[['gendermasculine:height']], 3)`) su isti kao kada smo koristili `margins::margins()` funbkciju u prethodnom slučaju. 
 
-Where this approach really shines is when you are estimating interaction terms in large models. The **margins** package relies on a numerical delta method which can be very computationally intensive, whereas using `/` adds no additional overhead beyond calculating the model itself. Still, that's about as much as say it here. Read my aforementioned [blog post](https://grantmcdermott.com/2019/12/16/interaction-effects/) if you'd like to learn more.
+Ovaj je pristup posebno koristan kod velilkih modela sa puno vraijabli. **margins** paket koristi numeričke (delta) metode koje su memorijski zahtjevne, a korištenje `/` ne opterećuje dodatno memoriju.
 
+
+## Prezentacija rezultata
+
+### Tablice
+
+#### Regresijske tablice
+
+U R postoji uistinu mnogo [različitih opcija](https://hughjonesd.github.io/huxtable/design-principles.html) za izradu regresijskih tablica.^[ **fixest** paket ima `etable()` funkciju. Ovo je optimizirana funkcija za proizvodnju sjajnih tablica uz minimalni trud no ograničena je na objekte koje proizvodi`fixest` funkcija.  Za detalje pogledajte  [ovdje](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html#14_viewing_the_results_in_r) i [ovdje](https://cran.r-project.org/web/packages/fixest/vignettes/exporting_tables.html).] Izvrsna opcija za tablice je **modelsummary**  [paket](https://vincentarelbundock.github.io/modelsummary) za izradu i izvoz regresijskih tablica. Ovaj paket je fleksibilan i podražva čitav niz modelskih outputa. **modelsummary** također podržava vizualizaciju koeficijenata i deskriptivnu statistiku podataka. [Dokumentacija](https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html) za paket je također izvrsna!
+
+```{r msum, warning=FALSE}
+# library(modelsummary) ## Učitano
+## Hint: msummary() je kratica za modelsummary()
+msummary(list(ols1, ols_ie, ols_fe, ols_hdfe))
+```
+
+</br>
+Još jedna sjajna stvar vezano uz **modelsummary** je kompatibilnost sa R Markdown-om. Funkcija će automatski prilagoditi tablice željenom output-u: HTML, LaTeX/PDF, RTF, itd. Vrstu ouputa je moguće i specificirati [prema potrebi](https://vincentarelbundock.github.io/modelsummary/#saving-and-viewing-output-formats) ako ne koristite R Markdown, a želite izvesti tablicu u neki specifičan format.
+
+#### Tablice za deskriptivnu statistiku 
+
+`modelsummary::datasummary*()` funkcija/e omogućavaju mnoštvo tablica za deskriptivnu statistiku,a za puni popis funkcionalnosti pogledajte [dokumentaciju](https://vincentarelbundock.github.io/modelsummary/articles/datasummary.html). Ovdje je jednostavan primjer na *subset-u* prethodno korištenog "humans" data frame-a.
+
+```{r datsum}
+datasummary_balance(~ gender,
+                    data = select(humans, gender, height, mass, birth_year, eye_color))
+```
+
+</br>
+Slične mogućnosti nudi i **vtable** [paket](https://nickch-k.github.io/vtable). Ovaj paket ima mnoštvo sličnosti sa Stata-om pa će biti posebno pogodan za tablice deskriptivne statsitike u ekonomiji. Ovo je ekvivalent prethodne tablice:
+
+```{r st1}
+# library(vtable) ## učitano
+## st() je kratica za sumtable()
+st(select(humans, gender, height, mass, birth_year, eye_color), 
+   group = 'gender')
+```
+
+</br>
+`vtable::st()` funkcija je *pametna* utoliko što automatski izbire bitne varijable i izbacije nebitne (npr. faktori sa puno razina). Ovdje je primjer za "starwars" data frame koji smo već koristili:
+
+```{r st2}
+st(starwars)
+```
+
+
+### Grafikoni
+
+#### Prikazi koefficijenata
+
+Već smo vidjeli kako izraditi i prikazati koeficijente procijenjenih modela. To je (u principu) izvrstan način za brzi pregled koeficijenata modela. Ovdje valja istaknuti još neke funkcionalnosti koje **modelsummary** paket pruža, primjerice [`modelplot()`](https://vincentarelbundock.github.io/modelsummary/articles/modelplot.html) funkciju. Posebno je korisno što `modelplot()` prihvaća i **ggplot2** sintaksu.
+
+```{r modplot, warning=FALSE}
+# library(modelsummary) ## učitano
+mods = list('FE, bez klastera' = summary(ols_fe, se = 'standard'),  # bez SE klastera 
+            'HDFE, dvostrani klaster' = ols_hdfe)
+modelplot(mods) +
+  ## radi i sa drugim ggplot2 naredbama
+  coord_flip() + 
+  labs(
+    title = "'Utjecaj' visine na težinu",
+    subtitle = "Usporedba modela fiksnih efekata"
+    )
+```
+
+Ovdje je još jedan primjer za Masculine × Height koeficijente iz prethodnog interakcijskog modela sa punim marginalnim efektima:
+
+```{r modplot2}
+ie_mods = list('Djelomični efekti' = ols_ie, 'Marginalni efekti' = ols_ie_marg2)
+modelplot(ie_mods, coef_map = c("gendermasculine:height" = "Masculine × Height")) +
+  coord_flip() + 
+  labs(
+    title = "Utjecaj' visine na težinu",
+    subtitle = "Djelomični vs marginalni efekti"
+    )
+```
+
+
+#### Predikcija i validacija modela
+
+Najjednostavniji način za vizualnu provjeru modela (i.e. validacija i predikcija) je  **ggplot2**. Tu je posebno pogodna `geom_smooth()` funkcija koju smo već spominjali, a koja omogućuje mapiranje modela na grafikon. Na osnovi`starwars2` data frame-a, bez outlier-a, bi to izgledalo otprilike ovako :
+
+```{r smooth, warning=FALSE}
+ggplot(starwars2, aes(x = height, y = mass)) + 
+    geom_point(alpha = 0.7) +
+    geom_smooth(method = "lm") ## ?geom_smooth za druge opcije
+```
+
+Ovdje je važno spomenuti `predict()` funkciju iz base R. Zamislimo situaciju u kojoj procjenjujemo bivarijatni regresijski odnos visine i težine, kao u prethodim slučajevima...^[Bivarijatna regresija omogućava izradu 2D vizualizacije.] Ovaj put ćemo procijeniti model na *training* podatcima koji se satoje od 30 likova rangiranih po visini. Procedura izgleda ovako:
+
+```{r predict}
+## procijeni model na training uzorkua (30 najnižih)
+ols1_train = lm(mass ~ height, data = starwars %>% filter(rank(height) <=30))
+## predvidi težinu svih 30 starwars likova 
+## uključi 95% intervale pouzdanosti;vidi ?predict.lm za druge intervale
+##i opcije
+predict(ols1_train, newdata = starwars2, interval = "prediction") %>%
+  head(5) ## prvih nekoliko redova
+```
+
+Prthodno korišteni data frame se može jednostavno kombinirati sa originalnim podatcima u **ggplot2** vizualizaciji. Za tu svrhu je posebno koristan **broom** paket, odnosno njegova `augment()` funkcija koja omogućava dodavanje modelskih predviđanja podatkovnom skupu. `augment()` funkcija prihvaća iste argumente kao i `predict()` funkcija, naravno, uzne neke manje izmjene.^[Ovdje dodajemo ".fitted", ".resid", ".conf.low", i ".conf.high" varijable (i.e. kolone) data frame-u. Konvencija u `augment()` funkciji je prefiksiranje dodanih varijabli sa "." kako bi se izbjegli konflikti sa postojećim varijablama.]
+
+```{r augment1}
+## alternativa za predict(): koristi augment() za dodavanje .fitted i .resid, kao i za 
+## .conf.low i .conf.high predikcijskih intervala podatcima.
+starwars2 = augment(ols1_train, newdata = starwars2, interval = "prediction")
+## prikaži nove varijable (sve imaju a "." prefiksx)
+starwars2 %>% select(contains("."), everything()) %>% head()
+```
+
+Sada možemo vidjeti rezulatate modela na 30 najnižih starwaars likova u usporedbi sa punim podatkovnim skupom.
+
+```{r predict_plot, warning=FALSE, echo=2:12}
+starwars2 = augment(ols1_train, newdata = starwars2, interval = "prediction")
+starwars2 %>%
+  ggplot(aes(x = height, y = mass, col = rank(height)<=30, fill = rank(height)<=30)) +
+  geom_point(alpha = 0.7) +
+  geom_line(aes(y = .fitted)) +
+  scale_color_discrete(name = "Training uzorak?", aesthetics = c("colour", "fill")) +
+  labs(
+    title = "Predviđanje težina na osnovi visine",
+    caption = "Regresijska linija 95% intervali pouzdanosti."
+    ) +
+  xlab("Visina") +
+  ylab("Težina")
+```
+
+## Dodatni resursi (uglavnom za ekonometriju)
+
+- Izvrsni [kolegiji](http://edrub.in/teaching.html) za ekonometriju u R. To uključuje [dodiplomski](https://github.com/edrubin/EC421S19) i [diplomski](https://github.com/edrubin/EC525S19) kolegij. 
+- Nekoliko besplatnih uvodnih udžbenka [*Introduction to Econometrics with R*](https://www.econometrics-with-r.org/) (Christoph Hanck *et al.*), [*Using R for Introductory Econometrics*](http://www.urfie.net/) (Florian Heiss), i [*Modern Dive*](https://moderndive.com/) (Chester Ismay and Albert Kim).
+- [Tyler Ransom](https://twitter.com/tyleransom) ima izvrstan [cheat sheet](https://github.com/tyleransom/EconometricsLabs/blob/master/tidyRcheatsheet.pdf) za regresiju i slične specifikacije.
+- R ima izvrsnu podršku i za analizu [Vremenskih serija](https://cran.r-project.org/web/views/TimeSeries.html).
+- Također pogledajte [*Data Visualization: A Practical Guide*](https://socviz.co/modeling.html). 
 
 

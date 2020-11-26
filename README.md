@@ -175,12 +175,13 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <a href="">Predavanje 08: Statistička analiza</a>
 
 <ul>
-<li> Baze podatka</li>
-<li> Baze podataka i *tidyverse*</li>
-<li> Baze podataka i SQL</li>
-<li> Praktični primjer - SQLite</li>
-<li> Praktični primjer - Google BigQuery</li>
-<li> Resursi za učenje</li>
+<li> Regresijski model</li>
+<li> Rezidualna struktura</li>
+<li> *Dummie* varijable</li>
+<li> Analiza panel podataka</li>
+<li> Instrumentalne varijable</li>
+<li> Marginalni efekti</li>
+<li> Prezentacija rezultata</li>
 <ul>
 
 </div>
