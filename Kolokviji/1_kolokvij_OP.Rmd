@@ -1,0 +1,26 @@
+---
+title: 'I. KOLOKVIJ IZ OBRADE PODATAKA'
+#author: "dr.sc. Luka Šikić"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+institute: Preddiplomski studij komunikologije
+subtitle: Hrvatski studiji
+font: 3t
+
+---
+
+Pitanja:
+
+1. Što je predstavlja *Big Data* i zašto je to bitno za sociologiju (i.e. društvene znanosti)?
+
+2. Koje *moderne* izvore podataka poznajete i na koji način se ti podatci generiraju? 
+
+3. Zašto R spada u objektno orjentirane programske jezike?
+
+4. Koje baze podataka poznajete? Navedite njihove karakteristike!
+
+5. Objasnite proceduru prikupljanja podataka sa interneta (web scraping)!
+
+
+
+

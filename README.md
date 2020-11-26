@@ -16,7 +16,7 @@ Cilj kolegija je upoznavanje sa:
 
 1) Ekosustavom modernog upravljanja podatcima (*Big Data*)
 2) Alatima za obradu i manipulaciju podataka (*paketi u programskom jeziku R*, *SQL*, *Spark* )
-3) Modernom metodologijom za analizu podataka (*regresija, strojno učenje, obrada teksta- NLP*)
+3) Modernom metodologijom za analizu podataka (*regresija, strojno učenje, obrada teksta - NLP*)
 4) Alatima za prezentaciju i dijeljenje rezulata (*Markdown, Git*)
 5) Programskim jezikom R
 
@@ -166,7 +166,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/07_BAZE.html">.html</a> | <a href="/Predavanja/07_BAZE.Rmd">.Rmd</a>
-<br><b>Čitanje: </b><a href="https://wizardzines.com/zines/sql/">Knjiga *Become A Select Star* od Julia Evans</a>
+<br><b>Čitanje: </b><a href="https://wizardzines.com/zines/sql/">Knjiga *Become A Select Star* od Julia-e Evans.</a>
 <br>
 <br>
 
