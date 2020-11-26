@@ -182,12 +182,13 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <li> Instrumentalne varijable</li>
 <li> Marginalni efekti</li>
 <li> Prezentacija rezultata</li>
+<li> Dodatni resursi</li>
 <ul>
 
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/08_STATS.html">.html</a> | <a href="/Predavanja/08_STATS.Rmd">.Rmd</a>
-<br><b>Čitanje: </b><a href=""></a>
+<br><b>Čitanje: </b><a href="">Izbor po želji iz dodatnih resursa.</a>
 <br>
 <br>
 
