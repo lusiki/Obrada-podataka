@@ -186,7 +186,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="/Predavanja/08_STAT.html">.html</a> | <a href="/Predavanja/08_STAT.Rmd">.Rmd</a>
+<b>Format predavanja:</b> <a href="/Predavanja/08_STATS.html">.html</a> | <a href="/Predavanja/08_STATS.Rmd">.Rmd</a>
 <br><b>Čitanje: </b><a href=""></a>
 <br>
 <br>
