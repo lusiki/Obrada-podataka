@@ -171,7 +171,24 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="">Predavanje 08: Statistička analiza</a>
 
+<ul>
+<li> Baze podatka</li>
+<li> Baze podataka i *tidyverse*</li>
+<li> Baze podataka i SQL</li>
+<li> Praktični primjer - SQLite</li>
+<li> Praktični primjer - Google BigQuery</li>
+<li> Resursi za učenje</li>
+<ul>
+
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/08_STAT.html">.html</a> | <a href="/Predavanja/08_STAT.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href=""></a>
+<br>
+<br>
 
 
 <a href="/Predavanja/08_PODRŠKA.pdf">Predavanje 08: Podrška za provedbu empirijske analize</a>

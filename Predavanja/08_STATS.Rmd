@@ -550,55 +550,57 @@ Na poslijetku vrijedi pogledati i neke korisne resurse (knjige i tutoriale) i li
 
 ## Marginalni efekti
 
-Calculating marginal effects in a regression is utterly straightforward in cases where there are no non-linearities... just look at the coefficient values. However, that quickly goes out the window when you have interaction effects or non-linear models like probit, logit, etc. Luckily, there are various ways to obtain these from R models. For example, we already saw the **mfx** package above for obtaining marginal effects from GLM models. I want to briefly focus on two of my favourite methods for obtaining marginal effects across different model classes: 1) The **margins** package and 2) a shortcut that works particularly well for models with interaction terms.
+Izračun marginalnih efekata u regresiji je jednostavan u slučaju kada nema nelinaernosti u modelu...dovoljno je pogledati vrijednosti koeficijenata u regresijskom ispisu. Za nelinearne modele poput logit, probit i sl., marginalne efekte je potrebno izračunati...a za to postoje funkcije u R. Već smo spominjali **mfx** paket za izračun marginalnih efekata u GLM modelima no ovdje ćemo istaknuti dvije metode za izračun marginalnih efekata kod više različitih vrsta modela: 1) **margins** paket 2) pristup za analizu svih modela sa interakcijskim varijablama.
 
-### The **margins** package
 
-The **margins** package ([link](https://cran.r-project.org/web/packages/margins)), which is modeled on its namesake in Stata, is great for obtaining marginal effects across an entire range of models.^[I do, however, want to flag that it does [not yet support](https://github.com/leeper/margins/issues/128) **fixest** (or **lfe**) models. But there are [workarounds](https://github.com/leeper/margins/issues/128#issuecomment-636372023) in the meantime.] You can read more in the package [vignette](https://cran.r-project.org/web/packages/margins/vignettes/Introduction.html), but here's a very simple example to illustrate. 
+### **margins** paket
 
-Consider our interaction effects regression [from earlier](#interaction-effects), where we were interested in how people's mass varied by height and gender. To get the average marginal effect (AME) of these dependent variables, we can just use the `margins::margins()` function.
+ **margins** ([paket](https://cran.r-project.org/web/packages/margins)) je izvrstan način za rad sa marginalnim efektima u različitim modelima.^[Ovaj pristup ipak [ne podržava](https://github.com/leeper/margins/issues/128) **fixest** (niti **lfe**) modele. Neka alternativna [rješenja](https://github.com/leeper/margins/issues/128#issuecomment-636372023) ipak postoje.] Za detalje vrijedi pročitati  [vignette](https://cran.r-project.org/web/packages/margins/vignettes/Introduction.html), a sada ćemo prikazati ogledni primjer. 
+
+U prethodnom regresijskom primjeru smo razmatrali odnos težine vs. visine i spola ljudi...Da bismo vidjeli prosječne marginalne efekte (*average marginal effect (AME)*) ovih zavisnih varijabli, moguće je koristiti `margins::margins()` funkciju:
 
 ```{r margins0, dependson=ols_ie}
-# library(margins) ## Already loaded
+# library(margins) ## učitano
 ols_ie_marg = margins(ols_ie)
 ```
 
-Like a normal regression object, we can get a nice print-out display of the above object by summarising or tidying it.
+Kao i kod *običnog* regresijskog modela, prikaz procjene je moguće pregledati na sljedeći način:
+
 
 ```{r margins1, dependson=ols_ie}
 # summary(ols_ie_marg) ## Same effect
 tidy(ols_ie_marg, conf.int = TRUE)
 ```
 
-If we want to compare marginal effects at specific values --- e.g. how the AME of height on mass differs across genders --- then that's easily done too.
+Za usporedbu marginalnih efekata na specifičnim vrijednostima (npr. odnos AME visine i težine po spolu) možemo napraviti sljedeće:
 
 ```{r margins2, dependson=ols_ie}
 ols_ie %>% 
   margins(
-    variables = "height", ## The main variable we're interested in
-    at = list(gender = c("masculine", "feminine")) ## How the main variable is modulated by at specific values of a second variable
+    variables = "height", ## glavna varijabla od interesa
+    at = list(gender = c("masculine", "feminine")) ## na kojim specifičnim vrijednostima
     ) %>% 
-  tidy(conf.int = TRUE) ## Tidy it (optional)
+  tidy(conf.int = TRUE) ## očisti
 ```
 
-If you're the type of person who prefers visualizations (like me), then you should consider `margins::cplot()`, which is the package's in-built method for constructing *conditional* effect plots.
+Za vizualizaciju je moguće koristiti `margins::cplot()` funkciju koja omogućava prikaz uvjetnih marginalnih efekata:
 
 ```{r margins3, dependson=ols_ie}
 cplot(ols_ie, x = "gender", dx = "height", what = "effect")
 ```
 
-In this case,it doesn't make much sense to read a lot into the larger standard errors on the female group; that's being driven by a very small sub-sample size.
+Ovo je samo demonstrativni prikaz bez puno substantivnog sadržaja!
 
-Finally, you can also use `cplot()` to plot the predicted values of your outcome variable (here: "mass"), conditional on one of your dependent variables. For example:
+`cplot()` funkciju je moguće koristiti za prikaz predviđenih (i.e. predicted) vrijednosti zavisne varijable (ovdje: "mass") uvjetno po nekoj od nezavisnih varijabli:
 
 ```{r margins4, dependson=ols_ie}
-par(mfrow=c(1, 2)) ## Just to plot these next two (base) figures side-by-side
+par(mfrow=c(1, 2)) ## definiraj grid za prikaz grafika
 cplot(ols_ie, x = "gender", what = "prediction")
 cplot(ols_ie, x = "height", what = "prediction")
-par(mfrow=c(1, 1)) ## Reset plot defaults
+par(mfrow=c(1, 1)) ## resetiraj grid
 ```
 
-Note that `cplot()` uses the base R plotting method. If you'd prefer **ggplot2** equivalents, take a look at the **marginsplot** package ([link](https://github.com/vincentarelbundock/marginsplot)).
+`cplot()` koristi base R sustav za izradu grafikona pa zbog toga je potrebno definirati grid za grafikone pomoću par() funkcije. If you'd prefer **ggplot2** equivalents, take a look at the **marginsplot** package ([link](https://github.com/vincentarelbundock/marginsplot)).
 
 Finally, I also want to draw your attention to the **emmeans** package ([link](https://cran.r-project.org/web/packages/emmeans/index.html)), which provides very similar functionality to **margins**. I'm not as familiar with it myself, but I know that it has many fans.
 
