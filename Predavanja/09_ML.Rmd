@@ -164,9 +164,9 @@ Regresijska analiza se koristi za predviđanje kontinuirane ili kvantitativne vr
 knitr::include_graphics("../Foto/ml_mlreg.png")
 ```
 
-Regresija je slična klasifikaciji uz bitnu razliku da želimo predvidjeti **vrijednost**, a ne **klasu** kao kod klasifikacije. Tipični regresijski problemi se odnose na predviđanje kreditnog rejtinga na osnovi redovitosti plaćanja u prošlosti, analiza pretplata na časops kroz vrijeme, vjerojatnost zaposlenja na osnovi ocjena. Regresijske tehnike imaju kvantitativni output i zahtijevaju input-output podatkovni skup.
+Regresija je slična klasifikaciji uz bitnu razliku da želimo predvidjeti **vrijednost**, a ne **klasu** kao kod klasifikacije. Tipični regresijski problemi se odnose na predviđanje kreditnog rejtinga na osnovi redovitosti plaćanja u prošlosti, analize pretplata na časops kroz vrijeme, vjerojatnost zaposlenja na osnovi ocjena... Regresijske tehnike imaju kvantitativni output i zahtijevaju input-output podatkovni skup.
 
-Za praktični primjer (još jedan!) analizirajmo broj pogleda na LinkedIn profilu u regresijskom kontekstu. Cilj je predvidjeti broj pregleda profila u sljedeća 3 dana, a na osnovi podataka o pregledima u prethodna 3 tjedna. Za to je potrebno definirati vektor LinkedIn pregleda: 
+Za praktični primjer (još jedan!) analizirajmo broj pogleda na LinkedIn profilu u regresijskom kontekstu. Cilj je predvidjeti broj pregleda profila u sljedeća 3 dana na osnovi podataka o pregledima u prethodna 3 tjedna. Za to je potrebno definirati vektor LinkedIn pregleda: 
 
 ```{r}
 linkedin <- c(5,7,4,9,11,10,14,17,13,11,18,17,21,21,24,23,28,35,21,27,23)
@@ -204,7 +204,7 @@ points(22:24, linkedin_pred, col = "green")
 
 ### Klasteri
 
-Procedura klasteringa ima za cilj grupirati objekte u klastere na način da su klasteri međusobno različiti, a objekti unutar svakog klastera slični. Klastering je sličan klasifikaciji uz razliku da ne postoje prethodno definirane kategorije već klaster procedura sama sortira objekte prema sličnosti (ne prema kategorijama). Za klastering nije potrebno definirati kategorije (*labels*), ne postoji točan ili netočan output, postoji mnogo mogućih klastera. 
+Procedura klasteringa ima za cilj grupirati objekte u klastere na način da su klasteri međusobno različiti, a objekti unutar svakog klastera slični. Klastering je sličan klasifikaciji uz razliku da ne postoje prethodno definirane kategorije već klaster procedura sama sortira objekte prema sličnosti (ne prema kategorijama). Za klastering nije potrebno definirati kategorije (*labels*) i ne postoji točan ili netočan output...postoji mnogo mogućih klastera. 
 
 
 Za primjer klastering procedure ćemo koristiti otprije poznati podatkovni skup `iris`. Pri tome je cilj grupirati iris cvijetove u 3 zasebna klastera, prema karakteristikama cvjetova koje su dane u podatcima. Pogledajmo prvo podatke:
@@ -251,7 +251,7 @@ Potom ćemo provesti klastering pomoću `kmeans()` funkcije:
 kmeans_iris <- kmeans(my_iris, 3)
 ```
 
-Usporedimo sada rezultate klastering procedure sa orginalnim podatcima pomoću `table` funkcije. Procijenjene grupe se nalaze u `claster` dijelu objekta `kmeans_iris`:
+Usporedimo sada rezultate klastering procedure sa orginalnim podatcima pomoću `table` funkcije. Procijenjene grupe se nalaze u `cluster` dijelu objekta `kmeans_iris`:
 
 ```{r}
 table(kmeans_iris$cluster, species)
@@ -272,19 +272,13 @@ plot(Petal.Length ~ Petal.Width,
 
 U prethodnom primjeru smo koristili `kmeans()` funkciju za klastering na *iris* podatcima. U ovom primjeru ćemo koristiti rekurzivno particioniranje na istim podatcima (no nećemo maknuti zadnju kolonu).
 
-Pogledajmo *iris* podatke:
-
-```{r}
-str(iris)
-```
-
-Pogledajmo također i strukturu podataka:
+Pogledajmo za početak strukturu podataka:
 
 ```{r}
 summary(iris)
 ```
 
-U sljedećemo koraku ćemo napraviti model nadgledanog strojnog učenja koristeći funkciju  `rpart()` iz istoimenog paketa. Na ovaj način ćemo napraviti *decision tree* model:
+U sljedećem koraku ćemo napraviti model nadgledanog strojnog učenja koristeći funkciju  `rpart()` iz istoimenog paketa. Specifikacija *decision tree* modela izgleda ovako:
 
 ```{r}
 library(rpart)
@@ -311,10 +305,10 @@ predict(tree, unseen, type = "class")
 ```
 
 
-### Primjer 2 (Ne-nadgledano ML)
+### Primjer 2. (Ne-nadgledano ML)
 
 
-U ovom primjeru ćemo grupirati automobile na osnovi snage motora i težine. Pri tome koristimo `mtcars` podatkovni skup. Prvo ćemo učitati, izabrati i pregledati podatke:
+U ovom primjeru želimo grupirati automobile na osnovi snage motora i težine. Pri tome koristimo `mtcars` podatkovni skup. Prvo ćemo učitati, izabrati i pregledati podatke:
 
 ```{r}
 data(mtcars)
@@ -382,7 +376,7 @@ $$\mbox{preciznost} = \frac{točne Klasifikacije}{ukupne Klasifikacije}$$
 i 
  
 $$\mbox{greška} = 1 - preciznost$$
-U klasifikaciji se često koristi i *confusion matrica* koja u svakoj od ćelija sadrži broj instanci koje su klasificirane na određeni način. Za primjer jednostavne binarne klasifikacije bi matrica izgledala ovako: 
+U klasifikaciji se često koristi i *confusion matrica* koja u svakoj od ćelija sadrži broj instanci koje su klasificirane na određeni način. Za primjer jednostavne binarne klasifikacije bi *confusion* matrica izgledala ovako: 
 
 ```{r echo=F}
 knitr::include_graphics("../Foto/cmtx.png")
@@ -397,7 +391,7 @@ $$\mbox{preciznost} = \frac{tp}{tp+fp}$$
 $$\mbox{recall} = \frac{tp}{tp+fn}$$
 #### Praktični primjer
 
-U ovom primjeru ćemo pokušati predvidjeti vjerojatnost preživljavanja nesreće na Titaniku s obzirom na karakteristike putnika (osobe) koje uključuju dob, spol i putničku klasu. Prvo učitavamo podatke i izabiremo potrebne podatke:
+U ovom primjeru ćemo pokušati predvidjeti vjerojatnost preživljavanja nesreće na Titaniku s obzirom na karakteristike putnika (osobe) koje uključuju dob, spol i putničku klasu. Prvo učitavamo i izabiremo potrebne podatke:
 
 ```{r}
 titanic = read.csv("../Dta/Titanic_train.csv", na.strings = "") # dostupno na Kaggle!
@@ -422,7 +416,7 @@ table(titanic_dta$Survived, pred)
 
 *Confusion matrica* pokazuje da je model točno klasificirao 212 od 265 preživjelih i 371 od 449 preminulih.
 
-Izračunajmo sada pokazatelje preciznosti procjene:
+Izračunajmo pokazatelje preciznosti procjene:
 
 ```{r}
 cfmtx <- table(titanic_dta$Survived, pred)
@@ -444,15 +438,15 @@ prec
 rec <- TP/(TP+FN)
 rec
 ```
- Točnost i preciznost modela su ~82% dok je model krivo predvidio sudbinu 18% putnika na Titaniku. Nije loše, ali nije ni posebno dobro...
+Točnost i preciznost modela su ~82% dok je model krivo predvidio sudbinu 18% putnika na Titaniku. Nije loše, ali nije ni posebno dobro...
 
 ### Regresija
 
-Kvaliteta regresijskog odnosa se procijenjue kriterijem rezidualnih kvadrata odstupanja (RMSE- root mean square error) koje smo već spominjali:
+Kvaliteta regresijskog odnosa se procijenjuje kriterijem rezidualnih kvadrata odstupanja (RMSE- root mean square error) koje smo već spominjali:
 
 $$RMSE = \sqrt{\frac{1}{n}\Sigma_{i=1}^{n}{({y_i -y\hat{}_i})^2}}$$
 
-RMSE procjenjuje udaljenost između *stvarnih* i *predviđenih* opservacija,a cilj je postići što manji broj.
+RMSE procjenjuje udaljenost između *stvarnih* i *predviđenih* opservacija, a cilj je postići što manji broj.
 
 
 #### Praktični primjer
@@ -495,7 +489,7 @@ Novi i bogatiji model ima niži pripadajući rmse od 4.8 pa za možemo zaključi
 ### Klastering
 
 
-U slučaju klastringa ne postoje explicitne varijable (*labels*) pa je se kvaliteta procjene procjenjuje na osnovi mjera udaljenosti unutar i između klastera. Te se mjere odnose na sličnost unutar klastera (poželjno visoka WSS), sličnost između klastera (poželjno niska BSS) i Dunnov indeks.
+U slučaju klastringa ne postoje explicitne varijable (*labels*) pa je se kvaliteta procjene radi na osnovi mjera udaljenosti unutar i između klastera. Te se mjere odnose na sličnost unutar klastera (poželjno visoka WSS), sličnost između klastera (poželjno niska BSS) i Dunnov indeks.
 
 #### Praktični primjer
 
@@ -506,7 +500,7 @@ seeds <- read.table("../Dta/seeds_dataset.txt",header = T)  # dostupno na UCIMLR
 str(seeds)
 ```
 
-Potom provedemo kmeans klastering sa tri klstera:
+Potom provedemo kmeans klastering sa tri klastera:
 
 ```{r}
 km_seeds <- kmeans(seeds[1:7], 3)
@@ -530,9 +524,9 @@ Unutar- klasterska sličnost je niža od među- klsterske sličnostišto znači 
 
 ## Trening vs. test podjela
 
-Bitna razlika između strojnog učenja i statistike je *prediktivna* vs *deskriptivna* moć modela. Modeli nadgledanog ML bi trebali imati veliku prediktivnu moć, tj. dobro predvidjeti odnos na novim, neviđenim opservacijama. Klasična statistika se bazira na kvaliteti modela s obzirom na podatke tj. model treba dobro opisati podatke (poznate opservacije).
+Bitna razlika između strojnog učenja i statistike je *prediktivna* vs *deskriptivna* moć modela. Modeli nadgledanog ML bi trebali imati veliku prediktivnu moć, tj. dobro predvidjeti odnos na novim, neviđenim opservacijama. Klasična statistika se bazira na kvaliteti modela s obzirom na dane (postojeće) podatke tj. model treba dobro opisati podatke (poznate opservacije).
 
-Zbog toga procjena *prediktivnog* modela ne smije uključivati potpuni podatkovni skup nego samo *trening* dio podataka. Potom se kvaliteta modela procjenjuje na *test* dijelu podataka. Za pouzdanu procjenu je bitno napraviti ovakvu podjelu podataka i osigurati da među njima nema preklapanja. Ova podjela je važna samo kod nadgledanog ML dok kod ne-nadgledanog ML nije potrebno dijeliti podatke.
+Zbog toga procjena *prediktivnog* ML modela ne smije uključivati potpuni podatkovni skup nego samo *trening* dio podataka, a kvaliteta modela se procjenjuje na *test* dijelu podataka. Za pouzdanu procjenu je bitno napraviti ovakvu podjelu podataka i osigurati da među njima nema preklapanja. Ova podjela je važna samo kod nadgledanog ML. Kod ne-nadgledanog ML nije potrebno dijeliti podatke.
 
 Podjela podataka izgleda ovako: 
 
@@ -552,7 +546,7 @@ Podjela podataka na *training* i *test* podatke je proizvoljna no postoji nekoli
 
 ### Praktični primjer
 
-Prethodni primjer na titanic podatkovnom skupu nije uključivao podjelu podatka. To ćemo sada ispraviti s ciljem poboljšanja kvalitete procjene. Podatke ćemo podijeliti u omjeru 70/30. Podjelu radimo na sljedeći način:
+Prethodni primjer na *titanic* podatkovnom skupu nije uključivao podjelu podatka. To ćemo sada ispraviti s ciljem poboljšanja kvalitete procjene. Podatke ćemo podijeliti u omjeru 70/30. Podjelu radimo na sljedeći način:
 
 ```{r}
 # promješaj podatke
@@ -570,7 +564,7 @@ str(train)
 str(test)
 ```
 
-Razmotrimo ponovno otprije korišteni modeln na novim, podijeljenim titanic podatcima:
+Razmotrimo ponovno otprije korišteni model na novim, podijeljenim *titanic* podatcima:
 
 ```{r}
 # procjeni model
@@ -614,7 +608,7 @@ Predikcijska pogreška modela se može podijeliti u dvije komponente:
  
 ### Greška na osnovi pristranosti
 
-Ova vrsta greške nastaje zbog pretpostavki koje unosimo u ML algoritam i predstavlja razliku između predviđanja modela i pravih vrijednosti. Greška na osnovi pristranosti nastaje zbog prevelikih restrikcija koje unosimo u model, primjerice ukoliko podatke koje karakterizira kvadratna funkcija opišemo s linearnom. Primjer je na sljedećem grafikonu:
+Ova vrsta greške nastaje zbog pretpostavki koje unosimo u ML algoritam i predstavlja razliku između predviđanja modela i pravih vrijednosti. Greška na osnovi pristranosti nastaje zbog prevelikih restrikcija koje unosimo u model, primjerice ukoliko podatke koje karakterizira kvadratni odnos opišemo s linearnom funkcijom. Primjer je na sljedećem grafikonu:
 
 ```{r echo  = F}
 knitr::include_graphics("../Foto/ml_bias.png")
