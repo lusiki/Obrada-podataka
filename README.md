@@ -194,7 +194,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="">Predavanje 09: Uvod u strojno učenje</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/09_ML.html">Predavanje 09: Uvod u strojno učenje</a>
 
 <ul>
 <li> Što je strojno učenje</li>
