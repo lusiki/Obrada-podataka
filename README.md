@@ -193,11 +193,26 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 
-<a href="/Predavanja/08_PODRŠKA.pdf">Predavanje 08: Podrška za provedbu empirijske analize</a>
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="">Predavanje 09: Uvod u strojno učenje</a>
 
-<a href="/Predavanja/09_ANALIZA.pdf">Predavanje 09: Statistička analiza</a>
+<ul>
+<li> Što je strojno učenje</li>
+<li> Klasifikacija</li>
+<li> Regresija</li>
+<li> Klastering</li>
+<li> Nadgledane i ne-nadgledane metode</li>
+<li> Trening i test uzorci</li>
+<li> Pristranost vs varijanca</li>
+<li> Interpretabilnost modela</li>
+<ul>
 
-<a href="/Predavanja/10_STROJNO.pdf">Predavanje 10: Strojno učenje</a>
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/09_ML.html">.html</a> | <a href="/Predavanja/09_ML.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href="">Izbor po želji iz dodatnih resursa.</a>
+<br>
+<br>
 
 <a href="/Predavanja/11_TEKST.pdf">Predavanje 11: Analiza teksta</a>
 
