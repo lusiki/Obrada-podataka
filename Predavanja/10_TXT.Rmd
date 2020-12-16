@@ -1,0 +1,741 @@
+---
+title: "Obrada podataka"
+author:
+  name: Luka Sikic, PhD
+  affiliation: Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)
+subtitle: 'Predavanje 10: Analiza teksta'
+output:
+  html_document:
+    theme: flatly
+    highlight: haddock
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+    keep_md: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
+```
+
+```{r paketi, echo = F,message=F, warning=F }
+library(tidyverse)
+library(tidytext)
+library(data.table)
+library(ggplot2)
+library(lubridate)
+library(grid)
+library(wordcloud)
+library(reshape2)
+library(igraph)
+library(ggraph)
+library(widyr)
+library(topicmodels)
+library(ggthemes)
+library(DT)
+```
+
+# Analiza teksta
+
+Analiza teksta dobiva na popularnosti zbog sve veće dostupnosti podataka i razvoja **user friendly** podrške za provedbu takve analize. Analiza tekstualnih podataka je moguća kroz mnoštvo različitih pristupa, a najšire korišten pristup je **bag-of-words** u kojem je frekvencija riječi polazište za analizu dok se (npr.) pozicija riječi zanemaruje. Postupak analize teksta započinje *pripremom teksta (podataka)*, koja uključuje: **uvoz teksta**, **operacije sa riječima**, **uređivanje i tokenizacija**, **izrada matrice pojmova**, **filtiranje i ponderiranje podataka**. Pri tome valja imati na umu da vrsta analize i korištena metoda određuju način na koji je potrebno pripremiti podatke za daljnu analizu te da svaka metoda ima svoje specifičnosti. Nakon pripreme podataka se vrši *analiza teksta (podataka)* metodama **nadziranog strojnog učenja**, **ne-nadziranog strojnog učenja**, **statistike na tekstualnim podatcima**, **analize riječnika**. *Napredne metode analize podataka* uključuju **NLP** i **analizu pozicije riječi i sintakse**.
+
+
+
+```{r, include=TRUE, out.width="400px", fig.align="center", fig.cap=c("Procedura za analizu teksta."), echo=FALSE}
+
+knitr::include_graphics("E:/Luka/Academic/HS/MULTIVARIJARNE METODE/7_TEXT/potupakAnalize.png")
+
+```
+
+
+U ovom ćemo pregledu koristiti 'tidytext' pristup za analizu tekstualnih podatka, detaljno opisan u knjizi [Text Mining with R](https://www.tidytextmining.com/). Analizirati ćemo temu COVID-19 pandemije na osnovi članka objavljenih na velikom broju domaćih internetskih portala u zadnjih 30 dana. Eksplorativna analiza teksta koju ćemo provesti uključuje: **uvoz podataka pomoću API**, **čišćenje, uređivanje i prilagodbu podataka**, **dekriptivnu statistiku na tekstualnim podatcima**, **analizu sentimenta**, **analizu frekvencija** i **tematsku analizu**.
+
+## Uvoz podataka
+
+Podatci za analizu su prikupljeni s 6 domaćih internetskih portala. Članci su identificirani ako sadrže riječ "korona" bilo gdje u tekstu članka, a članak je objavljen od prvog registriranog slučaja u Hrvatskoj ().
+
+```{r podatci, eval=T,message=F, warning=F}
+covid <- read.csv2("D:/LUKA/CroEcon/Zajednički/covidRHtxt/data/korona.csv") #, encoding="UTF-8"
+```
+
+Nakon što smo povukli članke, izabrali varijable od interesa i lokalno posporemili podatke, u sljedećem koraku učitavamo podatke u radni prostor R i učitavamo druge podatke koji su nam potrebni za analizu. Osim **članaka**, potrebni su nam **leksikoni** i **stop riječi**. Leksikone ćemo preuzeti iz FER-ovog [repozitorija](http://meta-share.ffzg.hr/repository/browse/croatian-sentiment-lexicon/940fe19e6c6d11e28a985ef2e4e6c59eff8b12d75f284d58aacfa8d732467509/), a "stop riječi" ćemo napraviti sami. 
+
+```{r leksikoni, message=F, warning=F}
+
+# UČITAJ LEKSIKONE
+
+CroSentilex_n <- read.delim("C:/Users/Lukas/Dropbox/Mislav@Luka/crosentilex-negatives.txt",
+                                   header = FALSE,
+                                   sep = " ",
+                                   stringsAsFactors = FALSE,
+                                   fileEncoding = "UTF-8")  %>%
+                   rename(word = "V1", sentiment = "V2" ) %>%
+                   mutate(brija = "NEG")
+ 
+CroSentilex_p  <- read.delim("C:/Users/Lukas/Dropbox/Mislav@Luka/crosentilex-positives.txt",
+                                   header = FALSE,
+                                   sep = " ",
+                                   stringsAsFactors = FALSE,
+                                   fileEncoding = "UTF-8") %>%
+                    rename(word = "V1", sentiment = "V2" ) %>%
+                    mutate(brija = "POZ")
+ 
+Crosentilex_sve <- rbind(setDT(CroSentilex_n), setDT(CroSentilex_p))
+ 
+ 
+CroSentilex_Gold  <- read.delim2("C:/Users/Lukas/Dropbox/Mislav@Luka/gs-sentiment-annotations.txt",
+                                 header = FALSE,
+                                 sep = " ",
+                                 stringsAsFactors = FALSE) %>%
+                    rename(word = "V1", sentiment = "V2" ) 
+
+ Encoding(CroSentilex_Gold$word) <- "UTF-8"
+ CroSentilex_Gold[1,1] <- "dati"
+ CroSentilex_Gold$sentiment <- str_replace(CroSentilex_Gold$sentiment , "-", "1")
+ CroSentilex_Gold$sentiment <- str_replace(CroSentilex_Gold$sentiment , "\\+", "2")
+ CroSentilex_Gold$sentiment <- as.numeric(unlist(CroSentilex_Gold$sentiment))
+ 
+# STVORI "STOP RIJEČI"
+ 
+stopwords_cro <- get_stopwords(language = "hr", source = "stopwords-iso")
+my_stop_words <- tibble(
+  word = c(
+    "jedan","mjera", "može", "mogu", "kad", "sada", "treba", "ima", "osoba",
+    "e","prvi", "dva","dvije","drugi",
+    "tri","treći","pet","kod",
+    "ove","ova",  "ovo","bez", "kod",
+    "evo","oko",  "om", "ek",
+    "mil","tko","šest", "sedam",
+    "osam",   "čim", "zbog",
+    "prema", "dok","zato", "koji", 
+    "im", "čak","među", "tek",
+    "koliko", "tko","kod","poput", 
+    "baš", "dakle", "osim", "svih", 
+    "svoju", "odnosno", "gdje",
+    "kojoj", "ovi", "toga",
+     "ubera", "vozača", "hrvatskoj", "usluge", "godine", "više", "taksi", "taxi", "taksija", "taksija", "kaže", "rekao", "19"," ae"
+  ),
+  lexicon = "lux"
+)
+stop_corpus <- my_stop_words %>%
+  bind_rows(stopwords_cro)
+
+
+```
+
+## Prilagodba podataka
+
+U sljedećem koraku ćemo prilagoditi podatke u **tidy** format koji je prikladan za analizu. 
+
+```{r prilagodi, message=F, warning=F}
+# prilagodi podatke
+newsCOVID <- covid %>% 
+  as.data.frame() %>%
+  select(naslov, datum, domena) %>%  
+  mutate(datum = as.Date(datum,"%Y-%m-%d")) %>%
+  mutate(clanak = 1:n()) %>%
+  filter(datum > "2020-02-25") %>%
+  filter(domena %in% c("nethr", "tportal", "index"))
+# brzi pregled strukture podataka
+glimpse(newsCOVID)
+# izgled podataka
+newsCOVID %>%
+  sample_n(.,10)
+
+#DT::datatable(newsCOVID)
+```
+
+
+Za to je potrebno provesti tokenizaciju:
+
+```{r tokeni}
+# tokenizacija
+
+newsCOVID %>% 
+  unnest_tokens(word, naslov) -> newsCOVID_token 
+
+#newsCOVID_token$word <- stri_encode(newsCOVID_token$word, "", "UTF-8") # prilagodi encoding
+
+#newsCOVID_token %>%
+#  head(10)
+
+newsCOVID_token %>% 
+  sample_n(.,10)
+```
+
+
+Potom valja očistiti riječi od brojeva i nepotrebnih riječi. Na tako uređenim podatcima ćemo napraviti deskriptivno- statistički pregled teksta.
+
+```{r očisti}
+## Ukloni "stop words", brojeve, veznike i pojedinačna slova
+newsCOVID_token %>% 
+  anti_join(stop_corpus, by = "word") %>%
+  mutate(word = gsub("\\d+", NA, word)) %>%
+  mutate(word = gsub("^[a-zA-Z]$", NA, word)) %>% 
+  drop_na(.)-> newsCOVID_tokenTidy
+
+
+newsCOVID_tokenTidy %>%
+  sample_n(.,10)
+```
+
+Na tako uređenim podatcima ćemo napraviti deskriptivno - statistički pregled teksta:
+
+```{r dekriptivnoTxt, warning=F }
+# DESKRIPTIVNI PREGLED PODATAKA
+
+## Vremenski raspon analize
+range(newsCOVID_token$datum)
+
+## Najčešće riječi
+newsCOVID_tokenTidy %>%
+  count(word, sort = T) %>%
+  head(25)
+
+## Vizualizacija najčešćih riječi
+newsCOVID_tokenTidy %>%
+  count(word, sort = T) %>%
+  filter(n > 100) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()
+
+## Vizualizacija najčešćih riječi kroz vrijeme
+newsCOVID_tokenTidy %>%
+   mutate(Datum = floor_date(datum, "day")) %>%
+   group_by(Datum) %>%
+   count(word) %>% 
+   mutate(gn = sum(n)) %>%
+   filter(word %in%  c("virus", "mjere", "novozaraženih", "stožer", "beroš", "maske")) %>%
+   ggplot(., aes(Datum,  n / gn)) + 
+   geom_point() +
+   ggtitle("Učestalost korištenja riječi u člancima o pandemiji COVID-19") +
+   ylab("% ukupnih riječi") +
+   geom_smooth() +
+   facet_wrap(~ word, scales = "free_y") +
+   scale_y_continuous(labels = scales::percent_format())
+
+
+```
+
+...i  deskriptivno - statistički pregled domena:
+
+
+```{r dekriptivnoDom, warning=F}
+# DESKRIPTIVNI PREGLED DOMENA
+
+## Broj domena
+newsCOVID_tokenTidy %>% 
+  summarise(Domena = n_distinct(domena))
+
+
+## Broj članaka po domeni
+
+newsCOVID %>% 
+  drop_na(.) %>%
+  group_by(domena) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>% 
+  head(20)
+
+## Najveći portali
+
+newsCOVID %>% 
+  group_by(domena) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>% 
+  top_n(6) %>%
+  select(domena) %>%
+  pull() -> topPortali
+
+## Broj članaka po domeni kroz vrijeme
+
+newsCOVID %>% 
+   mutate(Datum = floor_date(datum, "week")) %>%
+   group_by(Datum, domena) %>%
+   summarise(n = n()) %>%
+   ungroup() %>%
+   ggplot(., aes(Datum,  n)) + 
+   geom_line() +
+   ggtitle("Članci o pandemiji COVID-19 na najvažnijim RH portalima") +
+   ylab("Broj objavljenih COVID članaka") +
+   geom_smooth() +
+   facet_wrap(~ domena, scales = "free_y") 
+   
+  
+
+```
+
+
+## Analiza sentimenta
+
+Nakon uređivanja podataka i osnovnog pregleda najvažnijih riječi, dinamike kretanja članaka kroz vrijeme i pregleda deskriptivne statistike domena ćemo provesti analizu **sentimenta**. Za analizu sentimenta je potrebno preuzeti leksikone sentimenta koji su za hrvatski jezik dostupni kroz FER-ov [Croatian Sentiment Lexicon](http://meta-share.ffzg.hr/repository/browse/croatian-sentiment-lexicon/940fe19e6c6d11e28a985ef2e4e6c59eff8b12d75f284d58aacfa8d732467509/). Analiza sentimenta će biti provedena za cijeli korpus članaka te za domene i uključuje sentiment kroz vrijeme, doprinos riječi sentimentu, 'wordCloud' i analizu negativnosti portala.
+
+Pogledajmo prvo kako izgledaju leksikoni:
+
+```{r sentiment, message=F, warning=F}
+
+## Pregled leksikona
+CroSentilex_n %>% sample_n(10)
+CroSentilex_p %>% sample_n(10)
+Crosentilex_sve %>% sample_n(10)
+CroSentilex_Gold %>% sample_n(10)
+
+```
+
+Potom ćemo pogledati kretanje sentimenta kroz vrijeme:
+
+```{r}
+
+## Kretanje sentimenta kroz vrijeme
+vizualiziraj_sentiment <- function(dataset, frq = "week") {
+
+dataset %>%
+  inner_join( Crosentilex_sve, by = "word") %>%
+  filter(!is.na(word)) %>%
+  select(word, brija, datum, sentiment) %>% 
+  unique() %>%
+  spread(. , brija, sentiment) %>%
+  mutate(sentiment = POZ - NEG) %>%
+  select(word, datum, sentiment) %>% 
+  group_by(word) %>% 
+  mutate(count = n()) %>%
+  arrange(desc(count)) %>%
+  mutate( score = sentiment*count) %>%
+  ungroup() %>%
+  group_by(datum) %>%
+  arrange(desc(datum)) -> sm
+
+ 
+sm %>%
+  select(datum, score) %>%
+  group_by(Datum = floor_date(datum, frq)) %>%
+  summarise(Dnevni_sent = sum(score, na.rm = TRUE)) %>%
+  ggplot(., aes(Datum, Dnevni_sent)) +
+  geom_bar(stat = "identity") + 
+  ggtitle(paste0("Sentiment kroz vrijeme;frekvencija podataka:", frq)) +
+  ylab("SentimentScore") -> gg_sentiment_kroz_vrijeme_qv
+
+
+gg_sentiment_kroz_vrijeme_qv
+
+}
+
+vizualiziraj_sentiment(newsCOVID_tokenTidy,"week")
+
+```
+
+Korisno je i promotriti koje riječi najviše doprinose sentimentu (pozitivnom, negativnom i neutralnom):
+
+```{r}
+
+## Doprinos sentimentu
+doprinos_sentimentu <- function(dataset, no = n) {
+dataset %>%
+  inner_join(CroSentilex_Gold, by = "word") %>% 
+  count(word, sentiment,sort = TRUE) %>% 
+  group_by(sentiment) %>%
+  top_n(no) %>%
+  ungroup() %>%
+  mutate(sentiment = case_when(sentiment == 0 ~ "NEUTRALNO",
+                                 sentiment == 1 ~ "NEGATIVNO",
+                                 sentiment == 2 ~ "POZITIVNO")) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  ggtitle( "Doprinos sentimentu") +
+  labs( x = "Riječ", y = "Broj riječi") +
+  facet_wrap(~ sentiment, scales = "free_y") +
+  coord_flip() -> gg_doprinos_sentimentu
+  
+ gg_doprinos_sentimentu
+ 
+}
+
+
+doprinos_sentimentu(newsCOVID_tokenTidy,15)
+
+```
+
+Korisno je pogledati i WordCloud sentiment. Pogledajmo "obični" WordCloud prije toga:
+
+```{r}
+
+## WordCloud(vulgaris)
+newsCOVID_tokenTidy %>%
+  anti_join(CroSentilex_Gold,by="word") %>% 
+  count(word) %>% 
+  arrange(desc(n)) %>%
+  top_n(100) %>%
+  with(wordcloud(word, n, max.words = 80))
+
+```
+
+Ovako izgleda WordCloud koji sadržava i prikaz sentimenta:
+
+```{r warning=F, message=F}
+
+## ComparisonCloud
+newsCOVID_tokenTidy %>%
+  inner_join(CroSentilex_Gold,by="word") %>% 
+  count(word, sentiment) %>% 
+  top_n(200) %>%
+  mutate(sentiment = case_when(sentiment == 0 ~ "+/-",
+                                 sentiment == 1 ~ "-",
+                                 sentiment == 2 ~ "+")) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("firebrick3", "deepskyblue3","darkslategray"),
+                   max.words = 120)
+
+
+```
+
+Analiza sentimenta nam omogućava i pregled negativnosti pojedinih portala:
+
+
+```{r}
+
+## Najnegativniji portali
+
+wCount <- newsCOVID_tokenTidy %>% 
+  group_by(domena) %>%
+  summarise(word = n())
+
+CroSentilex_Gold_neg <- CroSentilex_Gold %>% filter(sentiment == 1)
+CroSentilex_Gold_poz <- CroSentilex_Gold %>% filter(sentiment == 2)
+
+
+newsCOVID_tokenTidy %>% 
+  semi_join(CroSentilex_Gold_neg, by= "word") %>%
+  group_by(domena) %>% 
+  summarise(negWords = n()) %>%
+  left_join(wCount, by = "domena") %>%
+  mutate(negativnostIndex = (negWords/word)*100) %>%
+  arrange(desc(negativnostIndex))
+
+```
+
+...također i pozitivnosti portala:
+
+```{r}
+## Najpozitivniji portali
+
+
+CroSentilex_Gold_poz <- CroSentilex_Gold %>% filter(sentiment == 2)
+
+newsCOVID_tokenTidy %>% 
+  semi_join(CroSentilex_Gold_poz, by= "word") %>%
+  group_by(domena) %>% 
+  summarise(pozWords = n()) %>%
+  left_join(wCount, by = "domena") %>%
+  mutate(pozitivnostIndex = (pozWords/word)*100) %>%
+  arrange(desc(pozitivnostIndex))  
+
+```
+
+```{r eval=F, include=F}
+
+### Veliki portali 
+
+newsCOVID %>%
+  group_by(domena) %>%
+  count %>%
+  arrange(desc(n)) %>%
+  head(10) %>%
+  pull(domena) -> najveceDomene
+
+newsCOVID %>%
+  group_by(domena) %>%
+  count %>%
+  arrange(desc(n)) %>%
+  head(5) %>%
+  pull(domena) -> najveceDomene5
+
+
+
+newsCOVID_tokenTidy %>% 
+  filter(domena %in% najveceDomene) %>%
+  semi_join(CroSentilex_Gold_neg, by= "word") %>%
+  group_by(domena) %>% 
+  summarise(negWords = n()) %>%
+  left_join(wCount, by = "domena") %>%
+  mutate(negativnostIndex = (negWords/word)*100) %>%
+  arrange(desc(negativnostIndex))
+
+
+newsCOVID_tokenTidy %>% 
+  filter(domena %in% najveceDomene) %>%
+  semi_join(CroSentilex_Gold_poz, by= "word") %>%
+  group_by(domena) %>% 
+  summarise(pozWords = n()) %>%
+  left_join(wCount, by = "domena") %>%
+  mutate(pozitivnostIndex = (pozWords/word)*100) %>%
+  arrange(desc(pozitivnostIndex))  
+
+```
+
+
+## Analiza važnosti pojmova
+
+Nakon analize sentimenta je korisno analizirati i najbitnije riječi. To se radi pomoću IDF (inverse document frequency) metode. IDF metoda omogućuje identifikaciju važnih (ne nužno čestih) riječi u korpusu i može poslužiti za analizu najvažnijih pojmova po domenama.
+
+```{r FREKVENCIJA, message=F, warning=F}
+
+## Udio riječi po domenama
+
+domenaWords <- newsCOVID %>%
+  unnest_tokens(word,naslov) %>% 
+  count(domena, word, sort = T)
+  
+ukupnoWords <- domenaWords %>%
+  group_by(domena) %>%
+  summarise(totWords = sum(n))
+
+domenaWords <- left_join(domenaWords, ukupnoWords)
+
+
+#domenaWords %>% head(15)
+
+#domenaWords %>% 
+#ggplot(., aes(n/totWords, fill = domena)) +
+#  geom_histogram(show.legend = FALSE) +
+#  xlim(NA, 0.0009) +
+#  facet_wrap(~domena, ncol = 2, scales = "free_y")
+
+## Najbitnije riječi po domenma
+
+idf <- domenaWords %>%
+  bind_tf_idf(word, domena, n)
+
+idf %>% head(10)
+
+idf %>% 
+  select(-totWords) %>%
+  arrange(desc(tf_idf))
+
+idf %>%
+  arrange(desc(tf_idf)) %>%
+  mutate(word = factor(word, levels = rev(unique(word)))) %>% 
+  mutate(domena = factor(domena)) %>%
+  group_by(domena) %>% 
+  top_n(10) %>% 
+  ungroup() %>%
+  ggplot(aes(word, tf_idf, fill = domena)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~domena, ncol = 2, scales = "free") +
+  coord_flip()
+
+
+```
+
+## nGrami
+
+Do sada smo analizirali tekst tako da je tekst tokeniziran na jednu riječ. To može prikriti bitne nalaze do kojih je moguće doći ukoliko se tekst tokenizira na fraze (dvije ili N riječi). U sljedećemo koraku ćemo tokenizirati tekst na bigrame (dvije riječi) kako bismo proveli frazeološku analizu. Korištenje bigrama omogućava korištenje dodatnih metoda pa ćemo provesti i analizu korelacije među riječima.
+
+```{r nGRAMI, message=F, warning=F}
+
+newsCOVID_bigram <- newsCOVID %>%
+  unnest_tokens(bigram, naslov, token = "ngrams", n = 2)
+
+newsCOVID_bigram %>% head(10)
+
+
+newsCOVID_bigram %>%
+  count(bigram, sort = T) %>%
+  head(15)
+
+newsCOVID_bigram_sep <- newsCOVID_bigram %>%
+  separate(bigram, c("word1","word2"), sep = " ")
+
+newsCOVID_bigram_tidy <- newsCOVID_bigram_sep %>%
+  filter(!word1 %in% stop_corpus$word) %>%
+  filter(!word2 %in% stop_corpus$word) %>%
+  mutate(word1 = gsub("\\d+", NA, word1)) %>%
+  mutate(word2 = gsub("\\d+", NA, word2)) %>%
+  mutate(word1 = gsub("^[a-zA-Z]$", NA, word1)) %>%
+  mutate(word2 = gsub("^[a-zA-Z]$", NA, word2)) %>% 
+  drop_na(.)
+
+
+newsCOVID_bigram_tidy_bigram_counts <- newsCOVID_bigram_tidy %>% 
+  count(word1, word2, sort = TRUE)
+
+newsCOVID_bigram_tidy_bigram_counts
+
+
+
+bigrams_united <- newsCOVID_bigram_tidy %>%
+  drop_na(.) %>%
+  unite(bigram, word1, word2, sep = " ")
+
+bigrams_united
+
+
+bigrams_united %>% 
+  count(clanak,bigram,sort = T) -> topicBigram
+
+# Najvažniji bigrami po domenama
+
+ bigram_tf_idf <- bigrams_united %>%
+  count(domena, bigram) %>%
+  bind_tf_idf(bigram, domena, n) %>%
+  arrange(desc(tf_idf))
+
+bigram_tf_idf %>%
+  arrange(desc(tf_idf)) %>%
+  mutate(bigram = factor(bigram, levels = rev(unique(bigram)))) %>% 
+  group_by(domena) %>% 
+  top_n(7) %>% 
+  ungroup() %>%
+  ggplot(aes(bigram, tf_idf, fill = domena)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~domena, ncol = 2, scales = "free") +
+  coord_flip()
+
+
+```
+
+
+```{r vizualizacijaBigrama, eval = F}
+
+# Analiza bigramskih fraza
+
+newsCOVID_bigram_tidy %>%
+  filter(word1 == "covid") %>%
+  count(word1,word2,sort=T)
+
+# Vizualiziraj bigrame
+
+bigram_graph <- newsCOVID_bigram_tidy_bigram_counts %>%
+  filter(n >50) %>%
+   graph_from_data_frame()
+
+a <- grid::arrow(type = "closed", length = unit(.15, "inches"))
+
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = FALSE,
+                 arrow = a, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
+
+
+```
+
+
+Provjerimo koje su riječi najviše korelirane sa izabranim ključnim riječima:
+
+
+```{r}
+
+# Korelacije riječi ( R crash na T=30)
+
+newsCOVID_tokenTidy %>% 
+#  filter(published == "2020-04-22") %>%
+  pairwise_count(word, domena, sort = T) %>%
+  filter_all(any_vars(!is.na(.))) -> pairsWords
+
+newsCOVID_tokenTidy %>% 
+#  filter(datum > "2020-02-20") %>%
+  group_by(word) %>%
+  filter(n() > 20) %>%
+  filter(!is.na(word)) %>%
+  pairwise_cor(word,datum, sort = T) -> corsWords
+
+corsWords %>%
+  filter(item1 == "oporavak")
+
+corsWords %>%
+  filter(item1 %in% c("stožer", "beroš", "mjere")) %>%
+  group_by(item1) %>%
+  top_n(8) %>%
+  ungroup() %>%
+  mutate(item2 = reorder(item2, correlation)) %>%
+  ggplot(aes(item2, correlation)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ item1, scales = "free") +
+  coord_flip()
+
+```
+
+## Tematska analiza
+
+Na kraju provodimo tematsku analizu kao najsloženiji dio do sada provedene analize. Pri tome koristimo LDA (Latent Dirichlet allocation) algoritam kako bismo pronašli najvažnije riječi u algoritamski identificiranim temama. Ovdje je važno primijetiti da prije provedbe LDA modela valja tokenizirane riječi pretvoriti u matricu pojmova (document term matrix) koju ćemo kasnije koristiti kao input za LDA algoritam.
+
+```{r TEME, message=F, warning=F}
+
+newsCOVID_tokenTidy %>%
+  count(clanak, word, sort = TRUE) %>%
+  cast_dtm(clanak, word,n) -> dtm
+
+newsCOVID_LDA <- LDA(dtm, k = 5,  control = list(seed = 1234))
+
+newsCOVID_LDA_tidy <- tidy(newsCOVID_LDA, matrix = "beta")
+newsCOVID_LDA_tidy
+
+newsCOVID_terms <- newsCOVID_LDA_tidy %>%
+  drop_na(.) %>%
+  group_by(topic) %>%
+  top_n(15, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+newsCOVID_terms
+
+
+newsCOVID_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(term, beta, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  scale_x_reordered()
+
+```
+
+Tematsku analizu je moguće i napraviti na bigramski tokeniziranom tekstu. Tada je često moguće doći do preciznijih i kontekstualno relevantnijih uvida:
+
+```{r TEMEbigram, eval=F,, message=F, warning=F}
+
+# Bigrami topic
+
+topicBigram %>%
+  cast_dtm(clanak, bigram,n) -> dtmB
+
+newsCOVID_LDA <- LDA(dtmB, k = 3,  control = list(seed = 1234))
+
+newsCOVID_LDA_tidy <- tidy(newsCOVID_LDA, matrix = "beta")
+newsCOVID_LDA_tidy
+
+newsCOVID_terms <- newsCOVID_LDA_tidy %>%
+  drop_na(.) %>%
+  group_by(topic) %>%
+  top_n(10, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+newsCOVID_terms
+
+
+newsCOVID_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(term, beta, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() + 
+  theme_economist()
+```
+
+
+
+
+
+

@@ -3,7 +3,7 @@ title: "Obrada podataka"
 author:
   name: Luka Sikic, PhD
   affiliation: Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)
-subtitle: 'Predavanje 8: Strojno učenje'
+subtitle: 'Predavanje 9: Strojno učenje'
 output:
   html_document:
     theme: flatly

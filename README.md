@@ -214,7 +214,26 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 <br>
 
-<a href="/Predavanja/11_TEKST.pdf">Predavanje 11: Analiza teksta</a>
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="">Predavanje 10: Analiza teksta</a>
+
+<ul>
+<li> Što je analiza teksta</li>
+<li> Primjeri analize teksta u sociologiji</li>
+<li> Uvoz i priprema teksta (preprocesing korpusa)</li>
+<li> Format teksta za analizu (TidyText vs DTM)</li>
+<li> Deskriptivna analiza teksta (frekvencije riječi)</li>
+<li> Analiza sentimenta</li>
+<li> Analiza važnosti pojmova</li>
+<li> Tematska analiza</li>
+<ul>
+
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/10_TXT.html">.html</a> | <a href="/Predavanja/10_TXT.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href="">Izbor po želji iz dodatnih resursa.</a>
+<br>
+<br>
 
 <a href="/Predavanja/12_STATICKI.pdf">Predavanje 12: Prezentacija podataka u statičkom formatu</a>
 
