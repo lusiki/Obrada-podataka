@@ -236,13 +236,23 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 
-<a href="/Predavanja/12_STATICKI.pdf">Predavanje 12: Prezentacija podataka u statičkom formatu</a>
 
-<a href="/Predavanja/13_DINAMICKI.pdf">Predavanje 13: Prezentacija podataka u dinamičkom formatu</a>
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href=">Predavanje 11: Prezentacija, objava i djeljenje rezultata</a>
 
-<a href="/Predavanja/14_DINAMICKI.pdf">Predavanje 14: Prezentacija podataka u interaktivnom formatu</a>
+<ul>
+<li> Prezentacija podataka u statičkom formatu</li>
+<li> Prezentacija podataka u dinamičkom formatu</li>
+<li> Prezentacija podataka u interaktivnom formatu</li>
+<li> Objava i dijeljenje rezultata analize</li>
+<ul>
 
-<a href="/Predavanja/15_OBJAVA.pdf">Predavanje 15: Objava i dijeljenje rezultata analize</a>
+</div>
+
+<b>Format predavanja:</bPPTTXT.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href="">RMarkdown</a>
+<br>
+<br>
 
 
 
