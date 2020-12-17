@@ -235,10 +235,13 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 <br>
 
-
+</div>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href=">Predavanje 11: Prezentacija, objava i djeljenje rezultata</a>
+<br>
+<br>
+
 
 <ul>
 <li> Prezentacija podataka u statičkom formatu</li>
