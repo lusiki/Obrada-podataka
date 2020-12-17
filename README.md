@@ -252,8 +252,8 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</bPPTTXT.Rmd">.Rmd</a>
-<br><b>Čitanje: </b><a href="">RMarkdown</a>
+<b>Format predavanja:</b> <a href="">.html</a> | <a href="">.Rmd</a>
+<br><b>Čitanje: </b><a href="">R Markdown</a>
 <br>
 <br>
 
