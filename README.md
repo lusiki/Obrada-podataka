@@ -8,7 +8,7 @@
 
 # Obrada podataka
 
-*OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi Luka Sikic,PhD. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije.
+*OpenSource* kolegij na diplomskoj razini 'Obrada podataka'u zimskom semestru akademske godine 2019/20 na Fakultetu hrvatskih studija u Zagrebu koji izvodi [Luka Sikic](https://www.lukasikic.info/),PhD. Kolegij je prvenstveno namijenjen sociolozima ali i prilagođen za studente iz drugih društvenih zananosti poput politologije, komunikologije, povijesti i ekonomije.
 
 Kolegij polazi od **Big Data** pristupa društvenim znanostima i modernih izvora podatka puput Web-a, aplikacija, društvenih mreža, urbanih senzora i dr. Metodološki fokus je na **computational social science (CSS)** principima i korištenju računalnih tehnologija za obradu i analizu (velikog volumena) podataka. Kolegij nije zamišljen kao sveobuhvatna referenca za rad s *Big Data* tehnologijama u društvenim znanostima jer materijali ne pokrivaju: rad sa terminalom (*Bash Shell*), rad sa platformama za suradnju i razmjenu koda (*Git*, *GitHub*), rad sa *Docker*-om, programiranje i iteraciju, paralelno programiranje, rad u oblaku (*Cloud*). 
 
@@ -219,7 +219,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 <ul>
 <li> Što je analiza teksta</li>
-<li> Primjeri analize teksta u sociologiji</li>
+<li> Primjeri analize teksta</li>
 <li> Uvoz i priprema teksta (preprocesing korpusa)</li>
 <li> Format teksta za analizu (TidyText vs DTM)</li>
 <li> Deskriptivna analiza teksta (frekvencije riječi)</li>
@@ -231,9 +231,12 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 </div>
 
 <b>Format predavanja:</b> <a href="/Predavanja/10_TXT.html">.html</a> | <a href="/Predavanja/10_TXT.Rmd">.Rmd</a>
-<br><b>Čitanje: </b><a href="">Izbor po želji iz dodatnih resursa.</a>
+<br><b>Čitanje: </b><a href="http://eprints.lse.ac.uk/86659/1/Benoit_Text%20analysis%20in%20R_2018.pdf">Vodič za analizu teksta u R</a>
 <br>
 <br>
+
+(http://eprints.lse.ac.uk/86659/1/Benoit_Text%20analysis%20in%20R_2018.pdf)
+
 
 <a href="/Predavanja/12_STATICKI.pdf">Predavanje 12: Prezentacija podataka u statičkom formatu</a>
 

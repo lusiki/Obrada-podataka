@@ -21,11 +21,29 @@ output:
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 ```
 
-```{r paketi, echo = F,message=F, warning=F }
+
+## Analiza teksta
+
+
+Analiza teksta dobiva na popularnosti zbog sve veće dostupnosti podataka i razvoja **user friendly** podrške za provedbu takve analize. Konceptualni pregled analize teksta je dostupan i u nedavno objavljenoj [knjizi](https://isi.f.bg.ac.rs/wp-content/uploads/2019/03/Zeljka_Manic_Analiza-sadr%C5%BEaja.pdf), koja se preporuča tek nakon savladavanja osnovnih tehničkih vještina i alata za obradu teksta. Provedba analize tekstualnih podataka je moguća na mnogo načina, a najšire korišten pristup je **bag-of-words** u kojem je frekvencija riječi polazište za analizu dok se (npr.) pozicija riječi u rečenici ili paragrafu zanemaruje. Bag of words pristup je ujedno i najjednostavniji (konceptualno i računarski) pa će biti korišten u ovom predavanju. 
+
+Postupak analize teksta započinje *pripremom teksta (podataka)*, koja je često dosta zahtjevna i uključuje: **uvoz teksta**, **operacije sa riječima**, **uređivanje i tokenizaciju**, **izradu matrice pojmova**, **filtiranje i ponderiranje podataka**. Pri tome valja imati na umu da vrsta analize i korištena metoda određuju način na koji je potrebno pripremiti podatke za daljnu analizu te da svaka metoda ima svoje specifičnosti. Nakon pripreme podataka se vrši *analiza teksta (podataka)* metodama **nadziranog strojnog učenja**, **ne-nadziranog strojnog učenja**, **statistike na tekstualnim podatcima**, **analize riječnika**, **analize sentimenta**. *Napredne metode analize podataka* uključuju **NLP**, **analizu pozicije riječi i sintakse**...Sažeti prikaz *workflow-a* za analizu teksta izgleda ovako:
+
+
+```{r, include=TRUE, out.width="400px", fig.align="center", fig.cap=c("Procedura za analizu teksta."), echo=FALSE}
+
+knitr::include_graphics("D:/LUKA/Academic/HS/NASTAVA/20-21/Obrada podataka/Foto/potupakAnalize.png")
+
+
+```
+### Software i korisni resursi
+
+U ovom predavanju ćemo koristiti `tidytext` pristup (i istoimeni paket) za analizu tekstualnih podatka, detaljno opisan u knjizi [Text Mining with R](https://www.tidytextmining.com/). Ovaj paket služi kako bismo tekstualne podatke "uveli" u tidyverse ovir pomoću kojeg je moguće nestrukturirani tekst analizirati sa otprije poznatim alatima iz `dplyr` i `ggplot` paketa. Učitajmo potrebne pakete: 
+
+```{r paketi, echo = T,message=F, warning=F }
 library(tidyverse)
 library(tidytext)
 library(data.table)
-library(ggplot2)
 library(lubridate)
 library(grid)
 library(wordcloud)
@@ -38,30 +56,43 @@ library(ggthemes)
 library(DT)
 ```
 
-# Analiza teksta
 
-Analiza teksta dobiva na popularnosti zbog sve veće dostupnosti podataka i razvoja **user friendly** podrške za provedbu takve analize. Analiza tekstualnih podataka je moguća kroz mnoštvo različitih pristupa, a najšire korišten pristup je **bag-of-words** u kojem je frekvencija riječi polazište za analizu dok se (npr.) pozicija riječi zanemaruje. Postupak analize teksta započinje *pripremom teksta (podataka)*, koja uključuje: **uvoz teksta**, **operacije sa riječima**, **uređivanje i tokenizacija**, **izrada matrice pojmova**, **filtiranje i ponderiranje podataka**. Pri tome valja imati na umu da vrsta analize i korištena metoda određuju način na koji je potrebno pripremiti podatke za daljnu analizu te da svaka metoda ima svoje specifičnosti. Nakon pripreme podataka se vrši *analiza teksta (podataka)* metodama **nadziranog strojnog učenja**, **ne-nadziranog strojnog učenja**, **statistike na tekstualnim podatcima**, **analize riječnika**. *Napredne metode analize podataka* uključuju **NLP** i **analizu pozicije riječi i sintakse**.
+Prije opisa podataka koje ćemo koristiti valja naglasiti da `tidytext` pristup nije jedini način za rad s podatcima u R. Ovdje ga koristimo jer je kompatibilan sa pristupima koje smo do sada koristili u okviru ovog kolegija. Drugi paketi (pristupi) za rad sa tekstom u R su:
+
+- `quanteda` je sveobuhvatan i funkcijama bogat paket, neophodan u za složeniju analizu teksta. Izvrstan tutorial je dostupan na [linku](https://tutorials.quanteda.io/).
+
+- `text2vec` je izrazito koristan paket za ML algoritme sa tekstualnim podatcima. Posebno je pogodan za izradu *dtm* i *tcm* matrica. Paket je motiviran python-ovom Gensim knjižnicom, a tutorial je dostupan na [linku](http://text2vec.org/index.html).
+
+- `stringr` paket je neophodan za manipulaciju *string* podataka u R i kao dio `tidyverse` svijeta će biti izrazito koristan u čišćenju i pripremi podataka. Vrlo je praktičan za rad sa [*regex-om*](https://en.wikipedia.org/wiki/Regular_expression)  i ima nekoliko izvrsnih funkcija za *pattern matching*. Službeni R Tutorial je dostupan na [linku](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html).
+
+- `spacyr` je *wrapper* paket za spaCy knjižnicu iz python-a i omogućava provedbu naprednijih NLP modela (deep learning, speech tagging, tkoenization, parsing) u R. Također je kompatibilan sa quanteda i tidytext paketima. Tutorial je dostupan na [linku](https://spacyr.quanteda.io/articles/using_spacyr.html).  
+
+- za one koji žele znati više mogu biti korisni i sljedeći resursi: [vodič za tekstualnu analizu u R](http://eprints.lse.ac.uk/86659/1/Benoit_Text%20analysis%20in%20R_2018.pdf) koji se  i [kolegij za obradu prirodnog teksta](https://github.com/BrbanMiro/Analiza-teksta) u najstajnju koji sadrži i reference na mnoštvo korisnih resursa.
 
 
+### Podatci
 
-```{r, include=TRUE, out.width="400px", fig.align="center", fig.cap=c("Procedura za analizu teksta."), echo=FALSE}
+Svaka analiza (teksta)  počinje od podataka. Pribava tekstualnih podataka o specifičnim temama najčešće nije jednostavna. Najčešći je način preuzimanja podataka neki od dostupnih API servisa za novinske članke ili tekstualnih repozitorija ili servisi poput Twitter-a. No to često nije dovoljno ukolilko želimo analizirati specifičnu temu ili temu na specifičnom jeziku (npr. hrvatskom). Ovdje još valja napomeniti da je preuzimanje kvalitetnih tekstualnih podataka često moguće isključivo uz nadoplatu kao što je to slučaj sa novinskim člancima na hrvatskom jeziku, primjerice kroz [webhose.io](https://webhose.io/) servis.
 
-knitr::include_graphics("E:/Luka/Academic/HS/MULTIVARIJARNE METODE/7_TEXT/potupakAnalize.png")
+U ovom ćemo predavanju analizirati temu COVID-19 pandemije na osnovi članka objavljenih na tri domaća internetska portala (nethr, index, tportal) od prvog službenog slučaja zaraze u RH (2020-26-02) do danas (2020-15-12). Analiza nema specifičan cilj već je namjera demonstrirati mogućnosti i tehnike analize teksta u R na aktualnoj temi. Članci su preuzeti *web-scraping* tehnikama, a identifikacija COVID-19 povezanih članka je napravljena ukoliko se u tekstu spominje riječ "korona". Na taj su način sa tri navedena portala prikupljena 2.623 članka. Zbog jednostavnosti su analizirani **naslovi** pripadajućih tekstova.  Analiza teksta koju ćemo provesti uključuje: **čišćenje, uređivanje i prilagodbu podataka**, **dekriptivnu statistiku na tekstualnim podatcima**, **analizu sentimenta**, **analizu frekvencija** i **tematsku analizu**.
 
-```
+## Primjeri analize teksta
 
+Analiza teksta kao metodološki pristup je korištena u uistinu širokom spektru područja, a sveobuhvatni pregled bi zahtijevao posebno predavanje, odnosno čitav kolegij. 
 
-U ovom ćemo pregledu koristiti 'tidytext' pristup za analizu tekstualnih podatka, detaljno opisan u knjizi [Text Mining with R](https://www.tidytextmining.com/). Analizirati ćemo temu COVID-19 pandemije na osnovi članka objavljenih na velikom broju domaćih internetskih portala u zadnjih 30 dana. Eksplorativna analiza teksta koju ćemo provesti uključuje: **uvoz podataka pomoću API**, **čišćenje, uređivanje i prilagodbu podataka**, **dekriptivnu statistiku na tekstualnim podatcima**, **analizu sentimenta**, **analizu frekvencija** i **tematsku analizu**.
+[link](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbaa296/6024738)
+
 
 ## Uvoz podataka
 
-Podatci za analizu su prikupljeni s 6 domaćih internetskih portala. Članci su identificirani ako sadrže riječ "korona" bilo gdje u tekstu članka, a članak je objavljen od prvog registriranog slučaja u Hrvatskoj ().
+Podatci za analizu su prikupljeni na prethodno opisan način i dostupni u GitHub repozitoriju kolegija (Dta folder;korona.csv file). Podataci uključuju i članke sa nekih drugih portala, ali u kraćem vremenskom rasponu pa su izostavljeni iz analize. Učitajmo podatke:
 
 ```{r podatci, eval=T,message=F, warning=F}
-covid <- read.csv2("D:/LUKA/CroEcon/Zajednički/covidRHtxt/data/korona.csv") #, encoding="UTF-8"
+covid <- read.csv2("D:/LUKA/Academic/HS/NASTAVA/20-21/Obrada podataka/Dta/korona.csv") #, encoding="UTF-8"
+str(covid)
 ```
 
-Nakon što smo povukli članke, izabrali varijable od interesa i lokalno posporemili podatke, u sljedećem koraku učitavamo podatke u radni prostor R i učitavamo druge podatke koji su nam potrebni za analizu. Osim **članaka**, potrebni su nam **leksikoni** i **stop riječi**. Leksikone ćemo preuzeti iz FER-ovog [repozitorija](http://meta-share.ffzg.hr/repository/browse/croatian-sentiment-lexicon/940fe19e6c6d11e28a985ef2e4e6c59eff8b12d75f284d58aacfa8d732467509/), a "stop riječi" ćemo napraviti sami. 
+Nakon što smo učitali podatke u radni prostor R, potrebno je učitati i druge podatke koji su nam potrebni za ovu  analizu. Osim **članaka**, potrebni su nam **leksikoni** i **stop riječi**. Leksikone ćemo preuzeti iz FER-ovog [repozitorija](http://meta-share.ffzg.hr/repository/browse/croatian-sentiment-lexicon/940fe19e6c6d11e28a985ef2e4e6c59eff8b12d75f284d58aacfa8d732467509/), a "stop riječi" ćemo napraviti sami. 
 
 ```{r leksikoni, message=F, warning=F}
 
@@ -116,7 +147,7 @@ my_stop_words <- tibble(
     "baš", "dakle", "osim", "svih", 
     "svoju", "odnosno", "gdje",
     "kojoj", "ovi", "toga",
-     "ubera", "vozača", "hrvatskoj", "usluge", "godine", "više", "taksi", "taxi", "taksija", "taksija", "kaže", "rekao", "19"," ae"
+     "ubera", "vozača", "hrvatskoj", "usluge", "godine", "više", "taksi", "taxi", "taksija", "taksija", "kaže", "rekao", "19"," aee", "ae"
   ),
   lexicon = "lux"
 )
@@ -128,7 +159,7 @@ stop_corpus <- my_stop_words %>%
 
 ## Prilagodba podataka
 
-U sljedećem koraku ćemo prilagoditi podatke u **tidy** format koji je prikladan za analizu. 
+U sljedećem koraku ćemo prilagoditi podatke u **tidy** format koji je prikladan za analizu. Pri tome pretvaramo podatke u `dataframe`, izabiremo varijable za analizu, specificiramo vremenski pečat članka kao datumsku varijablu, pripisujemo id svakom članku, izabiremo vremenski raspon analize i portale: 
 
 ```{r prilagodi, message=F, warning=F}
 # prilagodi podatke
@@ -139,6 +170,7 @@ newsCOVID <- covid %>%
   mutate(clanak = 1:n()) %>%
   filter(datum > "2020-02-25") %>%
   filter(domena %in% c("nethr", "tportal", "index"))
+
 # brzi pregled strukture podataka
 glimpse(newsCOVID)
 # izgled podataka
@@ -149,7 +181,7 @@ newsCOVID %>%
 ```
 
 
-Za to je potrebno provesti tokenizaciju:
+U sljedećem koraku provodimo *tokenizaciju*, odnosno pretvaranje teksta na jedinice analize. U ovom slučaju su to riječi:
 
 ```{r tokeni}
 # tokenizacija
@@ -159,32 +191,28 @@ newsCOVID %>%
 
 #newsCOVID_token$word <- stri_encode(newsCOVID_token$word, "", "UTF-8") # prilagodi encoding
 
-#newsCOVID_token %>%
-#  head(10)
-
 newsCOVID_token %>% 
   sample_n(.,10)
 ```
 
-
 Potom valja očistiti riječi od brojeva i nepotrebnih riječi. Na tako uređenim podatcima ćemo napraviti deskriptivno- statistički pregled teksta.
 
-```{r očisti}
+```{r ocisti}
 ## Ukloni "stop words", brojeve, veznike i pojedinačna slova
+
 newsCOVID_token %>% 
   anti_join(stop_corpus, by = "word") %>%
   mutate(word = gsub("\\d+", NA, word)) %>%
   mutate(word = gsub("^[a-zA-Z]$", NA, word)) %>% 
   drop_na(.)-> newsCOVID_tokenTidy
 
-
 newsCOVID_tokenTidy %>%
   sample_n(.,10)
 ```
 
-Na tako uređenim podatcima ćemo napraviti deskriptivno - statistički pregled teksta:
+Na tako uređenim podatcima ćemo napraviti deskriptivno-statistički pregled teksta:
 
-```{r dekriptivnoTxt, warning=F }
+```{r dekriptivnoTxt, warning=F, message=F }
 # DESKRIPTIVNI PREGLED PODATAKA
 
 ## Vremenski raspon analize
@@ -198,12 +226,13 @@ newsCOVID_tokenTidy %>%
 ## Vizualizacija najčešćih riječi
 newsCOVID_tokenTidy %>%
   count(word, sort = T) %>%
-  filter(n > 100) %>%
+  filter(n > 50) %>%
   mutate(word = reorder(word, n)) %>%
   ggplot(aes(word, n)) +
   geom_col() +
   xlab(NULL) +
-  coord_flip()
+  coord_flip() +
+  theme_economist()
 
 ## Vizualizacija najčešćih riječi kroz vrijeme
 newsCOVID_tokenTidy %>%
@@ -211,22 +240,21 @@ newsCOVID_tokenTidy %>%
    group_by(Datum) %>%
    count(word) %>% 
    mutate(gn = sum(n)) %>%
-   filter(word %in%  c("virus", "mjere", "novozaraženih", "stožer", "beroš", "maske")) %>%
+   filter(word %in%  c("virus", "mjere", "korona", "stožer", "beroš", "maske")) %>%
    ggplot(., aes(Datum,  n / gn)) + 
    geom_point() +
    ggtitle("Učestalost korištenja riječi u člancima o pandemiji COVID-19") +
    ylab("% ukupnih riječi") +
    geom_smooth() +
    facet_wrap(~ word, scales = "free_y") +
-   scale_y_continuous(labels = scales::percent_format())
-
+   scale_y_continuous(labels = scales::percent_format())+
+   theme_economist()
 
 ```
 
-...i  deskriptivno - statistički pregled domena:
+Također je moguće napraviti i deskriptivno-statistički pregled domena:
 
-
-```{r dekriptivnoDom, warning=F}
+```{r dekriptivnoDom, warning=F,message=F}
 # DESKRIPTIVNI PREGLED DOMENA
 
 ## Broj domena
@@ -243,15 +271,6 @@ newsCOVID %>%
   arrange(desc(n)) %>% 
   head(20)
 
-## Najveći portali
-
-newsCOVID %>% 
-  group_by(domena) %>%
-  summarise(n = n()) %>%
-  arrange(desc(n)) %>% 
-  top_n(6) %>%
-  select(domena) %>%
-  pull() -> topPortali
 
 ## Broj članaka po domeni kroz vrijeme
 
@@ -265,7 +284,8 @@ newsCOVID %>%
    ggtitle("Članci o pandemiji COVID-19 na najvažnijim RH portalima") +
    ylab("Broj objavljenih COVID članaka") +
    geom_smooth() +
-   facet_wrap(~ domena, scales = "free_y") 
+   facet_wrap(~ domena, scales = "free_y") +
+   theme_economist()
    
   
 
@@ -274,9 +294,9 @@ newsCOVID %>%
 
 ## Analiza sentimenta
 
-Nakon uređivanja podataka i osnovnog pregleda najvažnijih riječi, dinamike kretanja članaka kroz vrijeme i pregleda deskriptivne statistike domena ćemo provesti analizu **sentimenta**. Za analizu sentimenta je potrebno preuzeti leksikone sentimenta koji su za hrvatski jezik dostupni kroz FER-ov [Croatian Sentiment Lexicon](http://meta-share.ffzg.hr/repository/browse/croatian-sentiment-lexicon/940fe19e6c6d11e28a985ef2e4e6c59eff8b12d75f284d58aacfa8d732467509/). Analiza sentimenta će biti provedena za cijeli korpus članaka te za domene i uključuje sentiment kroz vrijeme, doprinos riječi sentimentu, 'wordCloud' i analizu negativnosti portala.
+Nakon uređivanja podataka i osnovnog pregleda najvažnijih riječi, dinamike kretanja članaka kroz vrijeme i pregleda deskriptivne statistike domena ćemo provesti analizu **sentimenta**. Za analizu sentimenta je potrebno preuzeti leksikone sentimenta koji su za hrvatski jezik dostupni kroz FER-ov [Croatian Sentiment Lexicon](http://meta-share.ffzg.hr/repository/browse/croatian-sentiment-lexicon/940fe19e6c6d11e28a985ef2e4e6c59eff8b12d75f284d58aacfa8d732467509/) . Analiza sentimenta i uključuje sentiment kroz vrijeme, doprinos riječi sentimentu, 'wordCloud' i analizu negativnosti portala.
 
-Pogledajmo prvo kako izgledaju leksikoni:
+Pogledajmo prvo kako izgledaju leksikoni (koje smo učitali na početku):
 
 ```{r sentiment, message=F, warning=F}
 
@@ -288,7 +308,7 @@ CroSentilex_Gold %>% sample_n(10)
 
 ```
 
-Potom ćemo pogledati kretanje sentimenta kroz vrijeme:
+Provjerimo kretanje sentimenta u vremenu:
 
 ```{r}
 
@@ -319,7 +339,8 @@ sm %>%
   ggplot(., aes(Datum, Dnevni_sent)) +
   geom_bar(stat = "identity") + 
   ggtitle(paste0("Sentiment kroz vrijeme;frekvencija podataka:", frq)) +
-  ylab("SentimentScore") -> gg_sentiment_kroz_vrijeme_qv
+  ylab("SentimentScore") +
+  theme_economist()-> gg_sentiment_kroz_vrijeme_qv
 
 
 gg_sentiment_kroz_vrijeme_qv
