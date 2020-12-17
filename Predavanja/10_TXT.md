@@ -30,7 +30,7 @@ Postupak analize teksta započinje *pripremom teksta (podataka)*, koja je često
 
 
 <div class="figure" style="text-align: center">
-<img src="D:/LUKA/Academic/HS/NASTAVA/20-21/Obrada podataka/Foto/potupakAnalize.png" alt="Procedura za analizu teksta." width="400px" />
+<img src="D:/LUKA/Academic/HS/NASTAVA/20-21/Obrada podataka/Foto/potupakAnalize.png" alt="Procedura za analizu teksta." width="700px" />
 <p class="caption">Procedura za analizu teksta.</p>
 </div>
 
@@ -998,5 +998,8 @@ newsCOVID_terms %>%
 
 ## Zaključak
 
+U ovom smo predavanju dali uvodni pregled mogućnosti analize teksta u okviru `tidytext` paketa. Riječ je o skupu alata koji omogućavaju "prilagodbu" teksta u *tidy* format i daljnu analizu s `tidyverse` alatima koje smo do sada već dobro upoznali. `tidytext` nije jedini dostupan okvir za analizu teksta u R, već postoji i niz drugih paketa (vidi na početku) koji omogućavaju korištenje naprednijih (algoritamkskih tehnika.
 
+U predavanju su korišteni tekstovi objavljeni na tri domaća portala o temi COVID-19 u razdoblju od prvog zabilježenog slučaja u RH do danas. Analiza je pokazala mogućnosti tekstualne analize te osnovnih tehnika i alata na aktualnom primjeru.
 
+Analiza teksta je trenutno (brzo) rastuće istraživačko područje sa sve većim brojem primjena, novih metodoloških pristupa i perspektiva. Dostupno je mnoštvo kvalitetnih i korisnih resursa pa se zainteresiranim studentima preporuča uključivanje u ovu (vrlo perspektivnu) istraživačku paradigmu.
