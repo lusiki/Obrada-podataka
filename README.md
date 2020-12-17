@@ -215,7 +215,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="">Predavanje 10: Analiza teksta</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/10_TXT.html">Predavanje 10: Analiza teksta</a>
 
 <ul>
 <li> Što je analiza teksta</li>
@@ -234,8 +234,6 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br><b>Čitanje: </b><a href="http://eprints.lse.ac.uk/86659/1/Benoit_Text%20analysis%20in%20R_2018.pdf">Vodič za analizu teksta u R</a>
 <br>
 <br>
-
-(http://eprints.lse.ac.uk/86659/1/Benoit_Text%20analysis%20in%20R_2018.pdf)
 
 
 <a href="/Predavanja/12_STATICKI.pdf">Predavanje 12: Prezentacija podataka u statičkom formatu</a>
