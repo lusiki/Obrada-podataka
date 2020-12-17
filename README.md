@@ -236,6 +236,28 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <br>
 
 
+
+<div style="width: 25%; margin-left: auto; margin-right: auto;">
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/09_ML.html">Predavanje 09: Uvod u strojno učenje</a>
+
+<ul>
+<li> Što je strojno učenje</li>
+<li> Klasifikacija</li>
+<li> Regresija</li>
+<li> Klastering</li>
+<li> Nadgledane i ne-nadgledane metode</li>
+<li> Trening i test uzorci</li>
+<li> Pristranost vs varijanca</li>
+<li> Interpretabilnost modela</li>
+<ul>
+
+</div>
+
+<b>Format predavanja:</b> <a href="/Predavanja/09_ML.html">.html</a> | <a href="/Predavanja/09_ML.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href="">Izbor po želji iz dodatnih resursa.</a>
+<br>
+<br>
+
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
 <a href=">Predavanje 11: Prezentacija, objava i djeljenje rezultata</a>
 
