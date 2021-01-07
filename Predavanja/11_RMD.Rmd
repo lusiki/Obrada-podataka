@@ -1,0 +1,76 @@
+---
+title: "Obrada podataka"
+author:
+  name: Luka Sikic, PhD
+  affiliation: Fakultet hrvatskih studija | [OP](https://github.com/BrbanMiro/Obrada-podataka)
+subtitle: 'Predavanje 11: Komunikacija i dijeljenje rezultata'
+output:
+  html_document:
+    code_folding: hide
+    theme: flatly
+    highlight: haddock
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+    keep_md: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
+```
+
+Do sada smo objasnili najvažnije načine prikupljanja, pohrane i analize podataka. Posljednji dio *pipeline-a* u podatkovnoj znanosti se odnosi na **komunikaciju i dijeljenje rezultata analize**. [R Markdown](https://vimeo.com/178485416) je platforma koja omogućuje provedbu svih navedenih elemenata analize pri čemu je analitički izvještaj moguće prilagoditi mnoštvu različitih potreba za **komunikacijom i dijeljenjem rezulatata analize**. Široki spektar mogućnosti **komunikacije i dijeljenja rezulatata analize** je najsnažniji motiv i najvažniji razlog za bolje upoznavanje sa R Markdown-om. Platforma omogućava export analize u formate: word, pdf, html, prezentacije, interaktivni dashboard i app. To znači da je u okviru R Markdown-a analizu moguće prezentirati kao **web stranicu, blog, akademski članak, knjigu ili aplikaciju**. Pregled [svih formata](https://rmarkdown.rstudio.com/lesson-9.html) je dostupan u službenoj dokumentaciji. Osim mnoštva export formata, neke od mogućnosti R Markdown-a su i korištenje [mnoštva programskih jezika](https://rmarkdown.rstudio.com/lesson-5.html) (npr. python-a kroz paket [reticulate](https://rstudio.github.io/reticulate/)).
+
+R Markdown platforma je kompatibilna sa [Open Source](https://medium.com/cracking-the-data-science-interview/a-friendly-introduction-to-open-source-data-science-for-business-leaders-778a69f452e9) principima, od kojih je za modernu obradu podataka među najvažnijima *reproducible research* princip. Platforma podržava *reproducible research* na 4 načina:
+
+- **Pristup analizi je dostupan svima**, primjerice istraživačima koji nemaju resurse za komercijalni software iz manje razvijenih djelova svijeta.
+
+_ **replikacija analize je moguća** u budućnosti i od strane drugih istraživača
+
+- **uklanjanje i kontrola grešaka** je automatizirana i olakšana jer je svaki korak analize eksplicitno definiran
+
+- **revidiranje** analize je efikasnije, što znači brže i lakše dostupno. To također uključuje i mogućnost proširenja analize.
+
+- **dijeljenje** analize kroz izvrsnu [GitHub integraciju](https://resources.github.com/whitepapers/github-and-rstudio/).
+
+
+## Software podrška
+
+U ovom predavanju se pretpostavlja da ste već upoznati sa osnovama R programskog jezika i ekosistema te da imate instaliran R + R Studio (ili alternativno [Visual Studio Code](https://code.visualstudio.com/)). Ukoliko su ti uvjeti zadovoljeni, za rad sa R Markdown-om je potrebno (preporučljivo):  
+
+- instalirati [tinytex](https://yihui.name/tinytex/)
+
+`install.packages(c('tinytex','rmarkdown'))`
+`tinytex::install_tinytex()`
+
+- još nekoliko paketa koji su neophodni ili olakšavaju rad u R Markdown-u
+
+`install.packages(c("rmarkdown", "knitr", "kableExtra","stargazer", "plotly", "knitr","bookdown"))`
+
+- konceptualno se upoznati sa:[Markdown](https://en.wikipedia.org/wiki/Markdown), [R Markdown](https://rmarkdown.rstudio.com/lesson-1.html) i [LaTeX](https://en.wikipedia.org/wiki/LaTeX)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
