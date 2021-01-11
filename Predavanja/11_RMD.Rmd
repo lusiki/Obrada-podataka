@@ -22,7 +22,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 ```
 
-Do sada smo objasnili najvažnije načine prikupljanja, pohrane i analize podataka. Posljednji dio *pipeline-a* u podatkovnoj znanosti se odnosi na **komunikaciju i dijeljenje rezultata analize**. [R Markdown](https://vimeo.com/178485416) je platforma koja omogućuje provedbu svih navedenih elemenata analize pri čemu je analitički izvještaj moguće prilagoditi mnoštvu različitih potreba za **komunikacijom i dijeljenjem rezulatata analize**. Široki spektar mogućnosti **komunikacije i dijeljenja rezulatata analize** je najsnažniji motiv i najvažniji razlog za bolje upoznavanje sa R Markdown-om. Platforma omogućava export analize u formate: word, pdf, html, prezentacije, interaktivni dashboard i app. To znači da je u okviru R Markdown-a analizu moguće prezentirati kao **web stranicu, blog, akademski članak, knjigu ili aplikaciju**. Pregled [svih formata](https://rmarkdown.rstudio.com/lesson-9.html) je dostupan u službenoj dokumentaciji. Osim mnoštva export formata, neke od mogućnosti R Markdown-a su i korištenje [mnoštva programskih jezika](https://rmarkdown.rstudio.com/lesson-5.html) (npr. python-a kroz paket [reticulate](https://rstudio.github.io/reticulate/)).
+Do sada smo objasnili najvažnije načine prikupljanja, pohrane i analize podataka. Posljednji dio *pipeline-a* u podatkovnoj znanosti se odnosi na **komunikaciju i dijeljenje rezultata analize**. [R Markdown](https://vimeo.com/178485416) je platforma koja omogućuje provedbu svih navedenih elemenata analize pri čemu je analitički izvještaj moguće prilagoditi mnoštvu različitih potreba za **komunikacijom i dijeljenjem rezulatata analize**. Široki spektar mogućnosti **komunikacije i dijeljenja rezulatata analize** je najsnažniji motiv i najvažniji razlog za bolje upoznavanje sa R Markdown-om. Platforma omogućava export analize u razne formate: word, pdf, html, prezentacije, interaktivni dashboard i app. To znači da je u okviru R Markdown-a analizu moguće prezentirati kao **web stranicu, blog, akademski članak, knjigu ili aplikaciju**. Pregled [svih formata](https://rmarkdown.rstudio.com/lesson-9.html) je dostupan u službenoj dokumentaciji. Osim mnoštva export formata, neke od mogućnosti R Markdown-a su i korištenje [mnoštva programskih jezika](https://rmarkdown.rstudio.com/lesson-5.html) (npr. python-a kroz paket [reticulate](https://rstudio.github.io/reticulate/)) i jednostavnost izrade analize u skladu s *reproducible research principima*.
 
 R Markdown platforma je kompatibilna sa [Open Source](https://medium.com/cracking-the-data-science-interview/a-friendly-introduction-to-open-source-data-science-for-business-leaders-778a69f452e9) principima, od kojih je za modernu obradu podataka među najvažnijima [*reproducible research*](https://rstudio-pubs-static.s3.amazonaws.com/21454_f3a90d90a7eb41359103564b73c7b0c2.html) princip. Platforma podržava *reproducible research* na 5 načina:
 
@@ -257,6 +257,6 @@ R Markdown u [lingvistici](https://yongfu.name/ling-rmd/index.pdf)
 [ds in soc](https://towardsdatascience.com/getting-started-in-machine-learning-data-science-a-guide-for-social-scientists-d4cdd6332eb0)
 
 
-
+[intergiraj ovo](https://resources.github.com/whitepapers/github-and-rstudio/)
 
 
