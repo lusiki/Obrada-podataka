@@ -315,13 +315,56 @@ Chunkovi koda imaju mnogo opcija i određuju što se prikazuje u dokumentu. Te o
 - `cahce = TRUE` save-a rezultate i ne re-izvršava chunk koda dok nije promijenjen
 - `out.height`  i `out.width` određuju veličinu i širinu grafikona (npr. ´`out.height=5`)
 
+#### `cache` opcija
+
+Svi code chunks moraju biti re-izračunati svaki put kada re-knit-amo file. Ako vaš dokument sadrži kodove koji se dugo procesuiraju, razmislite o korištenju `cache = TRUE` opcije koja pohranjuje i load-a cache-ane rezultate nakon prvog knit-anja. Na taj način možete uštedidi dosta vremena. Ova je opcija dostupna na *chunk-by-chunk* osnovi. Valja naglasiti da opcija ima smisla samo ako  se radi o neizmjenjenim code chunk-ovima (nakon prvog knit-anja). U slučaju da se podatci ili kod promijeni, potrebno je ponovno *izvrtiti* kod kako bi se rezultati prilagodili.
 Za pregled svih opcija pogledajte službenu [R Markdown stranicu](https://yihui.org/knitr/options/).
 
 ### Default za sve chunk-ove
 
+Ponekad je korisno postaviti default opcije za sve chunk-ove nego, npr. specificirati `warning=FALSE` na početku svakog pojedinačnog. Da biste postavili default opcije, specificirajte ovo na početku dokumenta:
+
+
+
+
+Moguće je premostiti defaultne postavke u svakom chunk-u ukoliko je potrebno, a savjet za povećanje brzine je "nizvodno" učitavanje paketa. 
+
 ### Grafikoni
 
+Izrada grafikona u R Markdownu je jednostavna i moguće je koristiti sve opcije koje smo do sada spominjali. Za primjer pogledajmo jednostavnu vizualizaciju odnosa tjelesne težine i težine srca kod mačaka:
 
+
+```r
+library(MASS)
+data(cats)
+plot(Hwt ~ Bwt, data = cats, title = "Odnos težine tijela i srca kod mačaka", xlab = "Tjelesna težina (kg)", ylab = " Težina srca (g)")
+```
+
+![](11_RMD_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+
+### Tablice
+
+Za prikaz matrica i data frame-ova u R Markdownu koristite `kable()` funkciju:
+
+
+```r
+library(knitr)
+kable(head(mtcars))
+```
+
+
+
+|                  |  mpg| cyl| disp|  hp| drat|    wt|  qsec| vs| am| gear| carb|
+|:-----------------|----:|---:|----:|---:|----:|-----:|-----:|--:|--:|----:|----:|
+|Mazda RX4         | 21.0|   6|  160| 110| 3.90| 2.620| 16.46|  0|  1|    4|    4|
+|Mazda RX4 Wag     | 21.0|   6|  160| 110| 3.90| 2.875| 17.02|  0|  1|    4|    4|
+|Datsun 710        | 22.8|   4|  108|  93| 3.85| 2.320| 18.61|  1|  1|    4|    1|
+|Hornet 4 Drive    | 21.4|   6|  258| 110| 3.08| 3.215| 19.44|  1|  0|    3|    1|
+|Hornet Sportabout | 18.7|   8|  360| 175| 3.15| 3.440| 17.02|  0|  0|    3|    2|
+|Valiant           | 18.1|   6|  225| 105| 2.76| 3.460| 20.22|  1|  0|    3|    1|
+
+Dobra praktična opcija za poboljšanje estetike tablica je `kableExtra` paket.
 
 ### Izračuni u tekstu (*inline txt computations*)
 
@@ -335,7 +378,7 @@ y <- rnorm(1)
 
 ...i ugradimo njihove vrijednosti u tekst:
 
-Sada možemo napisati x = 0.9132868 dok je y = 0.3933517.
+Sada možemo napisati x = -0.7870736 dok je y = 1.2824079.
 
 ### Jednadžbe
 
@@ -345,9 +388,6 @@ Ako ste upoznati sa latex jezikom, korištenje jednadžbi je vrlo jednostavno. K
 \mathbb{E}[Y] = \beta_0 + \beta_1x
 \end{equation}
 
-### `cache` opcija
-
-Svi code chunks moraju biti re-izračunati svaki put kada re-knit-amo file. Ako vaš dokument sadrži kodove koji se dugo procesuiraju, razmislite o korištenju `cache = TRUE` opcije koja pohranjuje i load-a cache-ane rezultate nakon prvog knit-anja. Na taj način možete uštedidi dosta vremena. Ova je opcija dostupna na *chunk-by-chunk* osnovi. Valja naglasiti da opcija ima smisla samo ako  se radi o neizmjenjenim code chunk-ovima (nakon prvog knit-anja). U slučaju da se podatci ili kod promijeni, potrebno je ponovno *izvrtiti* kod kako bi se rezultati prilagodili.
 
 ### Ekstrakcija R koda
 

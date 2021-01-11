@@ -248,8 +248,8 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 </div>
 
-<b>Format predavanja:</b> <a href="">.html</a> | <a href=">.Rmd</a>
-<br><b>Čitanje: </b><a href="">R Markdown</a>
+<b>Format predavanja:</b> <a href="/Predavanja/11_RMD.html">.html</a> | <a href="/Predavanja/10_RMD.Rmd">.Rmd</a>
+<br><b>Čitanje: </b><a href="https://dukespace.lib.duke.edu/dspace/bitstream/handle/10161/8374/Baumer_R%20Markdown-Integrating%20a%20Reproducible%20Analysis%20Tool%20into%20Introductory%20Statistics.pdf?sequence=1"> Članak o Reproducible Analysis</a>
 <br>
 <br>
 
