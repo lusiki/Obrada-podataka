@@ -6,7 +6,8 @@ author:
 subtitle: 'Predavanje 11: Komunikacija i dijeljenje rezultata'
 output:
   html_document:
-    code_folding: hide
+    indent: true
+    code_folding: show
     theme: flatly
     highlight: haddock
     toc: yes
@@ -16,13 +17,14 @@ output:
   pdf_document:
     toc: yes
     toc_depth: '4'
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 ```
 
-Do sada smo objasnili najvažnije načine prikupljanja, pohrane i analize podataka. Posljednji dio *pipeline-a* u podatkovnoj znanosti se odnosi na **komunikaciju i dijeljenje rezultata analize**. [R Markdown](https://vimeo.com/178485416) je platforma koja omogućuje provedbu svih navedenih elemenata analize pri čemu je analitički izvještaj moguće prilagoditi mnoštvu različitih potreba za **komunikacijom i dijeljenjem rezulatata analize**. Široki spektar mogućnosti **komunikacije i dijeljenja rezulatata analize** je najsnažniji motiv i najvažniji razlog za bolje upoznavanje sa R Markdown-om. Platforma omogućava export analize u razne formate: word, pdf, html, prezentacije, interaktivni dashboard i app. To znači da je u okviru R Markdown-a analizu moguće prezentirati kao **web stranicu, blog, akademski članak, knjigu ili aplikaciju**. Pregled [svih formata](https://rmarkdown.rstudio.com/lesson-9.html) je dostupan u službenoj dokumentaciji. Osim mnoštva export formata, neke od mogućnosti R Markdown-a su i korištenje [mnoštva programskih jezika](https://rmarkdown.rstudio.com/lesson-5.html) (npr. python-a kroz paket [reticulate](https://rstudio.github.io/reticulate/)) i jednostavnost izrade analize u skladu s *reproducible research principima*.
+Do sada smo objasnili najvažnije načine prikupljanja, pohrane i analize podataka. Posljednji dio *pipeline-a* u podatkovnoj znanosti se odnosi na **komunikaciju i dijeljenje rezultata analize**. [R Markdown](https://vimeo.com/178485416) je platforma koja omogućuje integraciju svih navedenih elemenata analize pri čemu je analitički izvještaj moguće prilagoditi mnoštvu različitih potreba za **komunikacijom i dijeljenjem rezulatata analize**. Široki spektar mogućnosti **komunikacije i dijeljenja rezulatata analize** je najsnažniji motiv i najvažniji razlog za bolje upoznavanje sa R Markdown-om. Platforma omogućava export analize u razne formate: word, pdf, html, prezentacije, interaktivni dashboard i app. To znači da je u okviru R Markdown-a analizu moguće prezentirati kao **web stranicu, blog, akademski članak, knjigu ili aplikaciju**. Pregled [svih formata](https://rmarkdown.rstudio.com/lesson-9.html) je dostupan u službenoj dokumentaciji. Osim mnoštva export formata, neke od mogućnosti R Markdown-a su i korištenje [mnoštva programskih jezika](https://rmarkdown.rstudio.com/lesson-5.html) (npr. python-a kroz paket [reticulate](https://rstudio.github.io/reticulate/)) i jednostavnost izrade analize u skladu s *reproducible research principima*.
 
 R Markdown platforma je kompatibilna sa [Open Source](https://medium.com/cracking-the-data-science-interview/a-friendly-introduction-to-open-source-data-science-for-business-leaders-778a69f452e9) principima, od kojih je za modernu obradu podataka među najvažnijima [*reproducible research*](https://rstudio-pubs-static.s3.amazonaws.com/21454_f3a90d90a7eb41359103564b73c7b0c2.html) princip. Platforma podržava *reproducible research* na 5 načina:
 
@@ -32,7 +34,7 @@ _ **Replikacija analize je moguća** u budućnosti i od strane drugih istraživa
 
 - **Uklanjanje i kontrola grešaka** je automatizirana i olakšana jer je svaki korak analize eksplicitno definiran.
 
-- **revidiranje** analize je efikasnije, što znači brže i lakše dostupno. To također uključuje i mogućnost proširenja analize.
+- **Revidiranje** analize je efikasnije, što znači brže i lakše dostupno. To također uključuje i mogućnost proširenja analize.
 
 - **Dijeljenje** analize kroz izvrsnu [GitHub integraciju](https://resources.github.com/whitepapers/github-and-rstudio/).
 
@@ -53,20 +55,46 @@ U ovom predavanju se pretpostavlja da ste već upoznati sa osnovama R programsko
 - konceptualno se upoznati sa:[Markdown](https://en.wikipedia.org/wiki/Markdown), [R Markdown](https://rmarkdown.rstudio.com/lesson-1.html) i [LaTeX](https://en.wikipedia.org/wiki/LaTeX).
 
 
- ## Tehnički detalji
+## Što je Markdown?
 
-Markdown je pojednostavljena vezija "markup" jezika. Za razliku od *uobičajnih* programa za procesuiranje riječi, tekst napisanu Markdown-u koristi jednostavan i intuitivan format koji je lako moguće dijeliti među računalima, mobilnim uređajima i ljudima. U posljednje vrijeme je postao standard u akademiji, znanosti, novinarstvu, obrazovanju i dr. Primjerice, stranice poput GitHub-a i Reddit-a koriste Markdown za menadžment komentara...
+Markdown je pojednostavljena vezija "markup" jezika pri čemu su Markdown file-ovi "čisti" tekstualni file-ovi pa ih je moguće edit-irati korištenjem "običnih"tekstualnih editora (npr. Notepad). Glavna razlika u odnosu na Word je što se formatiranje događa unutar samog dokumenta, a ne *u pozadini*. Zbog toga je potrebno naučiti nekoliko osnovnih (standardnih) pravila za formatiranje i organizaciju dokumenta. Važno je razumjeti da se željeno formatiranje prikazuje tek kada je je dokument **render**-an (i.e. procesuiran, pretvoren) u neki od željenih formata (pdf, html, word...).
+
+Za razliku od *uobičajnih* programa za procesuiranje riječi, tekst napisan u Markdown-u ima jednostavan i intuitivan format (i.e. standardan format) koji je lako dijeliti među računalima, mobilnim uređajima i ljudima. U posljednje vrijeme je markdown postao standard za rad u akademiji, znanosti, novinarstvu, obrazovanju i dr. Primjerice, stranice poput GitHub-a i Reddit-a koriste Markdown za menadžment komentara.
+
+
+## Što je R Markdown?
+
+U ovom predavanju koristimo varijantu **Markdown-a** koja se zove **R Markdown**. R Markdown ima sve opcije za formatiranje koje postoje u Markdown-u, a dodatno omogućava ugrađuvanje, prikaz i provedbu R koda u korištenim dokumentima. Kombiniranjem R koda i (običnog) teksta je moguće stvoriti dinamičke izvještaje analitičkih procesa, prikazati korišteni `code`, analitički output (deskriptivnu statistiku, tablice, grafikone, rezultate statističkih modela) i ugraditi tekstualna objašnjenja koja prate korištene procedure ili diskusiju o rezultatima.
+
+## Zašto koristiti R Markdown?
+
+- **Svestranost** - Mogućnost izvoza analize u mnoštvo formata.
+- **Integracija koda i teksta** - Izbjegava se copy/paste rezultata i čitav niz poteškoća koje pri tome nastaju.
+- **Isticanje koda** - Veliki broj mogućnosti organizacije analize i komunikacije bitnih točaka.
+- **Version control** - Već navedna jednostavnost integracije sa npr. GitHub-om. Nije potrebno save-ati v1, v2, v3...analize!
+- **Edit-iranje tekstualnih file-a** - R markdown je moguće edit-irati na bilo kojoj platformi koja podržava edit-ing teksta što znatno proširuje mogućnost primjene.
+- **Stabilnost** - R Mardown file su malene i stabilne pa to olakšava rad i integraciju na njima.
+- **Fokus je na tekstu, ne na formatiranju** - Na taj se način povećava kvaliteta sadržaja i povećava efikasnost utrošenog vremena.
+
+## Zašto ne koristiti R Markdown?
+
+- **Još uvijek ga ne koristi veliki broj ljudi.** Ljudi i dalje prefiraju Word pa dolazi do nekompatibilnosti formata.
+- **Nema track changes.**. Postoji Version Control varijanta ali nije skroz jednostavna za korištenje.
+- **Malo opcija za fomatiranje.** Upitno je da li je ovo uistinu ograničenje ili prednost?!
+- **Potrebno je naučiti sintaksu...** Vremenski i kognitivni troškovi učenja i prilagodbe na novu tehnologiju.
+
+
+## Osnovna Markdown sintaksa
 
 Formatiranje teksta u Markdown-u nije komplicirano i ne uključuje *high-level* prilagodbe poput promjene veličine fonta, boje ili vrste teksta. Glavni estetski aspekti oblikovanja teksta su bold-anje, izrada naslova i podnaslova, organizacija listi i sl. U ovom ćemo pregledu dati osnovne upute za oblikovanje i uređivanje teksta u R Markdown-u. Za više detalja pogledajte [službenu dokumentaciju](https://www.markdowntutorial.com/)
 
-### Kosa slova i bold-anje 
+### *Kurziv* i **bold** 
 
 Za prikaz riječi ili fraze kosim slovima u Markdown-u je potrebno staviti (`_`) ili (`*`) oko izraza. Primjerice, *ova* riječ će biti koso napisana.
 
 Slično tome, za bold isticanje riječi u Markdown stavite dvije crtice (`__`) ili dvije zvjezdice ( `**` ). Tako dobivamo **bold** prikaz riječi.
 
 Moguće je koristiti i **_obje_** varijante za postizanje kosih bold fraza koristeći (`**_`) sintaksu. To također vrijedi i za  **_više riječi_**.
-
 
 ### Naslovi
 
@@ -76,22 +104,40 @@ Headers are frequently used on websites, magazine articles, and notices, to draw
 
 Postoji šest vrsta naslova (prema veličini od najvećeg prema manjem):
 
+```{r}
 # Naslov jedan
 ## Naslov dva
 ### Naslov tri
 #### Naslov četiri
 ##### Naslov pet
 ###### Naslov šest
-
+```
 Za izradu naslova u Markdown-u je potrebno staviti hash mark (`#`) prije fraze. Broj hash mark-ova pri tome određuje željenu veličinu naslova. Za najveći naslov koristite hash mark (`# Najveći naslov`), dok za podnaslov treće razine koristite (`### Manji naslov`). Odluka o korištenju je na autoru analize.
 
-### Poveznice (hiperlinkovi) 
+### Novi paragraf
+
+Novi paragraf se označava praznom linijom između dva pragrafa:
+
+```{r eval=F}
+Ovo je jedan paragraf.
+
+Ovo je drugi paragraf.
+```
+
+Za prelazak u novi red je potrebno ostaviti dva pazna mjesta nakon prekida:
+```{r eval=F}
+Ovo je jedan red. 
+Ovo je drugi red.
+```
+
+
+### Poveznice 
 
 U Markdown-u postoje dvije vrste linkova i obje vrste funkcioniraju na jednak način. Prva vrsta se naziva _inline_ link. Za stvaranje inline link-a, stavite tekst linka u (`[ ]`) te nako toga link u (`( )`). Primjerice za hiper link na www.github.com s tekostom koji kaže "Posjeti GitHub!" je potrebno napisati sljedeće: [Posjeti GitHub!](https://github.com/).
 
 Druga vrsta linka je _reference_ link. Kao što i sami naziva ukazujem riječ je o linku koji upućuje na neko mjesto ubutar samog dokumenta. Primjrice:
 
-Ovdje je [link na ][drugo mjesto].  
+Ovdje je [link][drugo mjesto].  
 Ovo je još jedan [link][na drugi link].  
 Vratimo se sada [na prvi link][drugo mjesto].  
 
@@ -148,36 +194,82 @@ Poredana lista ima brojeve umjesto zvjezdica. Na primjer:
 
 Vrlo jednostavno, zar ne?!.
 
-## knitr
 
-`knitr` je R paket koji se koristi za  _statistical literate programming_, što omogućuje integraciju koda i teksta u jednostavne dokumente. Podržava`R Markdown`, `R LaTex`, i `R HTML` kao dokumentacijske jezike, i može export-ati `markdown`, `PDF` i `HTML` dokumente.
+## R Markdown 
 
-Sjajna stvar u `R Markdown` sa `knitr` je što finalni dokument neće biti render-an ukoliko postoje error-i u kodu. To znantno olakšava kontrolu grešaka pri procesu `knitting-a`  `.Rmd` fajla-e.
-
-Provjerite da li ste instalirali zadnju verziju `knitr` paketa: `install.packages("knitr")`.
-
-## rmarkdown
-
-Dokumenti poput ovog koji sadržavaju R code i markdown su `R Markdown` file-i. `rmarkdown` je R paket koji olakšava korištenje `R Markdown` kroz `knitr` i neke dodatne alate. Za više detalja o `R Markdown` formatu i  `rmarkdown` paketu pogledajte <http://rmarkdown.rstudio.com>.
+Dokumenti (poput ovog) koji sadržavaju R code i markdown su `R Markdown` file-i. `rmarkdown` je R paket koji olakšava korištenje `R Markdown` kroz `knitr` i neke dodatne alate. Za više detalja o `R Markdown` formatu i  `rmarkdown` paketu pogledajte <http://rmarkdown.rstudio.com>.
 
 Kada pokrente `render` iz `rmarkdown` paketa (klikom na **Knit** izbornik), `.Rmd` file-a se šalje u `knitr`, koji izvršava sav kod i stvara (`.md`) dokument koji sadržava tekst i output koda.
 
 Markdown file-a je generirana kroz `knitr` koji je procesuiran kroz pandoc, sustav zaslužan za stvaranje završnog formata. Prikaz ovih koraka je na donjoj slici:
 
 ![](http://rmarkdown.rstudio.com/lesson-images/RMarkdownFlow.png)
+Za pokretanje novog R MArkdown dokumenta napravite sljedeće:
+
+1. Klikni na `File -> ew File -> R Markdown...`
+2. Izaberi naslov i format(HTML, pdf, Word)
+3. Klikni Ok
+4. Spremi novi dokument
+
+### knitr
+
+`knitr` je R paket koji se koristi za  _statistical literate programming_, što omogućuje integraciju koda i teksta u jednostavne dokumente. Podržava`R Markdown`, `R LaTex`, i `R HTML` kao dokumentacijske jezike, i može export-ati `markdown`, `PDF` i `HTML` dokumente.
+
+Sjajna stvar u `R Markdown` sa `knitr`-om je što finalni dokument neće biti render-an ukoliko postoje error-i u kodu. To znantno olakšava kontrolu grešaka pri procesu `knitting-a` `.Rmd` fajla-e.
+
+Provjerite da li ste instalirali zadnju verziju `knitr` paketa: `install.packages("knitr")`.
+
+### YAML
+
+Svaki `.Rmd` file započinje s YAML zaglavljem. YAML definira opće postavke dokumenta i nalazi se između tri uzastopne crte na početku i na kraju:
+
+```{r eval=F}
+---
+title: "Testni dokument"
+author: "Luka Sikic"
+output: html_document
+---
+  
+```
+
+YAML ima i niz drugih opcija za fomatiranje, a ovdje su prikazane samo osnovne. Primjerice, za izvoz dokumenta u .pdf format je potrebno podesiti `output` iz `html_document` u `pdf_document` i ponovno kliknuti `Knit`. Ukoliko želite prilagoditi veličinu slova, moguće je dodati još jedan YAML argument ispod `output:html_document`:
+
+```{r eval=F}
+fontsize: 12pt
+```
+
+Promjena fonta je malo složenija. U pozadini R Markdown pretvara dokument u Latex kod, koji je potom pretvoren u pdf. Zbog toga je potrebno specificirati formating opcije na način da ih Latex može razumjeti. Da biste specificirali npr. `Arial` font, Latex-u je potrebno definirati sljedeće postavke u YAML-u: 
+
+```{reval=F}
+title: "Obrada podataka"
+subtitle: "R Markdown"
+author: "Luka Sikic"
+date: "2021-01-11"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+
+mainfont: Arial
+```
+
 
 ### Ugrađivanje koda
 
 Kada kliknete **Knit** na izborniku, dokument koji uključuje tekst i output na osnovi koda iz R "code chunks" će se generirati. **Uvijek** je cilj vidjeti kod i output, a izostavljanje koda iz `.Rmd` file-a će smanjiti kvalitetu finalnog izvještaja. Za vježbu pokušajte napraviti `.html` izvještaj sami.
 
-#### Chunk-ovi koda
+### Citiranje
+
+Za isticanje citata koristite `>` što će napraviti:
+
+> Svi su modeli netočni!
+
+### Chunk-ovi koda
 
 Postoje tri načina za stvaranje code chunk-ova:  
 
-1. Unesite `` ```{r} `` za inicijaciju code chunk-a ` ``` ` i za kraj  
+1. Unesite `` ```{r} `` za inicijaciju code chunk-a i za kraj chunk-a ` ``` `
 2. Koristite prečicu na tipkovnici **Ctrl + Alt + I** (OS X: **Cmd + Option + I**)  
 3. Kliknite **Add Chunk** na tool bar izborniku
-
 
 Pogledajmo primjer s ugrađenim podatkovnim skupom `pressure`, koji sadžrava podatke o pritisku pare na planetu Mercury kao funkciju temperature. R code chunk možete ugraditi na sljedeći način:
 
@@ -186,7 +278,20 @@ head(pressure)
 summary(pressure)
 ```
 
-Primjetite da su i kod i output prikazani na finalnom dokumentu!
+### Opcije chunk-ova
+
+Chunkovi koda imaju mnogo opcija i određuju što se prikazuje u dokumentu. Te opcije idu nakon ` ```{r} `, a prije zatvaranja zagrade `}`. Za popis svih opcija stavite kursor nakon `{r,` stisnite space, a nakon toga `tab`. Neke često korištene opcije su:
+
+- `echo = FALSE` prikazuje samo output koda, a ne i sami kod
+- `include = FALSE` izvršava kod ali ne prikazuje kod niti output
+- `eval = FALSE` prikazuje kod ali ga ne izvršava
+- `warning = FALSE` i `message = FALSE` isključuje error poruke i upozorenja
+- `cahce = TRUE` save-a rezultate i ne re-izvršava chunk koda dok nije promijenjen
+- `out.height`  i `out.width` određuju veličinu i širinu grafikona (npr. ´`out.height=5`)
+
+Za pregled svih opcija pogledajte službenu [R Markdown stranicu](https://yihui.org/knitr/options/).
+
+### Default za sve chunk-ove
 
 ### Grafikoni
 
