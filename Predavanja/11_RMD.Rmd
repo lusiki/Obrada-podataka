@@ -368,11 +368,17 @@ purl("intro-to-rmarkdown.Rmd", documentation = 0)
 R Markdown može render-ati PDF, beamer prezentacije, HTML prezentacije, iosides, slidy i reveal.js. U R Markdown-u je također moguće napisati cijeli akademski članak. Iz njega možete napraviti webstranice i različite interaktivne dokumente poput aplikacija i dashboard-ova.
 
 
+## Dodatni resursi
 
+- Službeni R Markdown [tutorial](https://rmarkdown.rstudio.com/lesson-1.html). Izvsno za opći pregled funkcionalnosti.
 
+- Detaljniji R Markdown [tutorial](http://learnr.usu.edu/r_markdown/1_1_markdown.php). Preporučeno kao nadopuna uz ovo predavanje.
 
+- Koristan [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) ukoliko želite isprobati razumjevanje R Markdown-a na praktičnom primjeru.
 
+- Detaljan i kvalitetan R Markdown [tutorial](http://www.stat.cmu.edu/~cshalizi/rmarkdown/).
 
+- [Bookdown](https://bookdown.org/yihui/rmarkdown/) za one koji žele dubinski razumjeti R Markdown i aktivne/profesionalne korisnike. 
 
 
 

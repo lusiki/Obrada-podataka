@@ -238,12 +238,12 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 
 
 <div style="width: 25%; margin-left: auto; margin-right: auto;">
-<a href="">Predavanje 11: Prezentacija, objava i djeljenje rezultata</a>
+<a href="https://raw.githack.com/BrbanMiro/Obrada-podataka/main/Predavanja/11_RMD.html">Predavanje 11: Prezentacija, objava i djeljenje rezultata</a>
 
 <ul>
-<li> Prezentacija podataka u statičkom formatu</li>
-<li> Prezentacija podataka u dinamičkom formatu</li>
-<li> Prezentacija podataka u interaktivnom formatu
+<li> Reproducible research i Markdown</li>
+<li> Markdown sintaksa</li>
+<li> R Markdown sintaksa i funkcionalnosti</li>
 <ul>
 
 </div>
