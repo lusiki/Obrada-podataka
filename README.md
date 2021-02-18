@@ -228,7 +228,7 @@ Sljedeća knjiga ulazi u nezaobilaznu literaturu za kolegij:
 <li> Tematska analiza</li>
 <ul>
 
-</div>
+</div> 
 
 <b>Format predavanja:</b> <a href="/Predavanja/10_TXT.html">.html</a> | <a href="/Predavanja/10_TXT.Rmd">.Rmd</a>
 <br><b>Čitanje: </b><a href="http://eprints.lse.ac.uk/86659/1/Benoit_Text%20analysis%20in%20R_2018.pdf">Vodič za analizu teksta u R</a>
